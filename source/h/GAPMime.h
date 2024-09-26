@@ -1,88 +1,70 @@
-#ifndef	_GAPMIME_H__
-#define	_GAPMIME_H__
+#ifndef GAPMIME_H
+#define GAPMIME_H
 
-
-////////////////////////////////////////////////////////////////////////////////////
-//类的定义：
-
+#include <string>
+#include <vector>
+#include <array>
+#include <memory>
 #include "Base64.h"
 
-class CGAPMime
-{
+class CGAPMime {
 public:
-	//public function;
-	CGAPMime();
-	virtual ~CGAPMime();
-	BOOL Init(const BYTE *pBody);
-	BOOL Work(long *pnSuccess);
-	BOOL SetBodyLen(LONG nBodyLen);
-	BOOL GetPartCount(LONG *pnCount);
-	BOOL GetPart(int nIndex, int nType, BYTE *pnVal);
+    CGAPMime();
+    virtual ~CGAPMime();
 
-	//added by billy.
-	char* GetSubject() { return m_szSubject;} //return the subject.
-	char* GetFrom() { return m_szFrom;} //return the mail from 
-	char* GetTo() { return m_szTo;}
-	char* GetCc() { return m_szCc;}
-	char* GetDate() { return m_szDate; }
-private:
-	char m_szCc[1024];
-	char m_szTo[1024];
-	char m_szFrom[1024];
-	char m_szDate[256];
-	//because we want to check the subject.
-private:
-	//added by billy.
-	char* GetValueFromKey(char* szLine,char* szKey);
-	//private function;
-	BOOL GetContentType(int& nContentType, char *pBoundary, 
-						int& nEncodingType, char *pFileName);
-	BOOL GetContentType(char *szBuf, char *szContentType);
-	int GetContentType(char *szContentType, int &nContentType);
-	BOOL GetLine(char *szBuf);
-	int GetFieldValue(char *szBuf, int nPos,char *szValue);	
-	int GetEncodingType(char *szBuf, int &nEncodingType);
+    bool Init(const uint8_t *pBody);
+    bool Work(long *pnSuccess);
+    bool SetBodyLen(long nBodyLen);
+    bool GetPartCount(long *pnCount);
+    bool GetPart(int nIndex, int nType, uint8_t *pnVal);
 
-	int DealWithTheContentType(int nContentType, char *szBoundary,
-								  int nEncodingType, char *szFileName);
-	int DealWithMultPart(int nContentType, char *szBoundary,
-							int nEncodingType, char *szFileName);
-	int DealWithSinglePart(int nContentType, char *szBoundary,
-							int nEncodingType, char *szFileName);
-	int GotoBoundary(char *szBoundary);
-	int DealWithTextPlain(int nContextType,int nEncodingType,char *szBoundary);
-	int DealWithOct(int nEncodingType, char *szBoundary, char *szFileName);
-	int DealWith7BitsPlainText(int nContextType, char *szBoundary);
-	int DealWithBase64PlainText(char *szBoundary);
-	int DealWithQP(char *szBoundary);
-	int RecvBodyAndDecode(char *szFileName, char *szBoundary);
-
-public:
-	//public var;
+    std::string GetSubject() const { return m_szSubject; }
+    std::string GetFrom() const { return m_szFrom; }
+    std::string GetTo() const { return m_szTo; }
+    std::string GetCc() const { return m_szCc; }
+    std::string GetDate() const { return m_szDate; }
 
 private:
-	//private var;
-	const BYTE *m_pBody;
-	int m_nOffset;
-	//CArray<CMimeInfo,CMimeInfo> m_arrMimeInfo;
-	int	m_nBodyLen;
-	int m_nCurrentAttachmentCount;
-	char m_szAttachmentName[128][1024];
+    std::string GetValueFromKey(const std::string& szLine, const std::string& szKey);
+    bool GetContentType(int& nContentType, std::string& pBoundary, int& nEncodingType, std::string& pFileName);
+    bool GetContentType(const std::string& szBuf, std::string& szContentType);
+    int GetContentType(const std::string& szContentType, int &nContentType);
+    bool GetLine(std::string& szBuf);
+    int GetFieldValue(const std::string& szBuf, int nPos, std::string& szValue);
+    int GetEncodingType(const std::string& szBuf, int &nEncodingType);
+    int DealWithTheContentType(int nContentType, const std::string& szBoundary, int nEncodingType, const std::string& szFileName);
+    int DealWithMultPart(int nContentType, const std::string& szBoundary, int nEncodingType, const std::string& szFileName);
+    int DealWithSinglePart(int nContentType, const std::string& szBoundary, int nEncodingType, const std::string& szFileName);
+    int GotoBoundary(const std::string& szBoundary);
+    int DealWithTextPlain(int nContextType, int nEncodingType, const std::string& szBoundary);
+    int DealWithOct(int nEncodingType, const std::string& szBoundary, const std::string& szFileName);
+    int DealWith7BitsPlainText(int nContextType, const std::string& szBoundary);
+    int DealWithBase64PlainText(const std::string& szBoundary);
+    int DealWithQP(const std::string& szBoundary);
+    int RecvBodyAndDecode(const std::string& szFileName, const std::string& szBoundary);
 
 private:
-	//链表操作
-	LONG m_nPartCount;
-	Gap_BodyPart_t m_pBodyPart;
+    const uint8_t *m_pBody;
+    int m_nOffset;
+    int m_nBodyLen;
+    int m_nCurrentAttachmentCount;
+    std::array<std::string, 128> m_szAttachmentName;
+    long m_nPartCount;
+    Gap_BodyPart_t m_pBodyPart;
 
-	Gap_BodyPart_t BodyContentCreate();
-	Gap_BodyPart_t BodyContentInsert(Gap_BodyPart_t pBodyPart, Gap_BodyPart_t szBodyPart);
-	void BodyContentDestroy(Gap_BodyPart_t *pBodyPart);
-	void BodyContentDestroyAll(Gap_BodyPart_t *pBodyPart);
-	Gap_BodyPart_t BodyContentDelete(Gap_BodyPart_t pBodyPart, int nPart);
+    std::string m_szSubject;
+    std::string m_szCc;
+    std::string m_szTo;
+    std::string m_szFrom;
+    std::string m_szDate;
 
-	char m_szSubject[1024];
+    Gap_BodyPart_t BodyContentCreate();
+    Gap_BodyPart_t BodyContentInsert(Gap_BodyPart_t pBodyPart, Gap_BodyPart_t szBodyPart);
+    void BodyContentDestroy(Gap_BodyPart_t *pBodyPart);
+    void BodyContentDestroyAll(Gap_BodyPart_t *pBodyPart);
+    Gap_BodyPart_t BodyContentDelete(Gap_BodyPart_t pBodyPart, int nPart);
 };
 
 extern void ToMakeUpper(char *pStr);
 
-#endif
+#endif // GAPMIME_H
