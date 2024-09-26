@@ -32,14 +32,14 @@ namespace asns {
                 volumeSet.addj(c.data.volume);
                 std::string streamUrl = c.data.streamPath + c.data.roomId;
                 char buf[256] = {0};
-                sprintf(buf, bus.getFfmpegCmd().c_str(), streamUrl.c_str());
+                sprintf (buf, bus.getFfmpegCmd().c_str(), streamUrl.c_str());
                 LOG(INFO) << "system:" << buf;
                 system(buf);
 
             } else {
                 std::string streamUrl = c.data.streamPath + c.data.roomId;
                 char buf[256] = {0};
-                sprintf(buf, bus.getFfmpegCmd().c_str(), streamUrl.c_str());
+                sprintf (buf, bus.getFfmpegCmd().c_str(), streamUrl.c_str());
                 LOG(INFO) << "system:" << buf;
                 system(buf);
             }

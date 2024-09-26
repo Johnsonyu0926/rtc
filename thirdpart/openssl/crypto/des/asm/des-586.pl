@@ -76,7 +76,7 @@ sub DES_encrypt_internal()
 		{
 		&comment("Round $i");
 		&D_ENCRYPT($i,$L,$R,$i*2,$trans,"eax","ebx","ecx","edx",&swtmp(0));
-		&comment("Round ".sprintf("%d",$i+1));
+		&comment("Round ".sprintf ("%d",$i+1));
 		&D_ENCRYPT($i+1,$R,$L,($i+1)*2,$trans,"eax","ebx","ecx","edx",&swtmp(0));
 		}
 	    &add("esp",4);
@@ -113,7 +113,7 @@ sub DES_decrypt_internal()
 		{
 		&comment("Round $i");
 		&D_ENCRYPT(15-$i,$L,$R,$i*2,$trans,"eax","ebx","ecx","edx",&swtmp(0));
-		&comment("Round ".sprintf("%d",$i-1));
+		&comment("Round ".sprintf ("%d",$i-1));
 		&D_ENCRYPT(15-$i+1,$R,$L,($i-1)*2,$trans,"eax","ebx","ecx","edx",&swtmp(0));
 		}
 	    &add("esp",4);
@@ -247,7 +247,7 @@ sub D_ENCRYPT
 
 sub n2a
 	{
-	sprintf("%d",$_[0]);
+	sprintf ("%d",$_[0]);
 	}
 
 # now has a side affect of rotating $a by $shift

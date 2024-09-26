@@ -1067,7 +1067,7 @@ my %visopf = (	"addxc"		=> 0x011,
 	    $_=$bias{$1}+$2;
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			0x81b00000|$rd<<25|$rs1<<14|$opf<<5|$rs2,
 			$ref;
     } else {
@@ -1096,7 +1096,7 @@ my %fmaopf = (	"fmadds"	=> 0x1,
 	    }
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			0x81b80000|$rd<<25|$rs1<<14|$rs3<<9|$opf<<5|$rs2,
 			$ref;
     } else {

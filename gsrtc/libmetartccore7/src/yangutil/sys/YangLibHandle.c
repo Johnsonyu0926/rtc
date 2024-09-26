@@ -72,10 +72,10 @@ void* yang_libhandle_loadObject(void* pcontext,const char *sofile)
 	}
 
 #if Yang_OS_WIN
-	yang_sprintf(file1, "%s/%s.dll", file_path_getcwd, sofile);
+	yang_sprintf (file1, "%s/%s.dll", file_path_getcwd, sofile);
 	context->handle =  LoadLibraryA(file1);
 #else
-    yang_sprintf(file1, "%s/%s.so", file_path_getcwd, sofile);
+    yang_sprintf (file1, "%s/%s.so", file_path_getcwd, sofile);
     context->handle = dlopen(file1, RTLD_NOW|RTLD_LOCAL);
 #endif
 

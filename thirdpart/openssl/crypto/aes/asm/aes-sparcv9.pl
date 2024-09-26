@@ -79,7 +79,7 @@ $rounds="%i7";	# aliases with return address, which is off-loaded to stack
 
 sub _data_word()
 { my $i;
-    while(defined($i=shift)) { $code.=sprintf"\t.long\t0x%08x,0x%08x\n",$i,$i; }
+    while(defined($i=shift)) { $code.=sprintf "\t.long\t0x%08x,0x%08x\n",$i,$i; }
 }
 
 $code.=<<___;

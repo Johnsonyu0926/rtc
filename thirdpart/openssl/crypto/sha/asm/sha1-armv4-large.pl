@@ -341,7 +341,7 @@ sub body_00_19 () {
 	'&bic	($t0,$d,$b)',
 	'&add	($e,$e,$Ki)',		# e+=X[i]+K
 	'&and	($t1,$c,$b)',
-	'&ldr	($Ki,sprintf "[sp,#%d]",4*(($j+1)&15))',
+	'&ldr	($Ki,sprintf  "[sp,#%d]",4*(($j+1)&15))',
 	'&add	($e,$e,$a,"ror#27")',	# e+=ROR(A,27)
 	'&eor	($t1,$t1,$t0)',		# F_00_19
 	'&mov	($b,$b,"ror#2")',	# b=ROR(b,2)
@@ -354,7 +354,7 @@ sub body_20_39 () {
 	'($a,$b,$c,$d,$e)=@V;'.		# '$code.="@ $j\n";'.
 	'&eor	($t0,$b,$d)',
 	'&add	($e,$e,$Ki)',		# e+=X[i]+K
-	'&ldr	($Ki,sprintf "[sp,#%d]",4*(($j+1)&15)) if ($j<79)',
+	'&ldr	($Ki,sprintf  "[sp,#%d]",4*(($j+1)&15)) if ($j<79)',
 	'&eor	($t1,$t0,$c)',		# F_20_39
 	'&add	($e,$e,$a,"ror#27")',	# e+=ROR(A,27)
 	'&mov	($b,$b,"ror#2")',	# b=ROR(b,2)
@@ -367,7 +367,7 @@ sub body_40_59 () {
 	'($a,$b,$c,$d,$e)=@V;'.		# '$code.="@ $j\n";'.
 	'&add	($e,$e,$Ki)',		# e+=X[i]+K
 	'&and	($t0,$c,$d)',
-	'&ldr	($Ki,sprintf "[sp,#%d]",4*(($j+1)&15))',
+	'&ldr	($Ki,sprintf  "[sp,#%d]",4*(($j+1)&15))',
 	'&add	($e,$e,$a,"ror#27")',	# e+=ROR(A,27)
 	'&eor	($t1,$c,$d)',
 	'&add	($e,$e,$t0)',
@@ -719,7 +719,7 @@ ___
 
 	    # this fix-up provides Thumb encoding in conjunction with INST
 	    $word &= ~0x10000000 if (($word & 0x0f000000) == 0x02000000);
-	    sprintf "INST(0x%02x,0x%02x,0x%02x,0x%02x)\t@ %s %s",
+	    sprintf  "INST(0x%02x,0x%02x,0x%02x,0x%02x)\t@ %s %s",
 			$word&0xff,($word>>8)&0xff,
 			($word>>16)&0xff,($word>>24)&0xff,
 			$mnemonic,$arg;
@@ -728,8 +728,8 @@ ___
 }
 
 foreach (split($/,$code)) {
-	s/{q([0-9]+)\[\]}/sprintf "{d%d[],d%d[]}",2*$1,2*$1+1/eo	or
-	s/{q([0-9]+)\[0\]}/sprintf "{d%d[0]}",2*$1/eo;
+	s/{q([0-9]+)\[\]}/sprintf  "{d%d[],d%d[]}",2*$1,2*$1+1/eo	or
+	s/{q([0-9]+)\[0\]}/sprintf  "{d%d[0]}",2*$1/eo;
 
 	s/\b(sha1\w+)\s+(q.*)/unsha1($1,$2)/geo;
 

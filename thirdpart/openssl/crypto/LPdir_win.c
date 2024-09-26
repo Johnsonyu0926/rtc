@@ -154,11 +154,11 @@ const char *LP_find_file(LP_DIR_CTX **ctx, const char *directory)
             if (directory[dirlen - 1] != '*') {
                 char *buf = _alloca(dirlen + 3);
 
-                strcpy(buf, directory);
+                strncpy(buf, directory);
                 if (buf[dirlen - 1] != '/' && buf[dirlen - 1] != '\\')
-                    strcpy(buf + dirlen, "/*");
+                    strncpy(buf + dirlen, "/*");
                 else
-                    strcpy(buf + dirlen, "*");
+                    strncpy(buf + dirlen, "*");
 
                 directory = buf;
             }

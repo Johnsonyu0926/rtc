@@ -70,7 +70,7 @@ sub BF_encrypt
 			&BF_ENCRYPT($i+1,$R,$L,$P,$tmp1,$tmp2,$tmp3,$tmp4,1);
 
 			&comment("");
-			&comment("Round ".sprintf("%d",$i+1));
+			&comment("Round ".sprintf ("%d",$i+1));
 			&BF_ENCRYPT($i+2,$L,$R,$P,$tmp1,$tmp2,$tmp3,$tmp4,1);
 			}
 		# &mov($tmp1,&wparam(0)); In last loop
@@ -88,7 +88,7 @@ sub BF_encrypt
 			&comment("Round $i");
 			&BF_ENCRYPT($i,$R,$L,$P,$tmp1,$tmp2,$tmp3,$tmp4,0);
 			&comment("");
-			&comment("Round ".sprintf("%d",$i-1));
+			&comment("Round ".sprintf ("%d",$i-1));
 			&BF_ENCRYPT($i-1,$L,$R,$P,$tmp1,$tmp2,$tmp3,$tmp4,0);
 			}
 		# &mov($tmp1,&wparam(0)); In last loop
@@ -144,6 +144,6 @@ sub BF_ENCRYPT
 
 sub n2a
 	{
-	sprintf("%d",$_[0]);
+	sprintf ("%d",$_[0]);
 	}
 

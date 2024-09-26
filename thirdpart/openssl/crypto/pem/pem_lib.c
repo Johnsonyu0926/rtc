@@ -98,7 +98,7 @@ void PEM_dek_info(char *buf, const char *type, int len, char *str)
             p += n;
         }
         if (j > 1)
-            strcpy(p, "\n");
+            strncpy(p, "\n");
     }
 }
 

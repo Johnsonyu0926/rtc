@@ -91,7 +91,7 @@ int32_t YangAudioAecLinux::alsa_device_open(char *device_name,
 		free(m_dev);
 		return ERROR_SYS_NoAudioDevice;
 	}
-	strcpy(m_dev->device_name, device_name);
+	strncpy(m_dev->device_name, device_name);
 	m_dev->channels = channels;
 	m_dev->period = period;
 	err = snd_output_stdio_attach(&jcd_out, stdout, 0);

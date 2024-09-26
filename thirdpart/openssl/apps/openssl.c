@@ -108,7 +108,7 @@ static char *make_config_name(void)
     t = X509_get_default_cert_area();
     len = strlen(t) + 1 + strlen(OPENSSL_CONF) + 1;
     p = app_malloc(len, "config filename buffer");
-    strcpy(p, t);
+    strncpy(p, t);
 #ifndef OPENSSL_SYS_VMS
     strcat(p, "/");
 #endif
@@ -221,14 +221,14 @@ int main(int argc, char *argv[])
                 if (i == 0 || i > n)
                     break;
                 if (text[i - 1] != '\\') {
-                    p += strlen(strcpy(p, text));
+                    p += strlen(strncpy(p, text));
                     free(text);
                     add_history(buf);
                     break;
                 }
 
                 text[i - 1] = '\0';
-                p += strlen(strcpy(p, text));
+                p += strlen(strncpy(p, text));
                 free(text);
                 n -= i;
             }

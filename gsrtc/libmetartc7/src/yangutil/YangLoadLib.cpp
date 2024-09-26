@@ -56,10 +56,10 @@ void* YangLoadLib::loadObject(const char *sofile)
 	}
 
 #if Yang_OS_WIN
-	sprintf(file1, "%s/%s.dll", file_path_getcwd, sofile);
+	sprintf (file1, "%s/%s.dll", file_path_getcwd, sofile);
     m_handle =  LoadLibraryA(file1);
 #else
-    sprintf(file1, "%s/%s.so", file_path_getcwd, sofile);
+    sprintf (file1, "%s/%s.so", file_path_getcwd, sofile);
     m_handle = dlopen(file1, RTLD_NOW|RTLD_LOCAL);
 #endif
 

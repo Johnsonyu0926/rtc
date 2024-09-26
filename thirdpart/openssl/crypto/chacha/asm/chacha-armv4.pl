@@ -1153,7 +1153,7 @@ ___
 foreach (split("\n",$code)) {
 	s/\`([^\`]*)\`/eval $1/geo;
 
-	s/\bq([0-9]+)#(lo|hi)/sprintf "d%d",2*$1+($2 eq "hi")/geo;
+	s/\bq([0-9]+)#(lo|hi)/sprintf  "d%d",2*$1+($2 eq "hi")/geo;
 
 	print $_,"\n";
 }

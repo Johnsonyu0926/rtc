@@ -312,7 +312,7 @@ char* yang_json_setValuestring(YangJson *object, const char *valuestring)
     }
     if (strlen(valuestring) <= strlen(object->valuestring))
     {
-        strcpy(object->valuestring, valuestring);
+        strncpy(object->valuestring, valuestring);
         return object->valuestring;
     }
     copy = (char*) yang_json_strdup((const uint8_t*)valuestring, &global_hooks);
@@ -465,22 +465,22 @@ static yangbool print_number(const YangJson * const item, printbuffer * const ou
    // This checks for NaN and Infinity
     if (isnan(d) || isinf(d))
     {
-        length = yang_sprintf((char*)number_buffer, "null");
+        length = yang_sprintf ((char*)number_buffer, "null");
     }
     else
     {
        // Try 15 decimal places of precision to avoid nonsignificant nonzero digits
-        length = yang_sprintf((char*)number_buffer, "%1.15g", d);
+        length = yang_sprintf ((char*)number_buffer, "%1.15g", d);
 
        // Check whether the original double can be recovered
         if ((sscanf((char*)number_buffer, "%lg", &test) != 1) || !compare_double((double)test, d))
         {
            // If not, print with 17 decimal places of precision
-            length = yang_sprintf((char*)number_buffer, "%1.17g", d);
+            length = yang_sprintf ((char*)number_buffer, "%1.17g", d);
         }
     }
 
-   // yang_sprintf failed or buffer overrun occurred
+   // yang_sprintf  failed or buffer overrun occurred
     if ((length < 0) || (length > (int)(sizeof(number_buffer) - 1)))
     {
         return yangfalse;
@@ -822,7 +822,7 @@ static yangbool print_string_ptr(const uint8_t * const input, printbuffer * cons
         {
             return yangfalse;
         }
-        strcpy((char*)output, "\"\"");
+        strncpy((char*)output, "\"\"");
 
         return yangtrue;
     }
@@ -909,7 +909,7 @@ static yangbool print_string_ptr(const uint8_t * const input, printbuffer * cons
                     break;
                 default:
                    // escape and print as unicode codepoint
-                    yang_sprintf((char*)output_pointer, "u%04x", *input_pointer);
+                    yang_sprintf ((char*)output_pointer, "u%04x", *input_pointer);
                     output_pointer += 4;
                     break;
             }
@@ -1284,7 +1284,7 @@ static yangbool print_value(const YangJson * const item, printbuffer * const out
             {
                 return yangfalse;
             }
-            strcpy((char*)output, "null");
+            strncpy((char*)output, "null");
             return yangtrue;
 
         case Yang_JSON_False:
@@ -1293,7 +1293,7 @@ static yangbool print_value(const YangJson * const item, printbuffer * const out
             {
                 return yangfalse;
             }
-            strcpy((char*)output, "false");
+            strncpy((char*)output, "false");
             return yangtrue;
 
         case Yang_JSON_True:
@@ -1302,7 +1302,7 @@ static yangbool print_value(const YangJson * const item, printbuffer * const out
             {
                 return yangfalse;
             }
-            strcpy((char*)output, "true");
+            strncpy((char*)output, "true");
             return yangtrue;
 
         case Yang_JSON_Number:

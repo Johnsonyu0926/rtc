@@ -101,7 +101,7 @@ void *PKCS12_item_decrypt_d2i(const X509_ALGOR *algor, const ASN1_ITEM *it,
 
         char fname[30];
         static int fnm = 1;
-        sprintf(fname, "DER%d", fnm++);
+        sprintf (fname, "DER%d", fnm++);
         op = fopen(fname, "wb");
         fwrite(p, 1, outlen, op);
         fclose(op);

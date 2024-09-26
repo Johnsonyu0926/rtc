@@ -143,7 +143,7 @@ my $cmplw = sub {
     my $cr = 0; $cr = shift if ($#_>1);
     # Some out-of-date 32-bit GNU assembler just can't handle cmplw...
     ($flavour =~ /linux.*32/) ?
-	"	.long	".sprintf "0x%x",31<<26|$cr<<23|$_[0]<<16|$_[1]<<11|64 :
+	"	.long	".sprintf  "0x%x",31<<26|$cr<<23|$_[0]<<16|$_[1]<<11|64 :
 	"	cmplw	".join(',',$cr,@_);
 };
 my $bdnz = sub {
@@ -155,21 +155,21 @@ my $bltlr = sub {
     my $f = shift;
     my $bo = $f=~/\-/ ? 12+2 : 12;	# optional "not to be taken" hint
     ($flavour =~ /linux/) ?		# GNU as doesn't allow most recent hints
-	"	.long	".sprintf "0x%x",19<<26|$bo<<21|16<<1 :
+	"	.long	".sprintf  "0x%x",19<<26|$bo<<21|16<<1 :
 	"	bclr	$bo,0";
 };
 my $bnelr = sub {
     my $f = shift;
     my $bo = $f=~/\-/ ? 4+2 : 4;	# optional "not to be taken" hint
     ($flavour =~ /linux/) ?		# GNU as doesn't allow most recent hints
-	"	.long	".sprintf "0x%x",19<<26|$bo<<21|2<<16|16<<1 :
+	"	.long	".sprintf  "0x%x",19<<26|$bo<<21|2<<16|16<<1 :
 	"	bclr	$bo,2";
 };
 my $beqlr = sub {
     my $f = shift;
     my $bo = $f=~/-/ ? 12+2 : 12;	# optional "not to be taken" hint
     ($flavour =~ /linux/) ?		# GNU as doesn't allow most recent hints
-	"	.long	".sprintf "0x%X",19<<26|$bo<<21|2<<16|16<<1 :
+	"	.long	".sprintf  "0x%X",19<<26|$bo<<21|2<<16|16<<1 :
 	"	bclr	$bo,2";
 };
 # GNU assembler can't handle extrdi rA,rS,16,48, or when sum of last two
@@ -207,7 +207,7 @@ my $mfspr = sub {
 # PowerISA 2.06 stuff
 sub vsxmem_op {
     my ($f, $vrt, $ra, $rb, $op) = @_;
-    "	.long	".sprintf "0x%X",(31<<26)|($vrt<<21)|($ra<<16)|($rb<<11)|($op*2+1);
+    "	.long	".sprintf  "0x%X",(31<<26)|($vrt<<21)|($ra<<16)|($rb<<11)|($op*2+1);
 }
 # made-up unaligned memory reference AltiVec/VMX instructions
 my $lvx_u	= sub {	vsxmem_op(@_, 844); };	# lxvd2x
@@ -221,17 +221,17 @@ my $lvx_splt	= sub { vsxmem_op(@_, 332); };	# lxvdsx
 my $vpermdi	= sub {				# xxpermdi
     my ($f, $vrt, $vra, $vrb, $dm) = @_;
     $dm = oct($dm) if ($dm =~ /^0/);
-    "	.long	".sprintf "0x%X",(60<<26)|($vrt<<21)|($vra<<16)|($vrb<<11)|($dm<<8)|(10<<3)|7;
+    "	.long	".sprintf  "0x%X",(60<<26)|($vrt<<21)|($vra<<16)|($vrb<<11)|($dm<<8)|(10<<3)|7;
 };
 
 # PowerISA 2.07 stuff
 sub vcrypto_op {
     my ($f, $vrt, $vra, $vrb, $op) = @_;
-    "	.long	".sprintf "0x%X",(4<<26)|($vrt<<21)|($vra<<16)|($vrb<<11)|$op;
+    "	.long	".sprintf  "0x%X",(4<<26)|($vrt<<21)|($vra<<16)|($vrb<<11)|$op;
 }
 sub vfour {
     my ($f, $vrt, $vra, $vrb, $vrc, $op) = @_;
-    "	.long	".sprintf "0x%X",(4<<26)|($vrt<<21)|($vra<<16)|($vrb<<11)|($vrc<<6)|$op;
+    "	.long	".sprintf  "0x%X",(4<<26)|($vrt<<21)|($vra<<16)|($vrb<<11)|($vrc<<6)|$op;
 };
 my $vcipher	= sub { vcrypto_op(@_, 1288); };
 my $vcipherlast	= sub { vcrypto_op(@_, 1289); };
@@ -261,17 +261,17 @@ my $vmrgow	= sub { vfour(@_,0,1676); };
 
 my $mtsle	= sub {
     my ($f, $arg) = @_;
-    "	.long	".sprintf "0x%X",(31<<26)|($arg<<21)|(147*2);
+    "	.long	".sprintf  "0x%X",(31<<26)|($arg<<21)|(147*2);
 };
 
 # VSX instructions masqueraded as AltiVec/VMX
 my $mtvrd	= sub {
     my ($f, $vrt, $ra) = @_;
-    "	.long	".sprintf "0x%X",(31<<26)|($vrt<<21)|($ra<<16)|(179<<1)|1;
+    "	.long	".sprintf  "0x%X",(31<<26)|($vrt<<21)|($ra<<16)|(179<<1)|1;
 };
 my $mtvrwz	= sub {
     my ($f, $vrt, $ra) = @_;
-    "	.long	".sprintf "0x%X",(31<<26)|($vrt<<21)|($ra<<16)|(243<<1)|1;
+    "	.long	".sprintf  "0x%X",(31<<26)|($vrt<<21)|($ra<<16)|(243<<1)|1;
 };
 
 # PowerISA 3.0 stuff
@@ -279,24 +279,24 @@ my $maddhdu	= sub { vfour(@_,49); };
 my $maddld	= sub { vfour(@_,51); };
 my $darn = sub {
     my ($f, $rt, $l) = @_;
-    "	.long	".sprintf "0x%X",(31<<26)|($rt<<21)|($l<<16)|(755<<1);
+    "	.long	".sprintf  "0x%X",(31<<26)|($rt<<21)|($l<<16)|(755<<1);
 };
 my $iseleq = sub {
     my ($f, $rt, $ra, $rb) = @_;
-    "	.long	".sprintf "0x%X",(31<<26)|($rt<<21)|($ra<<16)|($rb<<11)|(2<<6)|30;
+    "	.long	".sprintf  "0x%X",(31<<26)|($rt<<21)|($ra<<16)|($rb<<11)|(2<<6)|30;
 };
 # VSX instruction[s] masqueraded as made-up AltiVec/VMX
 my $vspltib	= sub {				# xxspltib
     my ($f, $vrt, $imm8) = @_;
     $imm8 = oct($imm8) if ($imm8 =~ /^0/);
     $imm8 &= 0xff;
-    "	.long	".sprintf "0x%X",(60<<26)|($vrt<<21)|($imm8<<11)|(360<<1)|1;
+    "	.long	".sprintf  "0x%X",(60<<26)|($vrt<<21)|($imm8<<11)|(360<<1)|1;
 };
 
 # PowerISA 3.0B stuff
 my $addex = sub {
     my ($f, $rt, $ra, $rb, $cy) = @_;	# only cy==0 is specified in 3.0B
-    "	.long	".sprintf "0x%X",(31<<26)|($rt<<21)|($ra<<16)|($rb<<11)|($cy<<9)|(170<<1);
+    "	.long	".sprintf  "0x%X",(31<<26)|($rt<<21)|($ra<<16)|($rb<<11)|($cy<<9)|(170<<1);
 };
 my $vmsumudm	= sub { vfour(@_,35); };
 

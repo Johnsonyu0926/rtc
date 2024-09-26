@@ -211,7 +211,7 @@ std::string getVideoFormat(uint32_t  pformat ){
 int32_t YangVideoCaptureLinux::init() {
 	char devStr[30];
 	memset(devStr, 0, 30);
-	sprintf(devStr, "/dev/video%d", cameraIndex);
+	sprintf (devStr, "/dev/video%d", cameraIndex);
 
 	if ((m_vd_id = open(devStr, O_RDWR)) == -1) {
 		yang_error("open video device Error!");

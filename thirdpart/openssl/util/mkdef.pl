@@ -152,10 +152,10 @@ my @known_algorithms = ( # These are algorithms we know are guarded in relevant
 my %disabled_algorithms =
     map { (my $x = uc $_) =~ s|-|_|g; $x => 1; } keys %disabled;
 
-my $apiv = sprintf "%x%02x%02x", split(/\./, $config{api});
+my $apiv = sprintf  "%x%02x%02x", split(/\./, $config{api});
 foreach (@known_algorithms) {
 	if (/^DEPRECATEDIN_(\d+)_(\d+)_(\d+)$/) {
-		my $depv = sprintf "%x%02x%02x", $1, $2, $3;
+		my $depv = sprintf  "%x%02x%02x", $1, $2, $3;
 		$disabled_algorithms{$_} = 1 if $apiv ge $depv;
 	}
 }

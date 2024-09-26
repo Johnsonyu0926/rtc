@@ -74,7 +74,7 @@ sub prepare {
                 $cnt++;
                 my $destfile =
                     catfile(curdir(),
-                            $basename . sprintf("-%02d", $cnt) . ".pem");
+                            $basename . sprintf ("-%02d", $cnt) . ".pem");
                 push @destfiles, $destfile;
                 open OUT, '>', $destfile
                     or die "Can't write $destfile\n";

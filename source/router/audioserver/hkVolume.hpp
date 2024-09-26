@@ -51,7 +51,7 @@ namespace asns {
                 v.saveToJson();
             }else{
                 char buf[64] = {0};
-                sprintf(buf, "amixer set Headphone Playback %d", vo[volume]);
+                sprintf (buf, "amixer set Headphone Playback %d", vo[volume]);
                 system(buf);
             }
         }

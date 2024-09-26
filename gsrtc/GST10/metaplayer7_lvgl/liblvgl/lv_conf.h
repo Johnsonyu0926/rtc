@@ -259,14 +259,14 @@
 #define LV_USE_REFR_DEBUG 0
 
 /*Change the built in (v)snprintf functions*/
-#define LV_SPRINTF_CUSTOM 0
-#if LV_SPRINTF_CUSTOM
-    #define LV_SPRINTF_INCLUDE <stdio.h>
+#define LV_sprintf _CUSTOM 0
+#if LV_sprintf _CUSTOM
+    #define LV_sprintf _INCLUDE <stdio.h>
     #define lv_snprintf  snprintf
     #define lv_vsnprintf vsnprintf
-#else   /*LV_SPRINTF_CUSTOM*/
-    #define LV_SPRINTF_USE_FLOAT 0
-#endif  /*LV_SPRINTF_CUSTOM*/
+#else   /*LV_sprintf _CUSTOM*/
+    #define LV_sprintf _USE_FLOAT 0
+#endif  /*LV_sprintf _CUSTOM*/
 
 #define LV_USE_USER_DATA 1
 

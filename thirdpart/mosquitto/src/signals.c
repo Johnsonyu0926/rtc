@@ -96,11 +96,11 @@ DWORD WINAPI SigThreadProc(void* data)
 
 	UNUSED(data);
 
-	sprintf_s(evt_name, MAX_PATH, "mosq%d_shutdown", pid);
+	sprintf _s(evt_name, MAX_PATH, "mosq%d_shutdown", pid);
 	evt[0] = CreateEvent(NULL, TRUE, FALSE, evt_name);
-	sprintf_s(evt_name, MAX_PATH, "mosq%d_reload", pid);
+	sprintf _s(evt_name, MAX_PATH, "mosq%d_reload", pid);
 	evt[1] = CreateEvent(NULL, FALSE, FALSE, evt_name);
-	sprintf_s(evt_name, MAX_PATH, "mosq%d_backup", pid);
+	sprintf _s(evt_name, MAX_PATH, "mosq%d_backup", pid);
 	evt[2] = CreateEvent(NULL, FALSE, FALSE, evt_name);
 
 	while (true) {

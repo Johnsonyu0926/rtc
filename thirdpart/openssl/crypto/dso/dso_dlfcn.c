@@ -244,9 +244,9 @@ static char *dlfcn_merger(DSO *dso, const char *filespec1,
             DSOerr(DSO_F_DLFCN_MERGER, ERR_R_MALLOC_FAILURE);
             return NULL;
         }
-        strcpy(merged, filespec2);
+        strncpy(merged, filespec2);
         merged[spec2len] = '/';
-        strcpy(&merged[spec2len + 1], filespec1);
+        strncpy(&merged[spec2len + 1], filespec1);
     }
     return merged;
 }
@@ -272,11 +272,11 @@ static char *dlfcn_name_converter(DSO *dso, const char *filename)
     }
     if (transform) {
         if ((DSO_flags(dso) & DSO_FLAG_NAME_TRANSLATION_EXT_ONLY) == 0)
-            sprintf(translated, "lib%s" DSO_EXTENSION, filename);
+            sprintf (translated, "lib%s" DSO_EXTENSION, filename);
         else
-            sprintf(translated, "%s" DSO_EXTENSION, filename);
+            sprintf (translated, "%s" DSO_EXTENSION, filename);
     } else
-        sprintf(translated, "%s", filename);
+        sprintf (translated, "%s", filename);
     return translated;
 }
 

@@ -76,7 +76,7 @@ int32_t YangAudioCaptureLinux::init() {
 	int32_t err = 0;
 	char device_name[64] = { 0 };
 	if (m_avinfo->audio.aIndex > -1)
-		sprintf(device_name, "hw:%d,%d", m_avinfo->audio.aIndex,
+		sprintf (device_name, "hw:%d,%d", m_avinfo->audio.aIndex,
 				m_avinfo->audio.aSubIndex);
 
 	if ((err = snd_pcm_open(&m_handle,

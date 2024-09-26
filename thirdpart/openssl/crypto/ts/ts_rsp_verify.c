@@ -504,7 +504,7 @@ static int ts_check_status_info(TS_RESP *response)
         }
     }
     if (failure_text[0] == '\0')
-        strcpy(failure_text, "unspecified");
+        strncpy(failure_text, "unspecified");
 
     TSerr(TS_F_TS_CHECK_STATUS_INFO, TS_R_NO_TIME_STAMP_TOKEN);
     ERR_add_error_data(6,

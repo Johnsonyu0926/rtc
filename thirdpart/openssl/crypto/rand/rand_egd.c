@@ -72,7 +72,7 @@ int RAND_query_egd_bytes(const char *path, unsigned char *buf, int bytes)
     addr.sun_family = AF_UNIX;
     if (strlen(path) >= sizeof(addr.sun_path))
         return -1;
-    strcpy(addr.sun_path, path);
+    strncpy(addr.sun_path, path);
     i = offsetof(struct sockaddr_un, sun_path) + strlen(path);
     fd = socket(AF_UNIX, SOCK_STREAM, 0);
     if (fd == -1 || (fp = fdopen(fd, "r+")) == NULL)

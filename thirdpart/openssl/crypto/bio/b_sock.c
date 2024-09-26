@@ -261,7 +261,7 @@ int BIO_accept(int sock, char **ip_port)
             BIO_closesocket(ret);
             ret = (int)INVALID_SOCKET;
         } else {
-            strcpy(*ip_port, host);
+            strncpy(*ip_port, host);
             strcat(*ip_port, ":");
             strcat(*ip_port, port);
         }

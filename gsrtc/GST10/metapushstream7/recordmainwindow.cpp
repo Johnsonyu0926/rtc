@@ -66,7 +66,7 @@ RecordMainWindow::RecordMainWindow(QWidget *parent)
     char s[128]={0};
     memset(m_context->avinfo.rtc.localIp,0,sizeof(m_context->avinfo.rtc.localIp));
     yang_getLocalInfo(m_context->avinfo.sys.familyType,m_context->avinfo.rtc.localIp);
-    sprintf(s,"http://%s:1985/rtc/v1/whip/?app=live&stream=livestream",m_context->avinfo.rtc.localIp);
+    sprintf (s,"http://%s:1985/rtc/v1/whip/?app=live&stream=livestream",m_context->avinfo.rtc.localIp);
     ui->m_url->setText(s);
 
     m_isDrawmouse=true; //screen draw mouse
@@ -257,9 +257,9 @@ void RecordMainWindow::on_m_c_whip_clicked()
     char s[128]={0};
 
     if(ui->m_c_whip->checkState()==Qt::CheckState::Checked)
-        sprintf(s,"http://%s:1985/rtc/v1/whip/?app=live&stream=livestream",m_context->avinfo.rtc.localIp);
+        sprintf (s,"http://%s:1985/rtc/v1/whip/?app=live&stream=livestream",m_context->avinfo.rtc.localIp);
     else
-        sprintf(s,"webrtc://%s:1985/live/livestream",m_context->avinfo.rtc.localIp);
+        sprintf (s,"webrtc://%s:1985/live/livestream",m_context->avinfo.rtc.localIp);
 
     ui->m_url->setText(s);
 }
@@ -268,7 +268,7 @@ void RecordMainWindow::on_m_c_janus_clicked()
 {
     char s[128]={0};
     if(ui->m_c_janus->checkState()==Qt::CheckState::Checked){
-        sprintf(s,"http://%s:7080/whip/endpoint/metaRTC",m_context->avinfo.rtc.localIp);
+        sprintf (s,"http://%s:7080/whip/endpoint/metaRTC",m_context->avinfo.rtc.localIp);
          ui->m_url->setText(s);
         m_janus.show();
     }

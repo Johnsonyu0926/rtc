@@ -251,7 +251,7 @@ static int convert_bn_memory(const unsigned char *in, size_t bytes,
         q = "NULL";
     else
         q = BN_is_negative(bn) ? "-0" : "0";
-    strcpy(p - strlen(q), q);
+    strncpy(p - strlen(q), q);
     return 0;
 }
 

@@ -2129,39 +2129,39 @@ foreach (split("\n",$code)) {
 	    s/(_[a-z]+\s+)(\$[0-9]+),([^,]+)(#.*)*$/$1$2,$2,$3/;
 
 	    s/_xtr\s+(\$[0-9]+),(\$[0-9]+),([0-9]+(\-2)*)/
-		sprintf("srl\t$1,$2,%d",$big_endian ?	eval($3)
+		sprintf ("srl\t$1,$2,%d",$big_endian ?	eval($3)
 					:		eval("24-$3"))/e or
 	    s/_ins\s+(\$[0-9]+),(\$[0-9]+),([0-9]+)/
-		sprintf("sll\t$1,$2,%d",$big_endian ?	eval($3)
+		sprintf ("sll\t$1,$2,%d",$big_endian ?	eval($3)
 					:		eval("24-$3"))/e or
 	    s/_ins2\s+(\$[0-9]+),(\$[0-9]+),([0-9]+)/
-		sprintf("ins\t$1,$2,%d,8",$big_endian ?	eval($3)
+		sprintf ("ins\t$1,$2,%d,8",$big_endian ?	eval($3)
 					:		eval("24-$3"))/e or
 	    s/_ror\s+(\$[0-9]+),(\$[0-9]+),(\-?[0-9]+)/
-		sprintf("srl\t$1,$2,%d",$big_endian ?	eval($3)
+		sprintf ("srl\t$1,$2,%d",$big_endian ?	eval($3)
 					:		eval("$3*-1"))/e or
 	    s/_bias\s+(\$[0-9]+),(\$[0-9]+),([0-9]+)/
-		sprintf("sll\t$1,$2,%d",$big_endian ?	eval($3)
+		sprintf ("sll\t$1,$2,%d",$big_endian ?	eval($3)
 					:		eval("($3-16)&31"))/e;
 
 	    s/srl\s+(\$[0-9]+),(\$[0-9]+),\-([0-9]+)/
-		sprintf("sll\t$1,$2,$3")/e				or
+		sprintf ("sll\t$1,$2,$3")/e				or
 	    s/srl\s+(\$[0-9]+),(\$[0-9]+),0/
-		sprintf("and\t$1,$2,0xff")/e				or
+		sprintf ("and\t$1,$2,0xff")/e				or
 	    s/(sll\s+\$[0-9]+,\$[0-9]+,0)/#$1/;
 	}
 
 	# convert lwl/lwr and swr/swl to little-endian order
 	if (!$big_endian && /^\s+[sl]w[lr]\s+/) {
 	    s/([sl]wl.*)([0-9]+)\((\$[0-9]+)\)/
-		sprintf("$1%d($3)",eval("$2-$2%4+($2%4-1)&3"))/e	or
+		sprintf ("$1%d($3)",eval("$2-$2%4+($2%4-1)&3"))/e	or
 	    s/([sl]wr.*)([0-9]+)\((\$[0-9]+)\)/
-		sprintf("$1%d($3)",eval("$2-$2%4+($2%4+1)&3"))/e;
+		sprintf ("$1%d($3)",eval("$2-$2%4+($2%4+1)&3"))/e;
 	}
 
 	if (!$big_endian) {
-	    s/(rotr\s+\$[0-9]+,\$[0-9]+),([0-9]+)/sprintf("$1,%d",32-$2)/e;
-	    s/(ext\s+\$[0-9]+,\$[0-9]+),([0-9]+),8/sprintf("$1,%d,8",24-$2)/e;
+	    s/(rotr\s+\$[0-9]+,\$[0-9]+),([0-9]+)/sprintf ("$1,%d",32-$2)/e;
+	    s/(ext\s+\$[0-9]+,\$[0-9]+),([0-9]+),8/sprintf ("$1,%d,8",24-$2)/e;
 	}
 
 	print $_,"\n";

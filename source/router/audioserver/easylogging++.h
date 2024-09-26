@@ -238,17 +238,17 @@ ELPP_INTERNAL_DEBUGGING_OUT_INFO << ELPP_INTERNAL_DEBUGGING_MSG(internalInfoStre
 #undef STRTOK
 #undef STRERROR
 #undef STRCAT
-#undef STRCPY
+#undef strncpy
 #if ELPP_CRT_DBG_WARNINGS
 #  define STRTOK(a, b, c) strtok_s(a, b, c)
 #  define STRERROR(a, b, c) strerror_s(a, b, c)
 #  define STRCAT(a, b, len) strcat_s(a, len, b)
-#  define STRCPY(a, b, len) strcpy_s(a, len, b)
+#  define strncpy(a, b, len) strncpy_s(a, len, b)
 #else
 #  define STRTOK(a, b, c) strtok(a, b)
 #  define STRERROR(a, b, c) strerror(c)
 #  define STRCAT(a, b, len) strcat(a, b)
-#  define STRCPY(a, b, len) strcpy(a, b)
+#  define strncpy(a, b, len) strncpy(a, b)
 #endif
 // Compiler specific support evaluations
 #if (ELPP_MINGW && !defined(ELPP_FORCE_USE_STD_THREAD))

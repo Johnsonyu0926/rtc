@@ -80,13 +80,13 @@ HPR_VOID hexdump(unsigned const char *pSrc, int iLen, int iUpper, unsigned char 
     char fmt[8];
 
     if (iUpper) {
-        strcpy(fmt, "%02X");
+        strncpy(fmt, "%02X");
     } else {
-        strcpy(fmt, "%02x");
+        strncpy(fmt, "%02x");
     }
 
     for (i = 0; i < iLen; ++i) {
-        sprintf((char *) pDst + 2 * i, fmt, pSrc[i]);
+        sprintf ((char *) pDst + 2 * i, fmt, pSrc[i]);
     }
 }
 
@@ -551,7 +551,7 @@ int main(int argc, char **argv) {
         LOG(WARNING) << "failed to load audio cfg.";
         return -1;
     }
-    sprintf(resp, RESP_FMT, g_audiocfg.business[0].devName.c_str(), g_audiocfg.business[0].serial.c_str(),g_audiocfg.business[0].subSerial.c_str());
+    sprintf (resp, RESP_FMT, g_audiocfg.business[0].devName.c_str(), g_audiocfg.business[0].serial.c_str(),g_audiocfg.business[0].subSerial.c_str());
     CUtils utils;
     asns::CUdpMsg data;
     CUtils::async_wait(0, 0, 30, [&] {

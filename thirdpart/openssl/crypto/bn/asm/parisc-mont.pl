@@ -902,14 +902,14 @@ my $ldd = sub {
 
     if ($args =~ /%r([0-9]+)\(%r([0-9]+)\),%r([0-9]+)/)		# format 4
     {	my $opcode=(0x03<<26)|($2<<21)|($1<<16)|(3<<6)|$3;
-	sprintf "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
+	sprintf  "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
     }
     elsif ($args =~ /(\-?[0-9]+)\(%r([0-9]+)\),%r([0-9]+)/)	# format 5
     {	my $opcode=(0x03<<26)|($2<<21)|(1<<12)|(3<<6)|$3;
 	$opcode|=(($1&0xF)<<17)|(($1&0x10)<<12);		# encode offset
 	$opcode|=(1<<5)  if ($mod =~ /^,m/);
 	$opcode|=(1<<13) if ($mod =~ /^,mb/);
-	sprintf "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
+	sprintf  "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
     }
     else { "\t".$orig; }
 };
@@ -923,7 +923,7 @@ my $std = sub {
 	$opcode|=(($2&0xF)<<1)|(($2&0x10)>>4);			# encode offset
 	$opcode|=(1<<5)  if ($mod =~ /^,m/);
 	$opcode|=(1<<13) if ($mod =~ /^,mb/);
-	sprintf "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
+	sprintf  "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
     }
     else { "\t".$orig; }
 };
@@ -938,14 +938,14 @@ my $extrd = sub {
 	my $len=32-$3;
 	$opcode |= (($2&0x20)<<6)|(($2&0x1f)<<5);		# encode pos
 	$opcode |= (($len&0x20)<<7)|($len&0x1f);		# encode len
-	sprintf "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
+	sprintf  "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
     }
     elsif ($args =~ /%r([0-9]+),%sar,([0-9]+),%r([0-9]+)/)	# format 12
     {	my $opcode=(0x34<<26)|($1<<21)|($3<<16)|(2<<11)|(1<<9);
 	my $len=32-$2;
 	$opcode |= (($len&0x20)<<3)|($len&0x1f);		# encode len
 	$opcode |= (1<<13) if ($mod =~ /,\**=/);
-	sprintf "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
+	sprintf  "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
     }
     else { "\t".$orig; }
 };
@@ -958,7 +958,7 @@ my $shrpd = sub {
     {	my $opcode=(0x34<<26)|($2<<21)|($1<<16)|(1<<10)|$4;
 	my $cpos=63-$3;
 	$opcode |= (($cpos&0x20)<<6)|(($cpos&0x1f)<<5);		# encode sa
-	sprintf "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
+	sprintf  "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
     }
     else { "\t".$orig; }
 };
@@ -972,7 +972,7 @@ my $sub = sub {
 	$opcode|=(1<<10);	# e1
 	$opcode|=(1<<8);	# e2
 	$opcode|=(1<<5);	# d
-	sprintf "\t.WORD\t0x%08x\t; %s",$opcode,$orig
+	sprintf  "\t.WORD\t0x%08x\t; %s",$opcode,$orig
     }
     else { "\t".$orig; }
 };

@@ -77,7 +77,7 @@ int32_t yang_dtls_randomBits(uint8_t *buf, uint32_t bufSize) {
 
 void yang_dtls_genDateStr(time_t ts, char *str) {
 	struct tm *ntm = localtime(&ts);
-	yang_sprintf(str, "%04d%02d%02d%02d%02d%02d", ntm->tm_year + 1900,
+	yang_sprintf (str, "%04d%02d%02d%02d%02d%02d", ntm->tm_year + 1900,
 			ntm->tm_mon + 1, ntm->tm_mday, ntm->tm_hour, ntm->tm_min,
 			ntm->tm_sec);
 }
@@ -206,7 +206,7 @@ int32_t yang_create_certificate(YangCertificate *cer) {
 	size_t n = Yang_SHA256_Length;
 
 	for (size_t i = 0; i < n; i++, ++p) {
-		yang_sprintf(p, "%02X", md[i]);
+		yang_sprintf (p, "%02X", md[i]);
 		p += 2;
 
 		if (i < (n - 1)) {

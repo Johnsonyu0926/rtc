@@ -90,12 +90,12 @@ int mosquitto_connect_srv(struct mosquitto *mosq, const char *host, int keepaliv
 		if(mosq->tls_cafile || mosq->tls_capath || mosq->tls_psk){
 			h = mosquitto__malloc(strlen(host) + strlen("_secure-mqtt._tcp.") + 1);
 			if(!h) return MOSQ_ERR_NOMEM;
-			sprintf(h, "_secure-mqtt._tcp.%s", host);
+			sprintf (h, "_secure-mqtt._tcp.%s", host);
 		}else{
 #endif
 			h = mosquitto__malloc(strlen(host) + strlen("_mqtt._tcp.") + 1);
 			if(!h) return MOSQ_ERR_NOMEM;
-			sprintf(h, "_mqtt._tcp.%s", host);
+			sprintf (h, "_mqtt._tcp.%s", host);
 #ifdef WITH_TLS
 		}
 #endif

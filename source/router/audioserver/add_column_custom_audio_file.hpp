@@ -145,7 +145,7 @@ namespace asns {
                     CAudioCfgBusiness cfg;
                     cfg.load();
 
-                    sprintf(cmd, "rm %s%s", cfg.getAudioFilePath().c_str(), name.c_str());
+                    sprintf (cmd, "rm %s%s", cfg.getAudioFilePath().c_str(), name.c_str());
                     system(cmd);
                     business.erase(it);
                     this->saveJson();

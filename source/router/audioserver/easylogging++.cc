@@ -1004,8 +1004,8 @@ char* Str::addToBuff(const char* str, char* buf, const char* bufLim) {
 }
 
 char* Str::clearBuff(char buff[], std::size_t lim) {
-  STRCPY(buff, "", lim);
-  ELPP_UNUSED(lim);  // For *nix we dont have anything using lim in above STRCPY macro
+  strncpy(buff, "", lim);
+  ELPP_UNUSED(lim);  // For *nix we dont have anything using lim in above strncpy macro
   return buff;
 }
 

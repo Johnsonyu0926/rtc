@@ -77,22 +77,22 @@ sub LO() { my $r=shift; $r =~ s/%r([a-z]+)/%e\1/;
 			$r =~ s/%r([0-9]+)/%r\1d/;	$r; }
 sub _data_word()
 { my $i;
-    while(defined($i=shift)) { $code.=sprintf".long\t0x%08x,0x%08x\n",$i,$i; }
+    while(defined($i=shift)) { $code.=sprintf ".long\t0x%08x,0x%08x\n",$i,$i; }
 }
 sub data_word()
 { my $i;
   my $last=pop(@_);
     $code.=".long\t";
-    while(defined($i=shift)) { $code.=sprintf"0x%08x,",$i; }
-    $code.=sprintf"0x%08x\n",$last;
+    while(defined($i=shift)) { $code.=sprintf "0x%08x,",$i; }
+    $code.=sprintf "0x%08x\n",$last;
 }
 
 sub data_byte()
 { my $i;
   my $last=pop(@_);
     $code.=".byte\t";
-    while(defined($i=shift)) { $code.=sprintf"0x%02x,",$i&0xff; }
-    $code.=sprintf"0x%02x\n",$last&0xff;
+    while(defined($i=shift)) { $code.=sprintf "0x%02x,",$i&0xff; }
+    $code.=sprintf "0x%02x\n",$last&0xff;
 }
 
 sub encvert()

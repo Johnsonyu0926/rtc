@@ -26,7 +26,7 @@ Contributors:
 #ifdef WIN32
 #  include <windows.h>
 #  include <process.h>
-#   define snprintf sprintf_s
+#   define snprintf sprintf _s
 #	include <io.h>
 #	include <windows.h>
 #else

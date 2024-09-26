@@ -71,8 +71,8 @@ class COracleReader;
 #include <stdio.h>
 #include <string.h>
 
-#define lstrcpyn	strncpy
-#define wsprintf	sprintf
+#define lstrncpyn	strncpy
+#define wsprintf 	sprintf 
 */
 class IDsObject
 {

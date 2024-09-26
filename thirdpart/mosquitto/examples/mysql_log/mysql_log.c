@@ -6,7 +6,7 @@
 #  include <unistd.h>
 #else
 #  include <process.h>
-#  define snprintf sprintf_s
+#  define snprintf sprintf _s
 #endif
 
 #include <mosquitto.h>

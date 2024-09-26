@@ -17,22 +17,22 @@ public:
 	
 	int DecodeBody(CString strSrc,CMemFile& mmfile);
 	
-	//对一个可能包含有\r\n的字符串如中文文件名或者是明文TEXT/PLAIN类型的邮件内容
-	//进行解码，这样解出的的结果是明文，所以可以直接返回串型值
+	//锟斤拷一锟斤拷锟斤拷锟杰帮拷锟斤拷锟斤拷\r\n锟斤拷锟街凤拷锟斤拷锟斤拷锟斤拷锟斤拷锟侥硷拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷TEXT/PLAIN锟斤拷锟酵碉拷锟绞硷拷锟斤拷锟斤拷
+	//锟斤拷锟叫斤拷锟诫，锟斤拷锟斤拷锟斤拷锟斤拷牡慕锟斤拷锟斤拷锟斤拷锟侥ｏ拷锟斤拷锟皆匡拷锟斤拷直锟接凤拷锟截达拷锟斤拷值
 	/*
 		char szDecode[1024];
-			strcpy(szDecode,LPCTSTR(strFileName));
+			strncpy(szDecode,LPCTSTR(strFileName));
 			base64.DecodeString(szDecode,strFileName);
 	**/
 
 	int DecodeString(char *szSrc, CString& strDecoded);
 
-	//对一个字符串进行编码，编码结果存入CString对象中返回
-	//用户：CUtf7
+	//锟斤拷一锟斤拷锟街凤拷锟斤拷锟斤拷锟叫憋拷锟诫，锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷CString锟斤拷锟斤拷锟叫凤拷锟斤拷
+	//锟矫伙拷锟斤拷CUtf7
 	CString Encode(LPCTSTR szEncoding,int nSize);
 	
 	int DecodeBody(CString strBody,CString& strDecoded);
-	//解码：UTF7
+	//锟斤拷锟诫：UTF7
 	int DecodeEx(const char* szSrc,int nSize,BYTE* pBuf);
 private:
 	
@@ -47,10 +47,10 @@ private:
 	//	CString strBoundary);
 
 	int Decode(const char* p6Bits,char* szDecoded);
-	int Decode(const char* p6Bits,char* szDecoded,int& nBytes/*返回字节数*/);
+	int Decode(const char* p6Bits,char* szDecoded,int& nBytes/*锟斤拷锟斤拷锟街斤拷锟斤拷*/);
 	int DecodeString(char* szSrc,char* szDecoded,int& nLineBytes);
 //	int DecodeBody(CString strSrc,CMemFile& mmfile);
-	//分解的结果存入CMemFile& mmfile中
+	//锟街斤拷慕锟斤拷锟斤拷锟斤拷CMemFile& mmfile锟斤拷
 
 	int AsciiTo6Bits(char cAsc);
 

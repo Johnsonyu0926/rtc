@@ -79,14 +79,14 @@ int main(int argc, char **argv) {
                 pathname = malloc(PATH_MAX);
                 if (pathname == NULL)
                     break;
-                strcpy(pathname, argv[n]);
+                strncpy(pathname, argv[n]);
 #ifdef __VMS
                 if (strchr(":<]", pathname[dirname_len - 1]) == NULL)
 #endif
                     pathname[dirname_len++] = '/';
                 pathname[dirname_len] = '\0';
             }
-            strcpy(pathname + dirname_len, filename);
+            strncpy(pathname + dirname_len, filename);
             testfile(pathname);
         }
         OPENSSL_DIR_end(&ctx);

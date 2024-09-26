@@ -50,13 +50,13 @@ namespace asns {
             CUtils utils;
             if (utils.is_ros_platform()) {
                 char buf[64] = {0};
-                sprintf(buf, "cm set_val sys server %s", serverAddress.c_str());
+                sprintf (buf, "cm set_val sys server %s", serverAddress.c_str());
                 system(buf);
-                sprintf(buf, "cm set_val sys port %s", serverPort.c_str());
+                sprintf (buf, "cm set_val sys port %s", serverPort.c_str());
                 system(buf);
-                sprintf(buf, "cm set_val sys password %s", password.c_str());
+                sprintf (buf, "cm set_val sys password %s", password.c_str());
                 system(buf);
-                sprintf(buf, "cm set_val sys deviceid %s", deviceCode.c_str());
+                sprintf (buf, "cm set_val sys deviceid %s", deviceCode.c_str());
                 system(buf);
             }
             LOG(INFO) << "serverAddress" << serverAddress << ",serverPort:" << serverPort << ",deviceCode:"

@@ -297,9 +297,9 @@ void yang_create_ice(YangIce* ice,YangStreamConfig* config,YangAVInfo* avinfo){
 
 	session->server.familyType=avinfo->sys.familyType;
 	session->server.serverPort=avinfo->rtc.iceServerPort;
-	yang_strcpy(session->server.serverIp,avinfo->rtc.iceServerIP);
-	yang_strcpy(session->server.username,avinfo->rtc.iceUserName);
-	yang_strcpy(session->server.password,avinfo->rtc.icePassword);
+	yang_strncpy(session->server.serverIp,avinfo->rtc.iceServerIP);
+	yang_strncpy(session->server.username,avinfo->rtc.iceUserName);
+	yang_strncpy(session->server.password,avinfo->rtc.icePassword);
 
 
 	ice->initIce=yang_ice_initIce;

@@ -65,17 +65,17 @@ namespace asns {
         void addj(const int v) const {
             CUtils utils;
             if (utils.is_ros_platform()) {
-                //sprintf(cmd, "amixer sset PCM %d", vo_ros[v]);
+                //sprintf (cmd, "amixer sset PCM %d", vo_ros[v]);
                 char dacxCmd[128] = {0};
                 char dac0Cmd[128] = {0};
-                sprintf(dacxCmd, "dspset /dev/ttyS2 dacxgan %d", vo_ros[v]);
-                sprintf(dac0Cmd, "dspset /dev/ttyS2 dac0gan %d", vo_ros[v]);
+                sprintf (dacxCmd, "dspset /dev/ttyS2 dacxgan %d", vo_ros[v]);
+                sprintf (dac0Cmd, "dspset /dev/ttyS2 dac0gan %d", vo_ros[v]);
                 CUtils::cmd_system(dacxCmd);
                 usleep(1000 * 100);
                 CUtils::cmd_system(dac0Cmd);
             } else {
                 char cmd[128] = {0};
-                sprintf(cmd, "amixer set Headphone Playback %d", vo[v]);
+                sprintf (cmd, "amixer set Headphone Playback %d", vo[v]);
                 CUtils::cmd_system(cmd);
             }
         }
@@ -87,9 +87,9 @@ namespace asns {
             std::ofstream o(filePath);
             o << std::setw(4) << j << std::endl;
             char buf[64] = {0};
-            sprintf(buf, "cm set_val sys dacxgan %d", volume);
+            sprintf (buf, "cm set_val sys dacxgan %d", volume);
             system(buf);
-            sprintf(buf, "cm set_val sys dac0gan %d", volume);
+            sprintf (buf, "cm set_val sys dac0gan %d", volume);
             system(buf);
             o.close();
             return 0;

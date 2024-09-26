@@ -98,7 +98,7 @@ for(1..37) {
 			push @line,(@tbl[$j*16+$i/4]>>(($i%4)*8))&0xff;
 		}
 		$code.=".byte\t";
-		$code.=join(',',map { sprintf "0x%02x",$_} @line);
+		$code.=join(',',map { sprintf  "0x%02x",$_} @line);
 		$code.="\n";
 	}
 }
@@ -1858,7 +1858,7 @@ ___
 foreach (split("\n",$code)) {
 	s/\`([^\`]*)\`/eval $1/geo;
 
-	s/\bq([0-9]+)#(lo|hi)/sprintf "d%d",2*$1+($2 eq "hi")/geo;
+	s/\bq([0-9]+)#(lo|hi)/sprintf  "d%d",2*$1+($2 eq "hi")/geo;
 
 	print $_,"\n";
 }

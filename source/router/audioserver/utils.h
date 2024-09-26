@@ -185,9 +185,9 @@ public:
     char *get_ros_addr() {
         char cmd[64] = {0};
         if(isIpWL() == 0){
-            strcpy(cmd, "cm get_val VLAN1 ipaddress | tail -1");
+            strncpy(cmd, "cm get_val VLAN1 ipaddress | tail -1");
         } else {
-            strcpy(cmd, "cm get_val WAN1 ipaddress|tail -1");
+            strncpy(cmd, "cm get_val WAN1 ipaddress|tail -1");
         }
         get_addr_by_cmd(cmd);
         return m_lan;
@@ -196,9 +196,9 @@ public:
     char *get_ros_gateway() {
         char cmd[64] = {0};
         if(isIpWL() == 0){
-            strcpy(cmd, "cm get_val VLAN1 gateway | tail -1");
+            strncpy(cmd, "cm get_val VLAN1 gateway | tail -1");
         } else {
-            strcpy(cmd, "cm get_val WAN1 gateway|tail -1");
+            strncpy(cmd, "cm get_val WAN1 gateway|tail -1");
         }
         get_addr_by_cmd(cmd);
         return m_lan;
@@ -207,9 +207,9 @@ public:
     char *get_ros_netmask() {
         char cmd[64] = {0};
         if(isIpWL() == 0){
-            strcpy(cmd, "cm get_val VLAN1 ipmask | tail -1");
+            strncpy(cmd, "cm get_val VLAN1 ipmask | tail -1");
         } else {
-            strcpy(cmd, "cm get_val WAN1 ipmask|tail -1");
+            strncpy(cmd, "cm get_val WAN1 ipmask|tail -1");
         }
         get_addr_by_cmd(cmd);
         return m_lan;
@@ -221,9 +221,9 @@ public:
         } else {
             char cmd[64] = {0};
             if(isIpWL() == 0){
-                strcpy(cmd, "uci get network.lan.gateway");
+                strncpy(cmd, "uci get network.lan.gateway");
             } else {
-                strcpy(cmd, "uci get network.wan.gateway");
+                strncpy(cmd, "uci get network.wan.gateway");
             }
             get_addr_by_cmd(cmd);
         }
@@ -237,9 +237,9 @@ public:
         } else {
             char cmd[64] = {};
             if(isIpWL() == 0){
-                strcpy(cmd, "uci get network.lan.netmask");
+                strncpy(cmd, "uci get network.lan.netmask");
             }else{
-                strcpy(cmd, "uci get network.wan.netmask");
+                strncpy(cmd, "uci get network.wan.netmask");
             }
             get_addr_by_cmd(cmd);
         }
@@ -253,9 +253,9 @@ public:
         } else {
             char cmd[64] = {0};
             if(isIpWL() == 0){
-                strcpy(cmd, "uci get network.lan.ipaddr");
+                strncpy(cmd, "uci get network.lan.ipaddr");
             } else {
-                strcpy(cmd, "uci get network.wan.ipaddr");
+                strncpy(cmd, "uci get network.wan.ipaddr");
             }
             get_addr_by_cmd(cmd);
         }
@@ -313,7 +313,7 @@ public:
 
     std::string get_doupload_result(const std::string &url, const std::string &imei) {
         char cmd[1024] = {0};
-        sprintf(cmd,
+        sprintf (cmd,
                 "curl --location --request POST '%s' \\\n"
                 "--form 'FormDataUploadFile=@\"/tmp/record.mp3\"' \\\n"
                 "--form 'imei=\"%s\"'", url.c_str(), imei.c_str());
@@ -338,7 +338,7 @@ public:
     //curl是将消息写入到stderr,所以popen获取不到，需要把stderr重定向stdout 2>&1
     std::string get_upload_result(const std::string &url, const std::string &path, const std::string &name) {
         char cmd[1024] = {0};
-        sprintf(cmd, "curl --location --request GET %s -f --output %s%s 2>&1", url.c_str(), path.c_str(), name.c_str());
+        sprintf (cmd, "curl --location --request GET %s -f --output %s%s 2>&1", url.c_str(), path.c_str(), name.c_str());
         LOG(INFO) << "cmd:" << cmd;
         std::string res = get_by_cmd_res(cmd);
         LOG(INFO) << "res:" << res;
@@ -423,7 +423,7 @@ public:
     float get_size(const char *prefix, const char *filename) {
 
         char full[256] = {0};
-        sprintf(full, "%s%s", prefix, filename);
+        sprintf (full, "%s%s", prefix, filename);
 
         LOG(INFO) << "full name: " << full;
         int fd = open(full, O_RDWR);
@@ -440,23 +440,23 @@ public:
 
     void clean_audio_server_file(const char *prefix) {
         char cmd[128] = {0};
-        sprintf(cmd, "rm %s/audiodata/*", prefix);
+        sprintf (cmd, "rm %s/audiodata/*", prefix);
         system(cmd);
-        sprintf(cmd, "rm %s/cfg/*.json", prefix);
+        sprintf (cmd, "rm %s/cfg/*.json", prefix);
         system(cmd);
     }
 
     void openwrt_restore_network() {
         char uci[128] = {0};
-        sprintf(uci, "uci set network.lan.ipaddr=%s", "192.168.1.100");
+        sprintf (uci, "uci set network.lan.ipaddr=%s", "192.168.1.100");
         system(uci);
-        sprintf(uci, "uci set network.lan.gateway=%s", "192.168.1.1");
+        sprintf (uci, "uci set network.lan.gateway=%s", "192.168.1.1");
         system(uci);
-        sprintf(uci, "uci set network.lan.netmask=%s", "255.255.255.0");
+        sprintf (uci, "uci set network.lan.netmask=%s", "255.255.255.0");
         system(uci);
-        sprintf(uci, "uci commit network");
+        sprintf (uci, "uci commit network");
         system(uci);
-        sprintf(uci, "/etc/init.d/network reload");
+        sprintf (uci, "/etc/init.d/network reload");
         system(uci);
     }
 
@@ -704,24 +704,24 @@ public:
     void network_set(const std::string &gateway, const std::string &ipAddress, const std::string &netMask) {
         if (is_ros_platform()) {
             char cm[128] = {0};
-            sprintf(cm, "cm set_val WAN1 gateway %s", gateway.c_str());
+            sprintf (cm, "cm set_val WAN1 gateway %s", gateway.c_str());
             system(cm);
-            sprintf(cm, "cm set_val WAN1 ipaddress %s", ipAddress.c_str());
+            sprintf (cm, "cm set_val WAN1 ipaddress %s", ipAddress.c_str());
             system(cm);
-            sprintf(cm, "cm set_val WAN1 ipmask %s", netMask.c_str());
+            sprintf (cm, "cm set_val WAN1 ipmask %s", netMask.c_str());
             system(cm);
             system("reboot");
         } else {
             char uci[128] = {0};
-            sprintf(uci, "uci set network.lan.ipaddr=%s", ipAddress.c_str());
+            sprintf (uci, "uci set network.lan.ipaddr=%s", ipAddress.c_str());
             system(uci);
-            sprintf(uci, "uci set network.lan.gateway=%s", gateway.c_str());
+            sprintf (uci, "uci set network.lan.gateway=%s", gateway.c_str());
             system(uci);
-            sprintf(uci, "uci set network.lan.netmask=%s", netMask.c_str());
+            sprintf (uci, "uci set network.lan.netmask=%s", netMask.c_str());
             system(uci);
-            sprintf(uci, "uci commit network");
+            sprintf (uci, "uci commit network");
             system(uci);
-            sprintf(uci, "/etc/init.d/network reload &");
+            sprintf (uci, "/etc/init.d/network reload &");
             system(uci);
         }
     }
@@ -729,20 +729,20 @@ public:
     void network_set(const std::string &gateway, const std::string &ipAddress) {
         if (is_ros_platform()) {
             char cm[128] = {0};
-            sprintf(cm, "cm set_val WAN1 ipaddress %s", ipAddress.c_str());
+            sprintf (cm, "cm set_val WAN1 ipaddress %s", ipAddress.c_str());
             system(cm);
-            sprintf(cm, "cm set_val WAN1 gateway %s", gateway.c_str());
+            sprintf (cm, "cm set_val WAN1 gateway %s", gateway.c_str());
             system(cm);
             system("reboot");
         } else {
             char uci[128] = {0};
-            sprintf(uci, "uci set network.lan.ipaddr=%s", ipAddress.c_str());
+            sprintf (uci, "uci set network.lan.ipaddr=%s", ipAddress.c_str());
             system(uci);
-            sprintf(uci, "uci set network.lan.gateway=%s", gateway.c_str());
+            sprintf (uci, "uci set network.lan.gateway=%s", gateway.c_str());
             system(uci);
-            sprintf(uci, "uci commit network");
+            sprintf (uci, "uci commit network");
             system(uci);
-            sprintf(uci, "/etc/init.d/network reload");
+            sprintf (uci, "/etc/init.d/network reload");
             system(uci);
         }
     }
@@ -768,7 +768,7 @@ public:
         int min = std::atoi(vecTime[1].c_str());
         int sec = std::atoi(vecTime[2].c_str());
         char buf[32] = {0};
-        sprintf(buf, "%02d_%02d%02d%02d", day, hour, min, sec);
+        sprintf (buf, "%02d_%02d%02d%02d", day, hour, min, sec);
         return vn + '_' + v + '_' + year + month + buf;
     }
 
@@ -792,7 +792,7 @@ public:
     }
     static std::string fmt_float_to_str(const double val) {
         char buf[16] = {0};
-		sprintf(buf, "%.01f", val);
+		sprintf (buf, "%.01f", val);
 		return buf;
     }
 };

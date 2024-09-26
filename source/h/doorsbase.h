@@ -91,7 +91,7 @@ public:
 	~CConfig();
 	BOOL Init(char *szInitFile)
 	{
-		strcpy(m_szFile, szInitFile);
+		strncpy(m_szFile, szInitFile);
 		return TRUE;
 	}
 	CConfig() {}
@@ -374,7 +374,7 @@ public:
 		DS_ASSERT(!m_bPrintBinary);
 
 		if (m_len + 1 < MAX_PRINTABLE_STRING_LENGTH)
-			m_len += sprintf(m_buf + m_len, "%c", ch);
+			m_len += sprintf (m_buf + m_len, "%c", ch);
 
 		return *this;
 	}
@@ -384,7 +384,7 @@ public:
 		DS_ASSERT(!m_bPrintBinary);
 
 		if (m_len + 1 < MAX_PRINTABLE_STRING_LENGTH)
-			m_len += sprintf(m_buf + m_len, "%c", ch);
+			m_len += sprintf (m_buf + m_len, "%c", ch);
 
 		return *this;
 	}
@@ -396,7 +396,7 @@ public:
 		else
 		{
 			if (m_len + 6 < MAX_PRINTABLE_STRING_LENGTH)
-				m_len += sprintf(m_buf + m_len, "%d", s);
+				m_len += sprintf (m_buf + m_len, "%d", s);
 		}
 
 		return *this;
@@ -409,7 +409,7 @@ public:
 		else
 		{
 			if (m_len + 5 < MAX_PRINTABLE_STRING_LENGTH)
-				m_len += sprintf(m_buf + m_len, "%u", s);
+				m_len += sprintf (m_buf + m_len, "%u", s);
 		}
 
 		return *this;
@@ -422,8 +422,8 @@ public:
 		else
 		{
 			if (m_len + 11 < MAX_PRINTABLE_STRING_LENGTH)
-				// m_len += sprintf(m_buf + m_len, "%ld", i);
-				m_len += sprintf(m_buf + m_len, "%ld", (long)i);
+				// m_len += sprintf (m_buf + m_len, "%ld", i);
+				m_len += sprintf (m_buf + m_len, "%ld", (long)i);
 			// Checkhere
 		}
 
@@ -437,8 +437,8 @@ public:
 		else
 		{
 			if (m_len + 10 < MAX_PRINTABLE_STRING_LENGTH)
-				// m_len += sprintf(m_buf + m_len, "%lu", i);
-				m_len += sprintf(m_buf + m_len, "%lu", (long)i);
+				// m_len += sprintf (m_buf + m_len, "%lu", i);
+				m_len += sprintf (m_buf + m_len, "%lu", (long)i);
 			// Checkhere
 		}
 
@@ -452,7 +452,7 @@ public:
 		else
 		{
 			if (m_len + 11 < MAX_PRINTABLE_STRING_LENGTH)
-				m_len += sprintf(m_buf + m_len, "%ld", l);
+				m_len += sprintf (m_buf + m_len, "%ld", l);
 		}
 
 		return *this;
@@ -465,7 +465,7 @@ public:
 		else
 		{
 			if (m_len + 10 < MAX_PRINTABLE_STRING_LENGTH)
-				m_len += sprintf(m_buf + m_len, "%lu", l);
+				m_len += sprintf (m_buf + m_len, "%lu", l);
 		}
 
 		return *this;
@@ -476,7 +476,7 @@ public:
 		DS_ASSERT(!m_bPrintBinary);
 
 		if (m_len + 12 < MAX_PRINTABLE_STRING_LENGTH)
-			m_len += sprintf(m_buf + m_len, "%ld.", (long)f);
+			m_len += sprintf (m_buf + m_len, "%ld.", (long)f);
 
 		return *this;
 	}
@@ -486,7 +486,7 @@ public:
 		DS_ASSERT(!m_bPrintBinary);
 
 		if (m_len + 12 < MAX_PRINTABLE_STRING_LENGTH)
-			m_len += sprintf(m_buf + m_len, "%ld.", (long)d);
+			m_len += sprintf (m_buf + m_len, "%ld.", (long)d);
 
 		return *this;
 	}
@@ -516,9 +516,9 @@ public:
 		DS_ASSERT(!m_bPrintBinary);
 
 		if (m_len + 10 < MAX_PRINTABLE_STRING_LENGTH)
-			// m_len += sprintf(m_buf + m_len, "0x%lX", lpsz);
+			// m_len += sprintf (m_buf + m_len, "0x%lX", lpsz);
 			// Modified by Billy.
-			m_len += sprintf(m_buf + m_len, "0x%lX", *(long *)lpsz);
+			m_len += sprintf (m_buf + m_len, "0x%lX", *(long *)lpsz);
 
 		return *this;
 	}
@@ -1256,7 +1256,7 @@ public:
 		struct tm tmCur;
 		tmCur = *localtime(&tmpTime);
 		static char szTime[128];
-		sprintf(szTime, "%04d%02d%02d-%02d%02d%02d",
+		sprintf (szTime, "%04d%02d%02d-%02d%02d%02d",
 				tmCur.tm_year + 1900,
 				tmCur.tm_mon + 1,
 				tmCur.tm_mday,

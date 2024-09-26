@@ -50,28 +50,28 @@ YangMediaDesc* yang_rtcsdp_find_media_descs(YangSdp *sdp, char *type) {
 void yang_rtcsdp_set_ice_ufrag(YangSdp *sdp, char *ufrag) {
 
 	for (int i = 0; i < sdp->media_descs.vsize; i++) {
-		yang_strcpy(sdp->media_descs.payload[i].session_info.ice_ufrag, ufrag);
+		yang_strncpy(sdp->media_descs.payload[i].session_info.ice_ufrag, ufrag);
 	}
 }
 
 void yang_rtcsdp_set_ice_pwd(YangSdp *sdp, char *pwd) {
 
 	for (int i = 0; i < sdp->media_descs.vsize; i++) {
-		yang_strcpy(sdp->media_descs.payload[i].session_info.ice_pwd, pwd);
+		yang_strncpy(sdp->media_descs.payload[i].session_info.ice_pwd, pwd);
 	}
 }
 
 void yang_rtcsdp_set_dtls_role(YangSdp *sdp, char *dtls_role) {
 
 	for (int i = 0; i < sdp->media_descs.vsize; i++) {
-		yang_strcpy(sdp->media_descs.payload[i].session_info.setup, dtls_role);
+		yang_strncpy(sdp->media_descs.payload[i].session_info.setup, dtls_role);
 	}
 }
 
 void yang_rtcsdp_set_fingerprint_algo(YangSdp *sdp, char *algo) {
 
 	for (int i = 0; i < sdp->media_descs.vsize; i++) {
-		yang_strcpy(sdp->media_descs.payload[i].session_info.fingerprint_algo, algo);
+		yang_strncpy(sdp->media_descs.payload[i].session_info.fingerprint_algo, algo);
 	}
 
 }
@@ -79,7 +79,7 @@ void yang_rtcsdp_set_fingerprint_algo(YangSdp *sdp, char *algo) {
 void yang_rtcsdp_set_fingerprint(YangSdp *sdp, char *fingerprint) {
 
 	for (int i = 0; i < sdp->media_descs.vsize; i++) {
-		yang_strcpy(sdp->media_descs.payload[i].session_info.fingerprint,
+		yang_strncpy(sdp->media_descs.payload[i].session_info.fingerprint,
 				fingerprint);
 	}
 
@@ -89,9 +89,9 @@ void yang_rtcsdp_add_candidate(YangSdp *sdp, char *ip, int port, char *type) {
 	// @see: https://tools.ietf.org/id/draft-ietf-mmusic-ice-sip-sdp-14.html#rfc.section.5.1
 	YangCandidate candidate;
 
-	yang_strcpy(candidate.ip, ip);
+	yang_strncpy(candidate.ip, ip);
 	candidate.port = port;
-	yang_strcpy(candidate.type, type);
+	yang_strncpy(candidate.type, type);
 
 
 	for (int i = 0; i < sdp->media_descs.vsize; i++) {
@@ -137,12 +137,12 @@ int32_t yang_rtcsdp_parse_origin(YangSdp *sdp, char *content) {
 	// o=<username> <sess-id> <sess-version> <nettype> <addrtype> <unicast-address>
 	// eg. o=- 9164462281920464688 2 IN IP4 127.0.0.1
 
-	yang_strcpy(sdp->username, str.str[0]);
-	yang_strcpy(sdp->session_id, str.str[1]);
-	yang_strcpy(sdp->session_version, str.str[2]);
-	yang_strcpy(sdp->nettype, str.str[3]);
-	yang_strcpy(sdp->addrtype, str.str[4]);
-	yang_strcpy(sdp->unicast_address, str.str[5]);
+	yang_strncpy(sdp->username, str.str[0]);
+	yang_strncpy(sdp->session_id, str.str[1]);
+	yang_strncpy(sdp->session_version, str.str[2]);
+	yang_strncpy(sdp->nettype, str.str[3]);
+	yang_strncpy(sdp->addrtype, str.str[4]);
+	yang_strncpy(sdp->unicast_address, str.str[5]);
 
 	yang_destroy_strings(&str);
 	return err;
@@ -152,7 +152,7 @@ int32_t yang_rtcsdp_parse_version(YangSdp *sdp, char *content) {
 	int32_t err = Yang_Ok;
 	// @see: https://tools.ietf.org/html/rfc4566#section-5.1
 	if (yang_strlen(content))
-		yang_strcpy(sdp->version, content);
+		yang_strncpy(sdp->version, content);
 	else
 		yang_itoa(0, sdp->version, 10);
 
@@ -163,7 +163,7 @@ int32_t yang_rtcsdp_parse_session_name(YangSdp *sdp, char *content) {
 	int32_t err = Yang_Ok;
 	// @see: https://tools.ietf.org/html/rfc4566#section-5.3
 	// s=<session name>
-	yang_strcpy(sdp->session_name, content);
+	yang_strncpy(sdp->session_name, content);
 
 	return err;
 }
@@ -194,7 +194,7 @@ int32_t yang_rtcsdp_parse_attr_group(YangSdp *sdp, char *value) {
 	if (str.vsize == 0)
 		return 1;
 
-	yang_strcpy(sdp->group_policy, str.str[0]);
+	yang_strncpy(sdp->group_policy, str.str[0]);
 	for (int i = 1; i < str.vsize; i++) {
 		yang_insert_stringVector(&sdp->groups, str.str[i]);
 	}
@@ -220,8 +220,8 @@ int32_t yang_rtcsdp_parse_media_description(YangSdp *sdp, char *content) {
 	yang_memset(&md, 0, sizeof(YangMediaDesc));
 	yang_insert_YangMediaDescVector(&sdp->media_descs, &md);
 	YangMediaDesc *desc = &sdp->media_descs.payload[sdp->media_descs.vsize - 1];
-	yang_strcpy(desc->type, str.str[0]);
-	yang_strcpy(desc->protos, str.str[2]);
+	yang_strncpy(desc->type, str.str[0]);
+	yang_strncpy(desc->protos, str.str[2]);
 	desc->port = atoi(str.str[1]);
 	for (int32_t i = 3; i < str.vsize; i++) {
 		YangMediaPayloadType pt;
@@ -250,7 +250,7 @@ int32_t yang_rtcsdp_parse_attribute(YangSdp *sdp, char *content) {
 	yang_memset(value, 0, sizeof(value));
 	if (p) {
 		yang_memcpy(attribute, content, p - content);
-		yang_strcpy(value, p + 1);
+		yang_strncpy(value, p + 1);
 
 	}
 	if (yang_strcmp(attribute, "group") == 0) {
@@ -258,7 +258,7 @@ int32_t yang_rtcsdp_parse_attribute(YangSdp *sdp, char *content) {
 	} else if (yang_strcmp(attribute, "msid-semantic") == 0) {
 		YangStrings str;
 		yang_cstr_split(value, " ", &str);
-		yang_strcpy(sdp->msid_semantic, str.str[0]);
+		yang_strncpy(sdp->msid_semantic, str.str[0]);
 		for (int j = 1; j < str.vsize; j++) {
 			yang_insert_stringVector(&sdp->msids, str.str[j]);
 		}
@@ -341,7 +341,7 @@ int32_t yang_rtcsdp_encode(YangSdp *sdp, YangBuffer *os) {
 	char *p = NULL;
 	char tmp[2048];
 	yang_memset(tmp, 0, sizeof(tmp));
-	yang_sprintf(tmp, "v=%s%s"
+	yang_sprintf (tmp, "v=%s%s"
 			"o=%s %s %s %s %s %s%s"
 			"s=%s%s"
 			"t=%" PRId64" %" PRId64"%s"
@@ -354,23 +354,23 @@ int32_t yang_rtcsdp_encode(YangSdp *sdp, YangBuffer *os) {
 
 	if (!sdp->groups.vsize) {
 		p = yang_rtcsdp_getnull(tmp);
-		yang_sprintf(p, "a=group:%s", sdp->group_policy);
+		yang_sprintf (p, "a=group:%s", sdp->group_policy);
 		for (int i = 0; i < sdp->groups.vsize; i++) {
 			p = yang_rtcsdp_getnull(tmp);
-			yang_sprintf(p, " %s", sdp->groups.payload[i]);
+			yang_sprintf (p, " %s", sdp->groups.payload[i]);
 		}
 		p = yang_rtcsdp_getnull(tmp);
-		yang_sprintf(p, "%s", kCRLF);
+		yang_sprintf (p, "%s", kCRLF);
 
 	}
 	p = yang_rtcsdp_getnull(tmp);
-	yang_sprintf(p, "a=msid-semantic: %s", sdp->msid_semantic);
+	yang_sprintf (p, "a=msid-semantic: %s", sdp->msid_semantic);
 	for (int i = 0; i < sdp->msids.vsize; i++) {
 		p = yang_rtcsdp_getnull(tmp);
-		yang_sprintf(p, " %s", sdp->msids.payload[i]);
+		yang_sprintf (p, " %s", sdp->msids.payload[i]);
 	}
 	p = yang_rtcsdp_getnull(tmp);
-	yang_sprintf(p, "%s", kCRLF);
+	yang_sprintf (p, "%s", kCRLF);
 
 	yang_write_cstring(os, tmp);
 	if ((err = yang_encode_sessionInfo(&sdp->session_info, os)) != Yang_Ok) {
@@ -435,19 +435,19 @@ int32_t yang_rtcsdp_parse(YangSdp *sdp, char *sdp_str) {
 
 			YangSSRCInfo *ssrc_info = &media_desc->ssrc_infos.payload[j];
 			if (yang_strlen(ssrc_info->msid) == 0) {
-				yang_strcpy(ssrc_info->msid, media_desc->msid);
+				yang_strncpy(ssrc_info->msid, media_desc->msid);
 			}
 
 			if (yang_strlen(ssrc_info->msid_tracker) == 0) {
-				yang_strcpy(ssrc_info->msid_tracker, media_desc->msid_tracker);
+				yang_strncpy(ssrc_info->msid_tracker, media_desc->msid_tracker);
 			}
 
 			if (yang_strlen(ssrc_info->mslabel) == 0) {
-				yang_strcpy(ssrc_info->mslabel, media_desc->msid);
+				yang_strncpy(ssrc_info->mslabel, media_desc->msid);
 			}
 
 			if (yang_strlen(ssrc_info->label) == 0) {
-				yang_strcpy(ssrc_info->label, media_desc->msid_tracker);
+				yang_strncpy(ssrc_info->label, media_desc->msid_tracker);
 			}
 		}
 	}

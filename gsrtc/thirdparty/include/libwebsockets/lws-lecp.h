@@ -386,13 +386,13 @@ LWS_VISIBLE LWS_EXTERN void
 lws_lec_setbuf(lws_lec_pctx_t *ctx, uint8_t *buf, size_t len);
 
 /*
- * lws_lec_vsprintf() - write into a cbor writing context
+ * lws_lec_vsprintf () - write into a cbor writing context
  *
  * \param ctx: the cbor writing context to prepare
  * \param format: a printf style argument map
  * \param args: the va args
  *
- * CBOR-aware vsprintf which pauses output when it fills the output buffer.  You
+ * CBOR-aware vsprintf  which pauses output when it fills the output buffer.  You
  * can call it again with the same args and same lws_lex_pctx to resume filling
  *
  * Returns either LWS_LECPCTX_RET_FINISHED if we have nothing left over that we
@@ -435,7 +435,7 @@ lws_lec_setbuf(lws_lec_pctx_t *ctx, uint8_t *buf, size_t len);
  * See READMEs/README.cbor-lecp.md for more details.
  */
 LWS_VISIBLE LWS_EXTERN enum lws_lec_pctx_ret
-lws_lec_vsprintf(lws_lec_pctx_t *ctx, const char *format, va_list args);
+lws_lec_vsprintf (lws_lec_pctx_t *ctx, const char *format, va_list args);
 
 /*
  * lws_lec_printf() - write into a cbor writing context
@@ -444,7 +444,7 @@ lws_lec_vsprintf(lws_lec_pctx_t *ctx, const char *format, va_list args);
  * \param format: a printf style argument map
  * \param ...: format args
  *
- * See lws_lec_vsprintf() for format details.  This is the most common way
+ * See lws_lec_vsprintf () for format details.  This is the most common way
  * to format the CBOR output.
  *
  * See READMEs/README.cbor-lecp.md for more details.

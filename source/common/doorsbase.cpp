@@ -87,7 +87,7 @@ CConfig::CConfig(char *szFile)
 	m_pFp = NULL;
 	if (szFile)
 	{
-		strcpy(m_szFile, szFile);
+		strncpy(m_szFile, szFile);
 	}
 }
 CConfig::~CConfig()
@@ -103,12 +103,12 @@ int CConfig::Read(char *szSess, char *szItem, char *szValue, char *szDefault)
 	{
 		DS_TRACE("[CConfig::Read] Your config file " << m_szFile << " can not be found, use your default setting.\n");
 
-		strcpy(szValue, szDefault);
+		strncpy(szValue, szDefault);
 		return 0;
 	}
 
 	char szSess1[128];
-	sprintf(szSess1, "[%s]", szSess);
+	sprintf (szSess1, "[%s]", szSess);
 
 	int bEnterSess = 0;
 	char szLine[256];
@@ -153,7 +153,7 @@ int CConfig::Read(char *szSess, char *szItem, char *szValue, char *szDefault)
 	}
 
 	DS_TRACE("[CConfig::Read] The config item " << szItem << " on file " << m_szFile << " had not been set or the format is invalid, use your default setting.\n");
-	strcpy(szValue, szDefault);
+	strncpy(szValue, szDefault);
 	fclose(m_pFp);
 	m_pFp = NULL;
 	return 0;
@@ -169,7 +169,7 @@ BOOL CSocket::GetMyIp(char *szBuf)
 		DS_TRACE("getpeername failed.\n");
 		return FALSE;
 	}
-	strcpy(szBuf, inet_ntoa(sockaddr.sin_addr));
+	strncpy(szBuf, inet_ntoa(sockaddr.sin_addr));
 	return TRUE;
 }
 CSocket::CSocket()
@@ -320,7 +320,7 @@ BOOL CSocket::ConnectTimeOut(const char *szIp, unsigned short nPort, long timeou
 
 	int n;
 	struct sockaddr_in server;
-	//Á¬½Ó
+	//ï¿½ï¿½ï¿½ï¿½
 	server.sin_family = AF_INET;
 	server.sin_port = htons(nPort);
 	server.sin_addr.s_addr = inet_addr(szAddress);
@@ -664,13 +664,13 @@ int CSocket::Recv(OUT char *szRecvBuf)
 				return FALSE;
 			}
 		}
-		strcpy(szBuf + nCur, szRecv);
+		strncpy(szBuf + nCur, szRecv);
 		nCur += nRecv;
 	} while (nRecv == BUF_MAX);
 	// Recv success!
 	// DealWithTheRequest(szBuf);
 
-	strcpy(szRecvBuf, szBuf);
+	strncpy(szRecvBuf, szBuf);
 	printf("#Recv: All succeeded.\n");
 	return strlen(szRecvBuf);
 }
@@ -730,7 +730,7 @@ int CSocket::SendTo(
 	ToAddr.sin_port = htons(nPort);
 	ToAddr.sin_addr.s_addr = inet_addr(szDotAddr);
 	*/
-	strcpy(ToAddr.sa_data, szInterfaceName);
+	strncpy(ToAddr.sa_data, szInterfaceName);
 	DS_TRACE("[CSocket::SendTo]: ");
 	int nToLen = sizeof(ToAddr);
 	int nSend;
@@ -898,7 +898,7 @@ BOOL CSocket::InetN2P(void *pSinAddr, char *szPtr, int nLen, int nFamily)
 		{
 			return FALSE;
 		}
-		strcpy(szPtr, temp);
+		strncpy(szPtr, temp);
 	}
 	return FALSE;
 }
@@ -951,7 +951,7 @@ char *CSocket::GetRemoteIp()
 
 	if (!m_bConnected)
 	{
-		strcpy(szBuf, "UNKNOWN");
+		strncpy(szBuf, "UNKNOWN");
 		return szBuf;
 	}
 
@@ -961,11 +961,11 @@ char *CSocket::GetRemoteIp()
 	if (getpeername(m_hSocket, (struct sockaddr *)&sockaddr, &len) < 0)
 	{
 		DS_TRACE("[CSocket::GetRemoteIp] getpeername failed - " << strerror(errno) << ",errno=" << errno);
-		strcpy(szBuf, "INVALID_ADDRESS");
+		strncpy(szBuf, "INVALID_ADDRESS");
 		return szBuf;
 	}
-	// sprintf(szBuf,"%s:%d", inet_ntoa(sockaddr.sin_addr),sockaddr.sin_port);
-	sprintf(szBuf, "%s", inet_ntoa(sockaddr.sin_addr));
+	// sprintf (szBuf,"%s:%d", inet_ntoa(sockaddr.sin_addr),sockaddr.sin_port);
+	sprintf (szBuf, "%s", inet_ntoa(sockaddr.sin_addr));
 	return szBuf;
 }
 void CSocket::SetPeerIp(DWORD ip)
@@ -1112,7 +1112,7 @@ BOOL CDsList::SetSize(int nNewSize)
 
 	if (nNewSize == 0)
 	{
-		//±íÊ¾È«Çå¿Õ
+		//ï¿½ï¿½Ê¾È«ï¿½ï¿½ï¿½
 		// DS_TRACE("[CDsList::CDsList] SetSize begin... nNewSize ==0 delete all node. ");
 		if (m_pData)
 			free(m_pData);
@@ -1351,7 +1351,7 @@ void DsLog(char *lpFormat, ...)
 		if(bPrint)
 		{
 			printf("Pid=%d\n",(int)getpid());
-			sprintf(fileName,"../log/log.%d",(int)getpid());
+			sprintf (fileName,"../log/log.%d",(int)getpid());
 			bPrint=FALSE;
 		}
 
@@ -1466,7 +1466,7 @@ void DsDebugInfo(char *lpFormat, ...)
 				if (bPrint)
 				{
 					printf("Pid=%d\n", (int)getpid());
-					sprintf(fileName, "../log/proxy.%d", (int)getpid());
+					sprintf (fileName, "../log/proxy.%d", (int)getpid());
 					bPrint = FALSE;
 				}
 
@@ -1737,9 +1737,9 @@ char *CDnsCache::Query(char *szHost)
 	}
 
 	CHostNode *pNode = new CHostNode();
-	if (!strcpy(pNode->m_szHost, szHost))
+	if (!strncpy(pNode->m_szHost, szHost))
 		printf(" The Add Node->m_szHost is error!");
-	if (!strcpy(pNode->m_szIp, szIp))
+	if (!strncpy(pNode->m_szIp, szIp))
 		printf(" The Add Node->m_szIp is error!");
 	if (m_list.GetCount() >= 149)
 	{
@@ -1758,8 +1758,8 @@ BOOL CDnsCache::Work(char *szHost, char *szIp)
 		pTempNode->m_nCount--;
 		if (pTempNode->m_nCount == 0)
 		{
-			strcpy(pTempNode->m_szHost, szHost);
-			strcpy(pTempNode->m_szIp, szIp);
+			strncpy(pTempNode->m_szHost, szHost);
+			strncpy(pTempNode->m_szIp, szIp);
 			pTempNode->m_nCount++;
 			return TRUE;
 		}
@@ -2188,7 +2188,7 @@ LPSTR DsCopyString(LPCSTR lpStr)
 		return NULL;
 	LPSTR str = new char[len + 1];
 	memset(str, 0, len + 1);
-	strcpy(str, lpStr);
+	strncpy(str, lpStr);
 	return str;
 }
 
@@ -2218,7 +2218,7 @@ INT IpAddrStrToInt(LPCSTR lpszIpAddr)
 }
 void IpAddrIntToStr(DWORD dwIp, LPSTR lpszIpAddr)
 {
-	sprintf((char *)lpszIpAddr, "%ld.%ld.%ld.%ld", (dwIp >> 24) & (0x000000ff), (dwIp >> 16) & (0x000000ff), (dwIp >> 8) & 0x000000ff, dwIp & 0x000000ff);
+	sprintf ((char *)lpszIpAddr, "%ld.%ld.%ld.%ld", (dwIp >> 24) & (0x000000ff), (dwIp >> 16) & (0x000000ff), (dwIp >> 8) & 0x000000ff, dwIp & 0x000000ff);
 }
 /////////////////////////////
 //////GetTickCount
@@ -3211,14 +3211,14 @@ unsigned char HexToDec(char szHex)
 }
 
 /*
-** º¯Êý£ºAscIIToBin()
-** ×÷ÓÃ£º
-** ½«asciiÐÎÊ½µÄ×Ö·û´®1f×ª³É¶þ½øÖÆbin¸ñÊ½£º0x1f
+** ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½AscIIToBin()
+** ï¿½ï¿½ï¿½Ã£ï¿½
+** ï¿½ï¿½asciiï¿½ï¿½Ê½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½1f×ªï¿½É¶ï¿½ï¿½ï¿½ï¿½ï¿½binï¿½ï¿½Ê½ï¿½ï¿½0x1f
 */
 
 unsigned char AscIIToBin(char *szAscII)
 {
-	/*assert(strlen(szAscII)==2);*/ /*È·±£ÎªÁ½¸ö×Ö½ÚµÄ×Ö·û´®*/
+	/*assert(strlen(szAscII)==2);*/ /*È·ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ö½Úµï¿½ï¿½Ö·ï¿½ï¿½ï¿½*/
 
 	return HexToDec(szAscII[0]) * 16 + HexToDec(szAscII[1]);
 }

@@ -219,7 +219,7 @@ int32_t yang_create_certificate( YangCertificate* cer) {
 	X509_digest(cer->dtls_cert, EVP_sha256(), md, &n);
 
 	for (uint32_t  i = 0; i < n; i++, ++p) {
-		yang_sprintf(p, "%02X", md[i]);
+		yang_sprintf (p, "%02X", md[i]);
 		p += 2;
 
 		if (i < (n - 1)) {

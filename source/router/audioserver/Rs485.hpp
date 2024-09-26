@@ -139,7 +139,7 @@ public:
         system("echo out > /sys/class/gpio/gpio3/direction");
 
         char name[32] = {0};
-        sprintf(name, "/dev/ttyS%d", m_rsTty);
+        sprintf (name, "/dev/ttyS%d", m_rsTty);
 
         iFd = open(name, O_RDWR | O_NOCTTY);  /* 读写方式打开串口 */
         LOG(INFO) << "uart open fd: " << iFd;
@@ -156,7 +156,7 @@ public:
 
         tcsetattr(iFd, TCSANOW, &opt);
         char cmd[64] = {0};
-        sprintf(cmd, "stty -F /dev/ttyS%d %d", m_rsTty, iBdVal);
+        sprintf (cmd, "stty -F /dev/ttyS%d %d", m_rsTty, iBdVal);
         system(cmd);
         LOG(INFO) << "uart open ibd :" << cmd;
         m_rs485 = iFd;

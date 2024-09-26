@@ -27,7 +27,7 @@ my @V_w32;
 my $v;
 my $c;
 foreach (0 .. 127) {
-    $c = sprintf("%c", $_);
+    $c = sprintf ("%c", $_);
     $v = 0;
     $v |= $NUMBER      if $c =~ /[0-9]/;
     $v |= $UPPER       if $c =~ /[A-Z]/;

@@ -18,7 +18,7 @@
 
 #define yang_strcat strcat
 #define yang_strncat strncat
-#define yang_strcpy strcpy
+#define yang_strncpy strncpy
 #define yang_strncpy strncpy
 #define yang_strlen strlen
 #define yang_strnlen strnlen
@@ -28,7 +28,7 @@
 #define yang_strcmp strcmp
 #define yang_strncmp strncmp
 #define yang_printf  printf
-#define yang_sprintf sprintf
+#define yang_sprintf  sprintf 
 #define yang_snprintf snprintf
 #define yang_vsnprintf vsnprintf
 #define yang_sscanf   sscanf

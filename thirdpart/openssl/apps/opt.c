@@ -879,12 +879,12 @@ void opt_help(const OPTIONS *list)
         *p++ = ' ';
         *p++ = '-';
         if (o->name[0])
-            p += strlen(strcpy(p, o->name));
+            p += strlen(strncpy(p, o->name));
         else
             *p++ = '*';
         if (o->valtype != '-') {
             *p++ = ' ';
-            p += strlen(strcpy(p, valtype2param(o)));
+            p += strlen(strncpy(p, valtype2param(o)));
         }
         *p = ' ';
         if ((int)(p - start) >= MAX_OPT_HELP_WIDTH) {

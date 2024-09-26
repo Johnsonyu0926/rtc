@@ -861,7 +861,7 @@ ___
 
 	$arg =~ m/[qv]([0-9]+)[^,]*,\s*[qv]([0-9]+)[^,]*(?:,\s*[qv]([0-9]+)[^,]*(?:,\s*[qv#]([0-9\-]+))?)?/
 	&&
-	sprintf ".inst\t0x%08x\t//%s %s",
+	sprintf  ".inst\t0x%08x\t//%s %s",
 			$opcode{$mnemonic}|$1|($2<<5)|($3<<16)|(eval($4)<<10),
 			$mnemonic,$arg;
     }

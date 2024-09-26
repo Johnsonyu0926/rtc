@@ -36,7 +36,7 @@ Contributors:
 #else
 #include <process.h>
 #include <winsock2.h>
-#define snprintf sprintf_s
+#define snprintf sprintf _s
 #endif
 
 #ifdef WITH_CJSON

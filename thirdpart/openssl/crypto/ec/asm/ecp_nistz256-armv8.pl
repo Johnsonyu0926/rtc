@@ -93,7 +93,7 @@ for(1..37) {
 			push @line,(@tbl[$j*16+$i/4]>>(($i%4)*8))&0xff;
 		}
 		$code.=".byte\t";
-		$code.=join(',',map { sprintf "0x%02x",$_} @line);
+		$code.=join(',',map { sprintf  "0x%02x",$_} @line);
 		$code.="\n";
 	}
 }

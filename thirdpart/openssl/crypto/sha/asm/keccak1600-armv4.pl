@@ -1578,11 +1578,11 @@ ___
 	if ($half eq "l") {
 	    $$op{reg} = $reg;
 	    $$op{ea}  = $ea;
-	    sprintf "#ifndef	__thumb2__\n"	.
+	    sprintf  "#ifndef	__thumb2__\n"	.
 		    "	%s\t%s,%s\n"		.
 		    "#endif", $mnemonic,$reg,$ea;
 	} else {
-	    sprintf "#ifndef	__thumb2__\n"	.
+	    sprintf  "#ifndef	__thumb2__\n"	.
 		    "	%s\t%s,%s\n"		.
 		    "#else\n"			.
 		    "	%sd\t%s,%s,%s\n"	.

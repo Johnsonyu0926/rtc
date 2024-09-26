@@ -15,8 +15,8 @@ int32_t yang_sdp_getAnswerSdp(YangRtcSession* session,char* answer){
 
     yang_sdp_genLocalSdp(session,session->context.streamConfig->localPort, &sdp,session->context.streamConfig->direction);
 
-	yang_sprintf(sdpstr,g_http_content,g_yang_sdp_answerId++,sdp);
-	yang_sprintf(answer,g_http_response,yang_strlen(sdpstr),sdpstr);
+	yang_sprintf (sdpstr,g_http_content,g_yang_sdp_answerId++,sdp);
+	yang_sprintf (answer,g_http_response,yang_strlen(sdpstr),sdpstr);
 	yang_free(sdp);
 
 	yang_free(sdpstr);
@@ -28,9 +28,9 @@ int32_t yang_sdp_getAnswerSdp2(YangRtcSession* session,char* answer){
 	char* sdpstr=(char*)yang_calloc(1024*12,1);
 	char* sessionid=(char*)yang_calloc(64,1);
     yang_sdp_genLocalSdp(session,session->context.streamConfig->localPort, &sdp,session->context.streamConfig->direction);
-	yang_sprintf(sessionid,"%s:%s",session->local_ufrag,session->remote_ufrag);
-	yang_sprintf(sdpstr,g_http_content2,sdp,sessionid);
-	yang_sprintf(answer,g_http_response,yang_strlen(sdpstr),sdpstr);
+	yang_sprintf (sessionid,"%s:%s",session->local_ufrag,session->remote_ufrag);
+	yang_sprintf (sdpstr,g_http_content2,sdp,sessionid);
+	yang_sprintf (answer,g_http_response,yang_strlen(sdpstr),sdpstr);
 	yang_free(sdp);
 	yang_free(sessionid);
 	yang_free(sdpstr);

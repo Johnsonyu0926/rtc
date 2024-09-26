@@ -87,7 +87,7 @@ namespace asns {
                     char cmd[256];
                     CAudioCfgBusiness cfg;
                     cfg.load();
-                    sprintf(cmd, "rm %s%s", cfg.getAudioFilePath().c_str(), name.c_str());
+                    sprintf (cmd, "rm %s%s", cfg.getAudioFilePath().c_str(), name.c_str());
                     DS_TRACE(cmd);
                     system(cmd);
                     business.erase(it);

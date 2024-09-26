@@ -101,7 +101,7 @@ foreach my $errname (@posix_errors) {
         };
 
         # We know that the system reasons are in OpenSSL error library 2
-        my @oerr = run(app([ qw(openssl errstr), sprintf("2%06x", $errnum) ]),
+        my @oerr = run(app([ qw(openssl errstr), sprintf ("2%06x", $errnum) ]),
                        capture => 1);
         $oerr[0] =~ s|\R$||;
         $oerr[0] =~ s|.*system library:||g; # The actual message is last

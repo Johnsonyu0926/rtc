@@ -2606,7 +2606,7 @@ char *SSL_get_shared_ciphers(const SSL *s, char *buf, int size)
             *p = '\0';
             return buf;
         }
-        strcpy(p, c->name);
+        strncpy(p, c->name);
         p += n;
         *(p++) = ':';
         size -= n + 1;
@@ -5170,18 +5170,18 @@ static int nss_keylog_int(const char *prefix,
         return 0;
     }
 
-    strcpy(cursor, prefix);
+    strncpy(cursor, prefix);
     cursor += prefix_len;
     *cursor++ = ' ';
 
     for (i = 0; i < parameter_1_len; i++) {
-        sprintf(cursor, "%02x", parameter_1[i]);
+        sprintf (cursor, "%02x", parameter_1[i]);
         cursor += 2;
     }
     *cursor++ = ' ';
 
     for (i = 0; i < parameter_2_len; i++) {
-        sprintf(cursor, "%02x", parameter_2[i]);
+        sprintf (cursor, "%02x", parameter_2[i]);
         cursor += 2;
     }
     *cursor = '\0';

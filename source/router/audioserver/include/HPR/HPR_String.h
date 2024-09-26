@@ -71,18 +71,18 @@ HPR_DECLARE HPR_INT32 CALLBACK HPR_StrToi32(const char* pSrc, char** pEnd, int i
 //HPR_DECLARE HPR_INT32 HPR_Snprintf(char* str, size_t n, const char* format, va_list ap);
 
 /*
- * vsprintf
+ * vsprintf 
  * */
 //HPR_DECLARE HPR_INT32 HPR_VSnprintf(char* str, size_t n, const char* format, va_list ap);
 
 /**
- * HPR_Strcpy
+ * HPR_strncpy
  * @param to  (IN OUT)
  * @param from (IN)
  * @return
  * @sa HPR_Strncpy
  * */
-HPR_DECLARE char* CALLBACK HPR_Strcpy(char* to, const char* from);
+HPR_DECLARE char* CALLBACK HPR_strncpy(char* to, const char* from);
 
 /**
  * HPR_Strncpy
@@ -90,7 +90,7 @@ HPR_DECLARE char* CALLBACK HPR_Strcpy(char* to, const char* from);
  * @param s2 (IN)
  * @param n (IN)
  * @return
- * @sa HPR_Strcpy
+ * @sa HPR_strncpy
  * */
 HPR_DECLARE char* CALLBACK HPR_Strncpy(char* to, const char* from, int n);
 
@@ -189,14 +189,14 @@ namespace hpr
 
 #if (defined _WIN32 || defined _WIN64)
 #define hpr_printf printf
-#define hpr_sprintf sprintf
+#define hpr_sprintf  sprintf 
 #define hpr_snprintf _snprintf
-#define hpr_vsprintf _vsnprintf
+#define hpr_vsprintf  _vsnprintf
 #else
 #define hpr_printf printf
-#define hpr_sprintf sprintf
-#define hpr_snprintf sprintf
-#define hpr_vsprintf sprintf
+#define hpr_sprintf  sprintf 
+#define hpr_snprintf sprintf 
+#define hpr_vsprintf  sprintf 
 #endif
 
     class HPR_DECLARE_CLASS hpr_string
@@ -210,7 +210,7 @@ namespace hpr
 
     public:
         static hpr_int32 atoi(const char* src);
-        static char* strcpy(char* src, const char* dst);
+        static char* strncpy(char* src, const char* dst);
         static char* strncpy(char* src, const char* dst, hpr_int32 len);
         static char* strcat(char* dst, char* src);
         static hpr_int32 strlen(const char* str);

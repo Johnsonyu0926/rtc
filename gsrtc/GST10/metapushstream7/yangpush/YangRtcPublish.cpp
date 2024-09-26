@@ -76,13 +76,13 @@ int32_t YangRtcPublish::init(int32_t nettype, char* server, int32_t pport,
 	int32_t ret = 0;
 	YangStreamConfig streamconfig;
 	memset(&streamconfig,0,sizeof(YangStreamConfig));
-	strcpy(streamconfig.app,app);
+	strncpy(streamconfig.app,app);
     streamconfig.direction=YangSendonly;
 
-	strcpy(streamconfig.remoteIp,server);
+	strncpy(streamconfig.remoteIp,server);
 	streamconfig.remotePort=pport;
 
-	strcpy(streamconfig.stream,stream);
+	strncpy(streamconfig.stream,stream);
 	streamconfig.uid=0;
 
 	streamconfig.localPort=m_context->avinfo.rtc.rtcLocalPort;

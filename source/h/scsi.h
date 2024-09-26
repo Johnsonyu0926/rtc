@@ -95,7 +95,7 @@ public:
 public:
 	CHeadBlock()
 	{
-		strcpy(m_szVerson,VERSON);
+		strncpy(m_szVerson,VERSON);
 		memset(m_pBufRev,0,492);
 	}
 	~CHeadBlock(){}

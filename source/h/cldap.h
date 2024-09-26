@@ -49,11 +49,11 @@ class CLdap
 		CLdap():m_pLdap(NULL),
 			m_pMessage(NULL)
 		{
-			strcpy(m_szBase,BASE);
-			strcpy(m_szLdapHost,LDAP_HOST);
+			strncpy(m_szBase,BASE);
+			strncpy(m_szLdapHost,LDAP_HOST);
 			m_nLdapPort = LDAP_PORT;
-			strcpy(m_szAdminBindDN,ADMIN_BINDDN);
-			strcpy(m_szAdminPasswd,ADMIN_PASSWD);
+			strncpy(m_szAdminBindDN,ADMIN_BINDDN);
+			strncpy(m_szAdminPasswd,ADMIN_PASSWD);
 		}
 		~CLdap(){}
 		/* comment:
@@ -166,7 +166,7 @@ class CLdap
 
 
 		int Auth(char* szUID,char* szPasswd);
-		//用户验证
+		//锟矫伙拷锟斤拷证
 
 	private:
 		
@@ -190,7 +190,7 @@ class CLdap
 		int LdapDeleteAttr(char* szBaseDN,char* szType,char* szValue);
 
 
-		//添加ＯＵ时用,1999-11-16
+		//锟斤拷锟接Ｏｏ拷时锟斤拷,1999-11-16
 
 		int GetDCDN(char* szNewOu,char* szBaseDN,char* szDCDN);
 		int GetURIAttr(char *szNewOU,char* szBaseDN,char* szURI);

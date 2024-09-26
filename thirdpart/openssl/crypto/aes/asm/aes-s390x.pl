@@ -125,7 +125,7 @@ $stdframe=16*$SIZE_T+4*8;
 
 sub _data_word()
 { my $i;
-    while(defined($i=shift)) { $code.=sprintf".long\t0x%08x,0x%08x\n",$i,$i; }
+    while(defined($i=shift)) { $code.=sprintf ".long\t0x%08x,0x%08x\n",$i,$i; }
 }
 
 $code=<<___;

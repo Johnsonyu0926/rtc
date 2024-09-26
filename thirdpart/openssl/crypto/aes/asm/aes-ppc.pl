@@ -65,7 +65,7 @@ $FRAME=32*$SIZE_T;
 
 sub _data_word()
 { my $i;
-    while(defined($i=shift)) { $code.=sprintf"\t.long\t0x%08x,0x%08x\n",$i,$i; }
+    while(defined($i=shift)) { $code.=sprintf "\t.long\t0x%08x,0x%08x\n",$i,$i; }
 }
 
 $sp="r1";

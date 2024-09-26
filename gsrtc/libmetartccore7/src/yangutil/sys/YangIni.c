@@ -97,15 +97,15 @@ int32_t yang_ini_readStringValue(char* filename,const char *section, const char 
 
 	if (section == NULL || key == NULL || val == NULL || filename == NULL) {
 		printf("%s: input parameter(s) is NULL!\n", __func__);
-		yang_strcpy(val, p_defaultStr);
+		yang_strncpy(val, p_defaultStr);
 		return -1;
 	}
 
 	yang_memset(sect, 0, SECTION_MAX_LEN);
-	yang_sprintf(sect, "[%s]", section);
+	yang_sprintf (sect, "[%s]", section);
 	int32_t ret = yang_ini_IniReadValue(filename,sect, key, val);
 	if (ret == -1)
-		yang_strcpy(val, p_defaultStr);
+		yang_strncpy(val, p_defaultStr);
 	return ret;
 }
 
@@ -117,7 +117,7 @@ int32_t yang_ini_readStringValue1(char* filename,const char *section, const char
 	}
 
 	yang_memset(sect, 0, SECTION_MAX_LEN);
-	yang_sprintf(sect, "[%s]", section);
+	yang_sprintf (sect, "[%s]", section);
 	return yang_ini_IniReadValue(filename,sect, key, val);
 }
 
@@ -256,7 +256,7 @@ void yang_create_ini(YangIni *ini, const char *p_filename) {
 #else
 		if (getcwd(file_path_getcwd, 255)) {
 #endif
-			yang_sprintf(file1, "%s/%s", file_path_getcwd, p_filename);
+			yang_sprintf (file1, "%s/%s", file_path_getcwd, p_filename);
 			yang_create_ini2(ini,file1);
 		}
 

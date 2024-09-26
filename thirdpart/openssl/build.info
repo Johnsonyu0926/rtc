@@ -4,7 +4,7 @@
      $sover_filename =~ s|\.|_|g
          if $config{target} =~ /^mingw/ || $config{target} =~ /^VC-/;
      $sover_filename =
-         sprintf "%02d%02d", split m|\.|, $config{shlib_version_number}
+         sprintf  "%02d%02d", split m|\.|, $config{shlib_version_number}
          if $config{target} =~ /^vms/;
      "";
 -}

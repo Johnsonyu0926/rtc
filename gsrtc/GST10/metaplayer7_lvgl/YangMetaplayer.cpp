@@ -29,7 +29,7 @@ YangMetaplayer::YangMetaplayer()
 
 	char s[128]={0};
 
-	sprintf(s,"webrtc://%s:1985/live/livestream",m_context->avinfo.rtc.localIp);
+	sprintf (s,"webrtc://%s:1985/live/livestream",m_context->avinfo.rtc.localIp);
 	yang_trace("\nurl===%s",s);
 	yang_lvgl_setUrlText(s);
 

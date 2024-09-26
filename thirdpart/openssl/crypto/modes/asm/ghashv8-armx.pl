@@ -708,7 +708,7 @@ if ($flavour =~ /64/) {			######## 64-bit code
 	my $arg=shift;
 
 	$arg =~ m/q([0-9]+)#(lo|hi),\s*q([0-9]+)#(lo|hi)/o &&
-	sprintf	"ins	v%d.d[%d],v%d.d[%d]",$1<8?$1:$1+8,($2 eq "lo")?0:1,
+	sprintf 	"ins	v%d.d[%d],v%d.d[%d]",$1<8?$1:$1+8,($2 eq "lo")?0:1,
 					     $3<8?$3:$3+8,($4 eq "lo")?0:1;
     }
     foreach(split("\n",$code)) {
@@ -739,7 +739,7 @@ if ($flavour =~ /64/) {			######## 64-bit code
 	my $arg=shift;
 
 	$arg =~ m/q([0-9]+),\s*q([0-9]+)\[([0-3])\]/o &&
-	sprintf	"vdup.32	q%d,d%d[%d]",$1,2*$2+($3>>1),$3&1;
+	sprintf 	"vdup.32	q%d,d%d[%d]",$1,2*$2+($3>>1),$3&1;
     }
     sub unvpmullp64 {
 	my ($mnemonic,$arg)=@_;
@@ -752,7 +752,7 @@ if ($flavour =~ /64/) {			######## 64-bit code
 	    # since ARMv7 instructions are always encoded little-endian.
 	    # correct solution is to use .inst directive, but older
 	    # assemblers don't implement it:-(
-	    sprintf ".byte\t0x%02x,0x%02x,0x%02x,0x%02x\t@ %s %s",
+	    sprintf  ".byte\t0x%02x,0x%02x,0x%02x,0x%02x\t@ %s %s",
 			$word&0xff,($word>>8)&0xff,
 			($word>>16)&0xff,($word>>24)&0xff,
 			$mnemonic,$arg;
@@ -770,7 +770,7 @@ if ($flavour =~ /64/) {			######## 64-bit code
 	s/cclr\s+([^,]+),\s*([a-z]+)/mov$2	$1,#0/o			or
 	s/vdup\.32\s+(.*)/unvdup32($1)/geo				or
 	s/v?(pmull2?)\.p64\s+(.*)/unvpmullp64($1,$2)/geo		or
-	s/\bq([0-9]+)#(lo|hi)/sprintf "d%d",2*$1+($2 eq "hi")/geo	or
+	s/\bq([0-9]+)#(lo|hi)/sprintf  "d%d",2*$1+($2 eq "hi")/geo	or
 	s/^(\s+)b\./$1b/o						or
 	s/^(\s+)ret/$1bx\tlr/o;
 

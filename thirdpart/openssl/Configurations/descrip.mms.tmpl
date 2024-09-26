@@ -10,8 +10,8 @@
   our $osslprefix = 'OSSL$';
   (our $osslprefix_q = $osslprefix) =~ s/\$/\\\$/;
 
-  our $sover_dirname = sprintf "%02d%02d", split(/\./, $config{shlib_version_number});
-  our $osslver = sprintf "%02d%02d", split(/\./, $config{version});
+  our $sover_dirname = sprintf  "%02d%02d", split(/\./, $config{shlib_version_number});
+  our $osslver = sprintf  "%02d%02d", split(/\./, $config{version});
 
   our $sourcedir = $config{sourcedir};
   our $builddir = $config{builddir};

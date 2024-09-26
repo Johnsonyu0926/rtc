@@ -62,9 +62,9 @@ namespace asns {
             // background play. and monitor....
             //
             char cmd[256] = {0};
-            sprintf(cmd, "madplay %s%s", prefix.c_str(), getFileName());
+            sprintf (cmd, "madplay %s%s", prefix.c_str(), getFileName());
             char background_cmd[256] = {0};
-            sprintf(background_cmd, "%s&", cmd);
+            sprintf (background_cmd, "%s&", cmd);
             LOG(INFO) << "palying status :" <<  CUtils::get_process_status("madplay");
             system(background_cmd); // background play
             LOG(INFO) << "cmd: " << background_cmd;
@@ -236,7 +236,7 @@ namespace asns {
         int download(CAddCustomAudioFileData node) const {
             char cmd[1024] = {0};
             node.parseFile();
-            sprintf(cmd, "dodownload.sh \"%s\" \"%s/%s\"",
+            sprintf (cmd, "dodownload.sh \"%s\" \"%s/%s\"",
                     (char *) node.getFilePath(),
                     savePrefix.c_str(),
                     (char *) node.getFileName());
@@ -284,7 +284,7 @@ namespace asns {
                     CAudioCfgBusiness cfg;
                     cfg.load();
 
-                    sprintf(cmd, "rm %s%s", cfg.getAudioFilePath().c_str(), name.c_str());
+                    sprintf (cmd, "rm %s%s", cfg.getAudioFilePath().c_str(), name.c_str());
                     LOG(INFO) << "cmd: " << cmd;
                     system(cmd);
                     business.erase(it);

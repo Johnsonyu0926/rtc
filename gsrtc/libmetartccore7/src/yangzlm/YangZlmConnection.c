@@ -87,7 +87,7 @@ int32_t yang_zlm_doHandleSignal(YangRtcSession* session,ZlmSdpResponseType* zlm,
 	char apiurl[256] ;
 	yang_memset(apiurl,0,sizeof(apiurl));
 
-	yang_sprintf(apiurl, "index/api/webrtc?app=%s&stream=%s&type=%s", session->context.streamConfig->app,session->context.streamConfig->stream,role==YangRecvonly?"play":"push");
+	yang_sprintf (apiurl, "index/api/webrtc?app=%s&stream=%s&type=%s", session->context.streamConfig->app,session->context.streamConfig->stream,role==YangRecvonly?"play":"push");
 	err=yang_zlm_query(session,zlm,role==YangRecvonly?1:0,(char*)session->context.streamConfig->remoteIp,session->context.streamConfig->remotePort,apiurl, sdp);
 
 	return err;

@@ -51,7 +51,7 @@ static int test_md2(int n)
         return 0;
 
     for (i = 0; i < MD2_DIGEST_LENGTH; i++)
-        sprintf(&(buf[i * 2]), "%02x", md[i]);
+        sprintf (&(buf[i * 2]), "%02x", md[i]);
     if (!TEST_str_eq(buf, ret[n]))
         return 0;
     return 1;

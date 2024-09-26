@@ -179,9 +179,9 @@ static int get_cert_verify_tbs_data(SSL *s, unsigned char *tls13tbs,
         /* This copies the 33 bytes of context plus the 0 separator byte */
         if (s->statem.hand_state == TLS_ST_CR_CERT_VRFY
                  || s->statem.hand_state == TLS_ST_SW_CERT_VRFY)
-            strcpy((char *)tls13tbs + TLS13_TBS_START_SIZE, servercontext);
+            strncpy((char *)tls13tbs + TLS13_TBS_START_SIZE, servercontext);
         else
-            strcpy((char *)tls13tbs + TLS13_TBS_START_SIZE, clientcontext);
+            strncpy((char *)tls13tbs + TLS13_TBS_START_SIZE, clientcontext);
 
         /*
          * If we're currently reading then we need to use the saved handshake

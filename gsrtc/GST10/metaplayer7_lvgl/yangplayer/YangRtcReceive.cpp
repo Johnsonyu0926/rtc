@@ -113,10 +113,10 @@ int32_t YangRtcReceive::init(int32_t puid, char* localIp,
 	if (!m_recv) m_recv=(YangPeerConnection*)calloc(sizeof(YangPeerConnection),1);
 	//memset(&m_recv->peer.streamconfig,0,sizeof(m_recv->peer.streamconfig));
 	m_recv->peer.streamconfig.localPort = m_context->avinfo.rtc.rtcLocalPort;
-	strcpy(m_recv->peer.streamconfig.remoteIp,server);
+	strncpy(m_recv->peer.streamconfig.remoteIp,server);
 	m_recv->peer.streamconfig.remotePort = pport;
-	strcpy(m_recv->peer.streamconfig.app,app);
-	strcpy(m_recv->peer.streamconfig.stream,stream);
+	strncpy(m_recv->peer.streamconfig.app,app);
+	strncpy(m_recv->peer.streamconfig.stream,stream);
 	m_recv->peer.streamconfig.uid = puid;
     m_recv->peer.streamconfig.streamDirection = YangRecvonly;
 

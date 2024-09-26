@@ -88,7 +88,7 @@ for(1..37) {
 		for($j=0;$j<64;$j++) {
 			push @line,(@tbl[$j*16+$i/4]>>(($i%4)*8))&0xff;
 		}
-		&data_byte(join(',',map { sprintf "0x%02x",$_} @line));
+		&data_byte(join(',',map { sprintf  "0x%02x",$_} @line));
 	}
 }
 

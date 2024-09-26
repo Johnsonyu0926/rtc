@@ -15,7 +15,7 @@ void yang_insert_fbsVector(YangFbsVector* vec,char* str){
 		vec->capacity+=10;
 	}
 	vec->groups[vec->vlen]=(char*)yang_calloc(yang_strlen(str)+1,1);
-	yang_strcpy(vec->groups[vec->vlen],str);
+	yang_strncpy(vec->groups[vec->vlen],str);
 	vec->vlen++;
 }
 void yang_init_sdpVector(YangFbsVector* vec){

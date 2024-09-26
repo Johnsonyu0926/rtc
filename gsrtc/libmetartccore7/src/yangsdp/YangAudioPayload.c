@@ -7,7 +7,7 @@
 #include <yangutil/sys/YangCString.h>
 
 void yang_init_audioPayload(YangAudioPayload* audio,int32_t channel){
-	    yang_strcpy(audio->codecPayload.type ,"audio");
+	    yang_strncpy(audio->codecPayload.type ,"audio");
 	    audio->channel = channel;
 	    audio->opus_param.minptime = 0;
 	    audio->opus_param.use_inband_fec = 0;

@@ -17,19 +17,19 @@ int32_t yang_stream_parseUrl2(char* url,YangStreamConfig* stream,YangAVInfo* avi
 	}
     if(opt==YangSendonly){
     	yang_memset(avinfo->sys.whipUrl,0,sizeof(avinfo->sys.whipUrl));
-    	yang_strcpy(avinfo->sys.whipUrl,data.stream);
+    	yang_strncpy(avinfo->sys.whipUrl,data.stream);
     }else if(opt==YangRecvonly){
     	yang_memset(avinfo->sys.whepUrl,0,sizeof(avinfo->sys.whepUrl));
-    	yang_strcpy(avinfo->sys.whepUrl,data.stream);
+    	yang_strncpy(avinfo->sys.whepUrl,data.stream);
     }
 
     yang_trace("\navinfo->sys.whipUrl==%s",avinfo->sys.whipUrl);
 
 	stream->localPort = 10000+yang_random()%15000;
-	yang_strcpy(stream->remoteIp,data.server);
+	yang_strncpy(stream->remoteIp,data.server);
 	stream->remotePort = data.port;
-	//yang_strcpy(stream->app,data.app);
-	//yang_strcpy(stream->stream,data.stream);
+	//yang_strncpy(stream->app,data.app);
+	//yang_strncpy(stream->stream,data.stream);
 	stream->uid = 0;
 	stream->direction = opt;//YangRecvonly;
 
@@ -49,10 +49,10 @@ int32_t yang_stream_parseUrl(char* url,YangStreamConfig* stream,YangAVInfo* avin
 	}
 
 	stream->localPort = 10000+yang_random()%15000;
-	yang_strcpy(stream->remoteIp,data.server);
+	yang_strncpy(stream->remoteIp,data.server);
 	stream->remotePort = data.port;
-	yang_strcpy(stream->app,data.app);
-	yang_strcpy(stream->stream,data.stream);
+	yang_strncpy(stream->app,data.app);
+	yang_strncpy(stream->stream,data.stream);
 	stream->uid = 0;
 	stream->direction = opt;//YangRecvonly;
 

@@ -705,7 +705,7 @@ my $ldd = sub {
     {	my $opcode=(0x14<<26)|($2<<21)|($3<<16)|(($1&0x1FF8)<<1)|(($1>>13)&1);
 	$opcode|=(1<<3) if ($mod =~ /^,m/);
 	$opcode|=(1<<2) if ($mod =~ /^,mb/);
-	sprintf "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
+	sprintf  "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
     }
     else { "\t".$orig; }
 };
@@ -716,7 +716,7 @@ my $std = sub {
 
     if ($args =~ /%r([0-9]+),(\-?[0-9]+)\(%r([0-9]+)\)/) # format 3 suffices
     {	my $opcode=(0x1c<<26)|($3<<21)|($1<<16)|(($2&0x1FF8)<<1)|(($2>>13)&1);
-	sprintf "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
+	sprintf  "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
     }
     else { "\t".$orig; }
 };
@@ -731,14 +731,14 @@ my $extrd = sub {
 	my $len=32-$3;
 	$opcode |= (($2&0x20)<<6)|(($2&0x1f)<<5);		# encode pos
 	$opcode |= (($len&0x20)<<7)|($len&0x1f);		# encode len
-	sprintf "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
+	sprintf  "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
     }
     elsif ($args =~ /%r([0-9]+),%sar,([0-9]+),%r([0-9]+)/)	# format 12
     {	my $opcode=(0x34<<26)|($1<<21)|($3<<16)|(2<<11)|(1<<9);
 	my $len=32-$2;
 	$opcode |= (($len&0x20)<<3)|($len&0x1f);		# encode len
 	$opcode |= (1<<13) if ($mod =~ /,\**=/);
-	sprintf "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
+	sprintf  "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
     }
     else { "\t".$orig; }
 };
@@ -751,10 +751,10 @@ my $shrpd = sub {
     {	my $opcode=(0x34<<26)|($2<<21)|($1<<16)|(1<<10)|$4;
 	my $cpos=63-$3;
 	$opcode |= (($cpos&0x20)<<6)|(($cpos&0x1f)<<5);		# encode sa
-	sprintf "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
+	sprintf  "\t.WORD\t0x%08x\t; %s",$opcode,$orig;
     }
     elsif ($args =~ /%r([0-9]+),%r([0-9]+),%sar,%r([0-9]+)/)	# format 11
-    {	sprintf "\t.WORD\t0x%08x\t; %s",
+    {	sprintf  "\t.WORD\t0x%08x\t; %s",
 		(0x34<<26)|($2<<21)|($1<<16)|(1<<9)|$3,$orig;
     }
     else { "\t".$orig; }
@@ -776,22 +776,22 @@ foreach (split("\n",$code)) {
 	s/\`([^\`]*)\`/eval $1/ge;
 
 	s/shd\s+(%r[0-9]+),(%r[0-9]+),([0-9]+)/
-		$3>31 ? sprintf("shd\t%$2,%$1,%d",$3-32)	# rotation for >=32
-		:       sprintf("shd\t%$1,%$2,%d",$3)/e			or
+		$3>31 ? sprintf ("shd\t%$2,%$1,%d",$3-32)	# rotation for >=32
+		:       sprintf ("shd\t%$1,%$2,%d",$3)/e			or
 	# translate made up instructions: _ror, _shr, _align, _shl
 	s/_ror(\s+)(%r[0-9]+),/
 		($SZ==4 ? "shd" : "shrpd")."$1$2,$2,"/e			or
 
 	s/_shr(\s+%r[0-9]+),([0-9]+),/
-		$SZ==4 ? sprintf("extru%s,%d,%d,",$1,31-$2,32-$2)
-		:        sprintf("extrd,u%s,%d,%d,",$1,63-$2,64-$2)/e	or
+		$SZ==4 ? sprintf ("extru%s,%d,%d,",$1,31-$2,32-$2)
+		:        sprintf ("extrd,u%s,%d,%d,",$1,63-$2,64-$2)/e	or
 
 	s/_align(\s+%r[0-9]+,%r[0-9]+),/
 		($SZ==4 ? "vshd$1," : "shrpd$1,%sar,")/e		or
 
 	s/_shl(\s+%r[0-9]+),([0-9]+),/
-		$SIZE_T==4 ? sprintf("zdep%s,%d,%d,",$1,31-$2,32-$2)
-		:            sprintf("depd,z%s,%d,%d,",$1,63-$2,64-$2)/e;
+		$SIZE_T==4 ? sprintf ("zdep%s,%d,%d,",$1,31-$2,32-$2)
+		:            sprintf ("depd,z%s,%d,%d,",$1,63-$2,64-$2)/e;
 
 	s/^\s+([a-z]+)([\S]*)\s+([\S]*)/&assemble($1,$2,$3)/e if ($SIZE_T==4);
 

@@ -35,7 +35,7 @@ int32_t yang_getIp( YangIpFamilyType familyType,char* domain, char* ip)
     struct addrinfo *addinfo=NULL,*addr=NULL;
 
     if(getaddrinfo(domain, NULL, NULL, &addinfo)!=0) {
-        yang_strcpy(ip,domain);
+        yang_strncpy(ip,domain);
         goto cleanup;
     }
 
@@ -158,7 +158,7 @@ int32_t yang_getLocalInfo(YangIpFamilyType familyType,char* ipAddress){
                 if(familyType==Yang_IpFamilyType_IPV4){
                     inet_ntop(AF_INET,  &((struct sockaddr_in*) (uaddress->Address.lpSockaddr))->sin_addr, ip, INET_ADDRSTRLEN);
                     if(yang_socket_filterIp(ip)){
-                        yang_strcpy(ipAddress,ip);
+                        yang_strncpy(ipAddress,ip);
                         err=Yang_Ok;
                         isLoop=yangfalse;
                         break;
@@ -174,7 +174,7 @@ int32_t yang_getLocalInfo(YangIpFamilyType familyType,char* ipAddress){
 
                 if(familyType==Yang_IpFamilyType_IPV6){
                     inet_ntop(AF_INET6, &ip6Addr->sin6_addr, ip, INET6_ADDRSTRLEN);
-                    yang_strcpy(ipAddress,ip);
+                    yang_strncpy(ipAddress,ip);
                     err=Yang_Ok;
                     isLoop=yangfalse;
                     break;
@@ -211,7 +211,7 @@ int32_t yang_getLocalInfo(YangIpFamilyType familyType,char* ipAddress)
                 if(familyType==Yang_IpFamilyType_IPV4){
                     inet_ntop(AF_INET, &((struct sockaddr_in*)ifAddr->ifa_addr)->sin_addr, ip, INET_ADDRSTRLEN);
                     if(yang_socket_filterIp(ip)){
-                        yang_strcpy(ipAddress,ip);
+                        yang_strncpy(ipAddress,ip);
                         err=Yang_Ok;
                         break;
                     }
@@ -221,7 +221,7 @@ int32_t yang_getLocalInfo(YangIpFamilyType familyType,char* ipAddress)
             } else if (ifAddr->ifa_addr->sa_family==AF_INET6) { // ipv6
                 if(familyType==Yang_IpFamilyType_IPV6){
                     inet_ntop(AF_INET6, &((struct sockaddr_in*)ifAddr->ifa_addr)->sin_addr, ip, INET6_ADDRSTRLEN);
-                    yang_strcpy(ipAddress,ip);
+                    yang_strncpy(ipAddress,ip);
                     err=Yang_Ok;
                     break;
                 }

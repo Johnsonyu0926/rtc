@@ -80,7 +80,7 @@ static int append_buf(char **buf, int *size, const char *s)
         }
     }
 
-    strcpy(p, s);
+    strncpy(p, s);
     return 1;
 }
 

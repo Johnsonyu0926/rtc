@@ -23,7 +23,7 @@ void YangH265EncoderMeta::loadLib() {
 	yang_x265_param_default_preset=(int32_t (*)(x265_param *, const char *preset, const char *tune))m_lib.loadFunction("x265_param_default_preset");
 	char s[30];
 	memset(s, 0, 30);
-	sprintf(s, "x265_encoder_open_%d", X265_BUILD);
+	sprintf (s, "x265_encoder_open_%d", X265_BUILD);
 
 	yang_x265_encoder_open =
 			(x265_encoder* (*)(x265_param*)) m_lib.loadFunction(s);

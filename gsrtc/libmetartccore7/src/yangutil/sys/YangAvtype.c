@@ -83,8 +83,8 @@ void yang_avinfo_initSys(YangSysInfo *sys) {
 	sys->transType = Yang_Webrtc;
 	sys->httpPort=1988;
 	sys->logLevel = 1;
-	yang_strcpy(sys->whipUrl, "rtc/v1/whip/?app=%s&stream=%s");
-	yang_strcpy(sys->whepUrl, "rtc/v1/whip-play/?app=%s&stream=%s");
+	yang_strncpy(sys->whipUrl, "rtc/v1/whip/?app=%s&stream=%s");
+	yang_strncpy(sys->whepUrl, "rtc/v1/whip-play/?app=%s&stream=%s");
 }
 
 void yang_avinfo_initEnc(YangVideoEncInfo *enc) {
@@ -113,11 +113,11 @@ void yang_avinfo_initRtc(YangRtcInfo *rtc) {
 	rtc->rtcPort = 1985;
 	rtc->rtcLocalPort = 16000;
 
-	yang_strcpy(rtc->rtcServerIP, "127.0.0.1");
-	yang_strcpy(rtc->iceServerIP, "127.0.0.1");
-	yang_strcpy(rtc->iceLocalIP, "127.0.0.1");
-	yang_strcpy(rtc->iceUserName, "metartc");
-	yang_strcpy(rtc->icePassword, "metartc");
+	yang_strncpy(rtc->rtcServerIP, "127.0.0.1");
+	yang_strncpy(rtc->iceServerIP, "127.0.0.1");
+	yang_strncpy(rtc->iceLocalIP, "127.0.0.1");
+	yang_strncpy(rtc->iceUserName, "metartc");
+	yang_strncpy(rtc->icePassword, "metartc");
 }
 
 

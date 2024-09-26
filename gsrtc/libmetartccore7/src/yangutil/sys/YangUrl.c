@@ -180,7 +180,7 @@ int32_t yang_http_url_parse(YangIpFamilyType familyType,char* url,YangUrlData* d
 
 
 	 yang_memset(data->stream,0,sizeof(data->stream));
-	 yang_strcpy(data->stream,p);
+	 yang_strncpy(data->stream,p);
 
 
 	return Yang_Ok;

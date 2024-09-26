@@ -25,7 +25,7 @@ yang_memset(tmp,0,sizeof(tmp));
 #else
     if(getcwd(tmp, 255)) {
 #endif
-    	yang_sprintf(path,"%s/lib",tmp);
+    	yang_sprintf (path,"%s/lib",tmp);
     	return Yang_Ok;
     }
 	return 1;
@@ -40,8 +40,8 @@ int32_t yang_getCaFile(char* pem,char* key){
 #else
     if(getcwd(tmp, 200)) {
 #endif
-    	yang_sprintf(pem,"%s/lib/client.pem",tmp);
-    	yang_sprintf(key,"%s/lib/client.key",tmp);
+    	yang_sprintf (pem,"%s/lib/client.pem",tmp);
+    	yang_sprintf (key,"%s/lib/client.key",tmp);
     	return Yang_Ok;
     }
     return 1;

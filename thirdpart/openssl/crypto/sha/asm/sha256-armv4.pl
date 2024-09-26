@@ -457,7 +457,7 @@ sub body_00_15 () {
 	'&eor	($t2,$a,$b)',			# a^b, b^c in next round
 	'&eor	($t0,$t0,$a,"ror#".($Sigma0[2]-$Sigma0[0]))',	# Sigma0(a)
 	'&add	($h,$h,$t1)',			# h+=Ch(e,f,g)
-	'&ldr	($t1,sprintf "[sp,#%d]",4*(($j+1)&15))	if (($j&15)!=15);'.
+	'&ldr	($t1,sprintf  "[sp,#%d]",4*(($j+1)&15))	if (($j&15)!=15);'.
 	'&ldr	($t1,"[$Ktbl]")				if ($j==15);'.
 	'&ldr	($t1,"[sp,#64]")			if ($j==31)',
 	'&and	($t3,$t3,$t2)',			# (b^c)&=(a^b)
@@ -709,7 +709,7 @@ close SELF;
 	    # since ARMv7 instructions are always encoded little-endian.
 	    # correct solution is to use .inst directive, but older
 	    # assemblers don't implement it:-(
-	    sprintf "INST(0x%02x,0x%02x,0x%02x,0x%02x)\t@ %s %s",
+	    sprintf  "INST(0x%02x,0x%02x,0x%02x,0x%02x)\t@ %s %s",
 			$word&0xff,($word>>8)&0xff,
 			($word>>16)&0xff,($word>>24)&0xff,
 			$mnemonic,$arg;

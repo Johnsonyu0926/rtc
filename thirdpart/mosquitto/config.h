@@ -31,7 +31,7 @@
  * Compatibility defines
  * ============================================================ */
 #if defined(_MSC_VER) && _MSC_VER < 1900
-#  define snprintf sprintf_s
+#  define snprintf sprintf _s
 #  define EPROTO ECONNABORTED
 #  ifndef ECONNABORTED
 #    define ECONNABORTED WSAECONNABORTED

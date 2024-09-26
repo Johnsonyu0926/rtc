@@ -1509,7 +1509,7 @@ $config{cxxflags} = [ map { (my $x = $_) =~ s/([\\\"])/\\$1/g; $x }
 
 if (defined($config{api})) {
     $config{openssl_api_defines} = [ "OPENSSL_MIN_API=".$apitable->{$config{api}} ];
-    my $apiflag = sprintf("OPENSSL_API_COMPAT=%s", $apitable->{$config{api}});
+    my $apiflag = sprintf ("OPENSSL_API_COMPAT=%s", $apitable->{$config{api}});
     push @{$config{defines}}, $apiflag;
 }
 
@@ -2733,7 +2733,7 @@ close(OUT);
 if ($builder_platform eq 'unix') {
     my $mode = (0755 & ~umask);
     chmod $mode, 'configdata.pm'
-        or warn sprintf("WARNING: Couldn't change mode for 'configdata.pm' to 0%03o: %s\n",$mode,$!);
+        or warn sprintf ("WARNING: Couldn't change mode for 'configdata.pm' to 0%03o: %s\n",$mode,$!);
 }
 
 my %builders = (

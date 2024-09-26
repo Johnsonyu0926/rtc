@@ -145,7 +145,7 @@ my %globals;
 	my $self = shift;
 	if ($gas) {
 	    if ($self->{op} eq "movz") {	# movz is pain...
-		sprintf "%s%s%s",$self->{op},$self->{sz},shift;
+		sprintf  "%s%s%s",$self->{op},$self->{sz},shift;
 	    } elsif ($self->{op} =~ /^set/) {
 		"$self->{op}";
 	    } elsif ($self->{op} eq "ret") {
@@ -210,11 +210,11 @@ my %globals;
 	    if ($value =~ s/([0-9]+\s*[\*\/\%]\s*[0-9]+)/eval($1)/eg) {
 		$self->{value} = $value;
 	    }
-	    sprintf "\$%s",$self->{value};
+	    sprintf  "\$%s",$self->{value};
 	} else {
 	    my $value = $self->{value};
 	    $value =~ s/0x([0-9a-f]+)/0$1h/ig if ($masm);
-	    sprintf "%s",$value;
+	    sprintf  "%s",$value;
 	}
     }
 }
@@ -290,13 +290,13 @@ my %globals;
 	    $self->{label} =~ s/^___imp_/__imp__/   if ($flavour eq "mingw64");
 
 	    if (defined($self->{index})) {
-		sprintf "%s%s(%s,%%%s,%d)%s",
+		sprintf  "%s%s(%s,%%%s,%d)%s",
 					$self->{asterisk},$self->{label},
 					$self->{base}?"%$self->{base}":"",
 					$self->{index},$self->{scale},
 					$self->{opmask};
 	    } else {
-		sprintf "%s%s(%%%s)%s",	$self->{asterisk},$self->{label},
+		sprintf  "%s%s(%%%s)%s",	$self->{asterisk},$self->{label},
 					$self->{base},$self->{opmask};
 	    }
 	} else {
@@ -314,15 +314,15 @@ my %globals;
 	    $self->{opmask}  =~ s/%(k[0-7])/$1/;
 
 	    if (defined($self->{index})) {
-		sprintf "%s[%s%s*%d%s]%s",$szmap{$sz},
+		sprintf  "%s[%s%s*%d%s]%s",$szmap{$sz},
 					$self->{label}?"$self->{label}+":"",
 					$self->{index},$self->{scale},
 					$self->{base}?"+$self->{base}":"",
 					$self->{opmask};
 	    } elsif ($self->{base} eq "rip") {
-		sprintf "%s[%s]",$szmap{$sz},$self->{label};
+		sprintf  "%s[%s]",$szmap{$sz},$self->{label};
 	    } else {
-		sprintf "%s[%s%s]%s",	$szmap{$sz},
+		sprintf  "%s[%s%s]%s",	$szmap{$sz},
 					$self->{label}?"$self->{label}+":"",
 					$self->{base},$self->{opmask};
 	    }
@@ -364,7 +364,7 @@ my %globals;
     }
     sub out {
     	my $self = shift;
-	if ($gas)	{ sprintf "%s%%%s%s",	$self->{asterisk},
+	if ($gas)	{ sprintf  "%s%%%s%s",	$self->{asterisk},
 						$self->{value},
 						$self->{opmask}; }
 	else		{ $self->{opmask} =~ s/%(k[0-7])/$1/;
@@ -691,7 +691,7 @@ my %globals;
 	    /cfa_expression/
 			&& do {	$dir = undef;
 				$self->{value} = ".cfi_escape\t" .
-					join(",", map(sprintf("0x%02x", $_),
+					join(",", map(sprintf ("0x%02x", $_),
 						      cfa_expression($$line)));
 				last;
 			      };

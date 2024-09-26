@@ -339,7 +339,7 @@ static char *win32_joiner(DSO *dso, const struct file_st *file_split)
     }
 
     if (file_split->node) {
-        strcpy(&result[offset], "\\\\");
+        strncpy(&result[offset], "\\\\");
         offset += 2;
         strncpy(&result[offset], file_split->node, file_split->nodelen);
         offset += file_split->nodelen;
@@ -469,9 +469,9 @@ static char *win32_name_converter(DSO *dso, const char *filename)
         return NULL;
     }
     if (transform)
-        sprintf(translated, "%s.dll", filename);
+        sprintf (translated, "%s.dll", filename);
     else
-        sprintf(translated, "%s", filename);
+        sprintf (translated, "%s", filename);
     return translated;
 }
 

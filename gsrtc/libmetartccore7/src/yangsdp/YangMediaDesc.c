@@ -237,9 +237,9 @@ int32_t yang_mediadesc_update_msid(YangMediaDesc *desc, char *id) {
 	for (int i = 0; i < desc->ssrc_infos.vsize; i++) {
 		YangSSRCInfo *info = &desc->ssrc_infos.payload[i];
 		yang_memset(info->msid, 0, sizeof(info->msid));
-		yang_strcpy(info->msid, id);
+		yang_strncpy(info->msid, id);
 		yang_memset(info->mslabel, 0, sizeof(info->mslabel));
-		yang_strcpy(info->mslabel, id);
+		yang_strncpy(info->mslabel, id);
 	}
 	return err;
 }
@@ -258,17 +258,17 @@ int32_t yang_sessioninfo_parse_attribute(YangSessionInfo *info, char *attribute,
 	if (yang_strcmp(attribute, "ice-ufrag") == 0) {
 		if(yang_strlen(info->ice_ufrag)>0) return err;
 		yang_memset(info->ice_ufrag, 0, sizeof(info->ice_ufrag));
-		yang_strcpy(info->ice_ufrag, value);
+		yang_strncpy(info->ice_ufrag, value);
 
 	} else if (yang_strcmp(attribute, "ice-pwd") == 0) {
 		if(yang_strlen(info->ice_pwd)>0) return err;
 		yang_memset(info->ice_pwd, 0, sizeof(info->ice_pwd));
-		yang_strcpy(info->ice_pwd, value);
+		yang_strncpy(info->ice_pwd, value);
 
 	} else if (yang_strcmp(attribute, "ice-options") == 0) {
 		if(yang_strlen(info->ice_options)>0) return err;
 		yang_memset(info->ice_options, 0, sizeof(info->ice_options));
-		yang_strcpy(info->ice_options, value);
+		yang_strncpy(info->ice_options, value);
 
 	} else if (yang_strcmp(attribute, "fingerprint") == 0) {
 		if(yang_strlen(info->fingerprint_algo)>0) return err;
@@ -277,7 +277,7 @@ int32_t yang_sessioninfo_parse_attribute(YangSessionInfo *info, char *attribute,
 		char *p = yang_strstr(value, " ");
 		if(p){
 			yang_memcpy(info->fingerprint_algo, value, p - value);
-			yang_strcpy(info->fingerprint, p + 1);
+			yang_strncpy(info->fingerprint, p + 1);
 		}
 
 
@@ -285,7 +285,7 @@ int32_t yang_sessioninfo_parse_attribute(YangSessionInfo *info, char *attribute,
 		if(yang_strlen(info->setup)>0) return err;
 		// @see: https://tools.ietf.org/html/rfc4145#section-4
 		yang_memset(info->setup, 0, sizeof(info->setup));
-		yang_strcpy(info->setup, value);
+		yang_strncpy(info->setup, value);
 	} else {
 
 	}
@@ -337,7 +337,7 @@ int32_t yang_mediadesc_parse_attr_extmap(YangMediaDesc *desc, char *value) {
 	YangExtmap ext;
 	yang_memset(&ext, 0, sizeof(ext));
 	ext.mapid = id;
-	yang_strcpy(ext.extmap, p + 1);
+	yang_strncpy(ext.extmap, p + 1);
 	yang_insert_YangExtmapVector(&desc->extmaps, &ext);
 
 	return err;
@@ -375,11 +375,11 @@ int32_t yang_mediadesc_parse_attr_rtpmap(YangMediaDesc *desc, char *value) {
 				value);
 	}
 
-	yang_strcpy(payload->encoding_name, str.str[0]);
+	yang_strncpy(payload->encoding_name, str.str[0]);
 	payload->clock_rate = yang_atoi(str.str[1]);
 
 	if (str.vsize == 3) {
-		yang_strcpy(payload->encoding_param, str.str[2]);
+		yang_strncpy(payload->encoding_param, str.str[2]);
 	}
 	yang_destroy_strings(&str);
 	return err;
@@ -440,7 +440,7 @@ int32_t yang_mediadesc_parse_attr_fmtp(YangMediaDesc *desc, char *value) {
 				"can not find payload %d when pase fmtp", payload_type);
 	}
 
-	yang_strcpy(payload->format_specific_param, str.str[1]);
+	yang_strncpy(payload->format_specific_param, str.str[1]);
 
 	yang_destroy_strings(&str);
 	return err;
@@ -450,7 +450,7 @@ int32_t yang_mediadesc_parse_attr_mid(YangMediaDesc *desc, char *value) {
 	// @see: https://tools.ietf.org/html/rfc3388#section-3
 	int32_t err = Yang_Ok;
 
-	yang_strcpy(desc->mid, value);
+	yang_strncpy(desc->mid, value);
 
 	return err;
 }
@@ -463,8 +463,8 @@ int32_t yang_mediadesc_parse_attr_msid(YangMediaDesc *desc, char *value) {
 	yang_cstr_split(value, " ", &str);
 	if (str.vsize > 1) {
 
-		yang_strcpy(desc->msid, str.str[0]);
-		yang_strcpy(desc->msid_tracker, str.str[1]);
+		yang_strncpy(desc->msid, str.str[0]);
+		yang_strncpy(desc->msid_tracker, str.str[1]);
 	}
 
 	yang_destroy_strings(&str);
@@ -486,7 +486,7 @@ int32_t yang_mediadesc_parse_attr_ssrc_group(YangMediaDesc *desc, char *value) {
 
 	YangSSRCGroup group;
 	yang_memset(&group, 0, sizeof(group));
-    yang_strcpy(group.semantic,str.str[0]);
+    yang_strncpy(group.semantic,str.str[0]);
 	yang_create_yangsdpintVector(&group.groups);
 
     for (size_t i = 1; i < str.vsize; ++i) {
@@ -544,7 +544,7 @@ int32_t yang_mediadesc_parse_attr_ssrc(YangMediaDesc *desc, char *value) {
 
 	if (yang_strcmp(ssrc_attr, "cname") == 0) {
 		// @see: https://tools.ietf.org/html/rfc5576#section-6.1
-		yang_strcpy(ssrc_info->cname, ssrc_value);
+		yang_strncpy(ssrc_info->cname, ssrc_value);
 		ssrc_info->ssrc = ssrc;
 	} else if (yang_strcmp(ssrc_attr, "msid") == 0) {
 		// @see: https://tools.ietf.org/html/draft-alvestrand-mmusic-msid-00#section-2
@@ -556,16 +556,16 @@ int32_t yang_mediadesc_parse_attr_ssrc(YangMediaDesc *desc, char *value) {
 					value);
 		}
 
-		yang_strcpy(ssrc_info->msid, str.vsize == 1 ? ssrc_value : str.str[0]);
+		yang_strncpy(ssrc_info->msid, str.vsize == 1 ? ssrc_value : str.str[0]);
 
 		if (str.vsize > 1) {
-			yang_strcpy(ssrc_info->msid_tracker, str.str[1]);
+			yang_strncpy(ssrc_info->msid_tracker, str.str[1]);
 		}
 		yang_destroy_strings(&str);
 	} else if (yang_strcmp(ssrc_attr, "mslabel") == 0) {
-		yang_strcpy(ssrc_info->mslabel, ssrc_value);
+		yang_strncpy(ssrc_info->mslabel, ssrc_value);
 	} else if (yang_strcmp(ssrc_attr, "label") == 0) {
-		yang_strcpy(ssrc_info->label, ssrc_value);
+		yang_strncpy(ssrc_info->label, ssrc_value);
 	}
 
 	return err;
@@ -581,9 +581,9 @@ int32_t yang_mediadesc_parse_attr_candidate(YangMediaDesc *desc, char *value) {
 	YangCandidate candiate;
 	yang_memset(&candiate,0,sizeof(YangCandidate));
 
-		yang_strcpy(candiate.ip,str.str[4]);
+		yang_strncpy(candiate.ip,str.str[4]);
 		candiate.port=atoi(str.str[5]);
-		yang_strcpy(candiate.type,str.str[7]);
+		yang_strncpy(candiate.type,str.str[7]);
 
 	yang_insert_YangCandidateVector(&desc->candidates, &candiate);
 
@@ -602,7 +602,7 @@ int32_t yang_mediadesc_parse_attribute(YangMediaDesc *desc, char *content) {
 		yang_memcpy(attribute, content, p - content);
 		yang_memcpy(value, p + 1, yang_strlen(p + 1));
 	} else {
-		yang_strcpy(attribute, content);
+		yang_strncpy(attribute, content);
 	}
 
 

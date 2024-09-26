@@ -625,7 +625,7 @@ sub body_00_15 () {
 	'&eor	($t2,$a,$b)',			# a^b, b^c in next round
 	'&eor	($t4,$t4,$a,"ror#".($Sigma0[2]-$Sigma0[0]))',	# Sigma0(a)
 	'&add	($h,$h,$t0)',			# h+=Sigma1(e)
-	'&ldr	($t1,sprintf "[sp,#%d]",4*(($j+1)&15))	if (($j&15)!=15);'.
+	'&ldr	($t1,sprintf  "[sp,#%d]",4*(($j+1)&15))	if (($j&15)!=15);'.
 	'&ldr	($t1,"[$Ktbl]")				if ($j==15);'.
 	'&and	($t3,$t3,$t2)',			# (b^c)&=(a^b)
 	'&ror	($t4,$t4,"#$Sigma0[0]")',
@@ -855,7 +855,7 @@ ___
 
 	$arg =~ m/[qv]([0-9]+)[^,]*,\s*[qv]([0-9]+)[^,]*(?:,\s*[qv]([0-9]+))?/o
 	&&
-	sprintf ".inst\t0x%08x\t//%s %s",
+	sprintf  ".inst\t0x%08x\t//%s %s",
 			$opcode{$mnemonic}|$1|($2<<5)|($3<<16),
 			$mnemonic,$arg;
     }
@@ -870,7 +870,7 @@ ___
 
 	$arg =~ m/[qv]([0-9]+)[^,]*,\s*[qv]([0-9]+)[^,]*(?:,\s*[qv]([0-9]+))?/o
 	&&
-	sprintf ".inst\t0x%08x\t//%s %s",
+	sprintf  ".inst\t0x%08x\t//%s %s",
 			$opcode{$mnemonic}|$1|($2<<5)|($3<<16),
 			$mnemonic,$arg;
     }

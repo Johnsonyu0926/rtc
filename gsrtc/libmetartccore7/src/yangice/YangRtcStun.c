@@ -291,7 +291,7 @@ uint32_t yang_stun_encode_rtcusername(YangStunPacket* pkt,char** str)
 	yang_init_buffer(&stream,buf, sizeof(buf));
 	char username[128];
 	yang_memset(username,0,128);
-	yang_sprintf(username,"%s:%s",pkt->remote_ufrag,pkt->local_ufrag);
+	yang_sprintf (username,"%s:%s",pkt->remote_ufrag,pkt->local_ufrag);
 
 
 	yang_write_2bytes(&stream,StunUsername);
@@ -571,8 +571,8 @@ int32_t yang_stun_createResponseStunPacket(YangStunPacket* request,void* psessio
 	packet.mapped_port=yang_addr_getPort(&session->context.sock->session.remote_addr);
 
 	yang_memcpy(packet.transcation_id,request->transcation_id,12);
-	yang_strcpy(packet.local_ufrag,session->local_ufrag);
-	yang_strcpy(packet.remote_ufrag,session->remote_ufrag);
+	yang_strncpy(packet.local_ufrag,session->local_ufrag);
+	yang_strncpy(packet.remote_ufrag,session->remote_ufrag);
 	yang_stun_encode_binding_response(&packet,session->localIcePwd,&stream);
 
 	return session->context.sock->write(&session->context.sock->session,stream.data, yang_buffer_pos(&stream));
@@ -628,10 +628,10 @@ int32_t yang_decode_stun(YangStunPacket* pkt,char* buf, const int32_t nb_buf)
 			yang_memcpy(pkt->username,val,len);
 			char* p = strtok(val,":");
 			if(p) {
-				yang_strcpy(pkt->local_ufrag,p);
+				yang_strncpy(pkt->local_ufrag,p);
 				p=strtok(NULL,":");
 				if(p) {
-					yang_strcpy(pkt->remote_ufrag ,p);
+					yang_strncpy(pkt->remote_ufrag ,p);
 				}
 			}
 			break;
@@ -717,10 +717,10 @@ int32_t yang_decode_rtcstun(YangStunPacket* pkt,char* buf, const int32_t nb_buf)
 			yang_memcpy(pkt->username,val,len);
 			char* p = strtok(val,":");
 			if(p) {
-				yang_strcpy(pkt->local_ufrag,p);
+				yang_strncpy(pkt->local_ufrag,p);
 				p=strtok(NULL,":");
 				if(p) {
-					yang_strcpy(pkt->remote_ufrag ,p);
+					yang_strncpy(pkt->remote_ufrag ,p);
 				}
 			}
 			break;
@@ -845,10 +845,10 @@ int32_t yang_stun_createRequestStunPacket(void* psession,char* ice_pwd){
 	YangStunPacket packet;
 	yang_memset(&packet,0,sizeof(YangStunPacket));
 	packet.message_type=StunBindingRequest;
-	yang_strcpy(packet.local_ufrag,session->local_ufrag);
-	yang_strcpy(packet.remote_ufrag,session->remote_ufrag);
+	yang_strncpy(packet.local_ufrag,session->local_ufrag);
+	yang_strncpy(packet.remote_ufrag,session->remote_ufrag);
 
-	yang_strcpy(packet.transcation_id,tid);
+	yang_strncpy(packet.transcation_id,tid);
 	packet.mapped_address=addr;
 	packet.mapped_port=session->context.streamConfig->localPort;//session->context.udp->session.local_addr.sin_port;
 	char* property_username=NULL;
@@ -877,7 +877,7 @@ int32_t yang_stun_encode(YangStunMessageType stunType,YangBuffer* stream,void* p
 	packet.message_type=stunType;;
 
 
-	yang_strcpy(packet.transcation_id,tid);
+	yang_strncpy(packet.transcation_id,tid);
 	packet.mapped_address=addr;
 
     packet.mapped_port=yang_addr_getSinPort(&udp->session.local_addr);

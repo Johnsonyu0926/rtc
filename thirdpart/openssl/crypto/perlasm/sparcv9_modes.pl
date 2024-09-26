@@ -1423,7 +1423,7 @@ my %visopf = (	"faligndata"	=> 0x048,
 	    }
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			0x81b00000|$rd<<25|$rs1<<14|$opf<<5|$rs2,
 			$ref;
     } else {
@@ -1450,7 +1450,7 @@ my %visopf = (	"addxc"		=> 0x011,
 	    $_=$bias{$1}+$2;
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			0x81b00000|$rd<<25|$rs1<<14|$opf<<5|$rs2,
 			$ref;
     } else {
@@ -1485,7 +1485,7 @@ my %aesopf = (	"aes_eround01"	=> 0,
 	    }
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			2<<30|$rd<<25|0x19<<19|$rs1<<14|$rs3<<9|$opf<<5|$rs2,
 			$ref;
     } else {
@@ -1512,7 +1512,7 @@ my %aesopf = (	"aes_kexpand0"	=> 0x130,
 	    }
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			2<<30|$rd<<25|0x36<<19|$rs1<<14|$opf<<5|$rs2,
 			$ref;
     } else {
@@ -1538,7 +1538,7 @@ my ($ref,$opf);
 	    }
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			2<<30|$rd<<25|0x19<<19|$rs1<<14|$rs3<<9|0xc<<5|$rs2,
 			$ref;
     } else {
@@ -1565,7 +1565,7 @@ my %cmllopf = (	"camellia_fl"	=> 0x13c,
 	    }
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			2<<30|$rd<<25|0x36<<19|$rs1<<14|$opf<<5|$rs2,
 			$ref;
     } else {
@@ -1596,7 +1596,7 @@ my %movxopf = (	"movdtox"	=> 0x110,
 	    }
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			2<<30|$rd<<25|0x36<<19|$opf<<5|$rs,
 			$ref;
     } else {
@@ -1626,7 +1626,7 @@ my %desopf = (	"des_round"	=> 0b1001,
 		    $_=($1|$1>>5)&31;
 		}
 	    }
-	    return  sprintf ".word\t0x%08x !%s",
+	    return  sprintf  ".word\t0x%08x !%s",
 			    2<<30|0b011001<<19|$opf<<5|$args[0]<<14|$args[1]|$args[2]<<9|$args[3]<<25,
 			    $ref;
 	} elsif ($mnemonic eq "des_kexpand") {	# 3-arg
@@ -1639,7 +1639,7 @@ my %desopf = (	"des_round"	=> 0b1001,
 		    $_=($2|$2>>5)&31;
 		}
 	    }
-	    return  sprintf ".word\t0x%08x !%s",
+	    return  sprintf  ".word\t0x%08x !%s",
 			    2<<30|0b110110<<19|$opf<<5|$args[0]<<14|$args[1]|$args[2]<<25,
 			    $ref;
 	} else {				# 2-arg
@@ -1652,7 +1652,7 @@ my %desopf = (	"des_round"	=> 0b1001,
 		    $_=($1|$1>>5)&31;
 		}
 	    }
-	    return  sprintf ".word\t0x%08x !%s",
+	    return  sprintf  ".word\t0x%08x !%s",
 			    2<<30|0b110110<<19|$opf<<5|$args[0]<<14|$args[1]<<25,
 			    $ref;
 	}

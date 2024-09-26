@@ -1156,7 +1156,7 @@ my %visopf = (	"faligndata"	=> 0x048,
 	    }
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			0x81b00000|$rd<<25|$rs1<<14|$opf<<5|$rs2,
 			$ref;
     } else {
@@ -1180,7 +1180,7 @@ my %visopf = (	"alignaddr"	=> 0x018,
 	    $_=$bias{$1}+$2;
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			0x81b00000|$rd<<25|$rs1<<14|$opf<<5|$rs2,
 			$ref;
     } else {
@@ -1213,7 +1213,7 @@ my %aesopf = (	"faesencx"	=> 0x90,
 	    }
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			2<<30|$rd<<25|0x36<<19|$rs1<<14|$opf<<5|$rs2,
 			$ref;
     } else {
@@ -1239,7 +1239,7 @@ my %aesopf = (	"fshiftorx"	=> 0x0b	);
 	    }
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			2<<30|$rd<<25|0x37<<19|$rs1<<14|$rs3<<9|$opf<<5|$rs2,
 			$ref;
     } else {
@@ -1250,7 +1250,7 @@ my %aesopf = (	"fshiftorx"	=> 0x0b	);
 foreach (split("\n",$code)) {
     s/\`([^\`]*)\`/eval $1/ge;
 
-    s/%f([0-9]+)#lo/sprintf "%%f%d",$1+1/ge;
+    s/%f([0-9]+)#lo/sprintf  "%%f%d",$1+1/ge;
 
     s/\b(faes[^x]{3,4}x)\s+(%f[0-9]{1,2}),\s*([%fx0-9]+),\s*(%f[0-9]{1,2})/
 		&unfx($1,$2,$3,$4)

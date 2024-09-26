@@ -94,8 +94,8 @@ int32_t yang_srs_getSignal(YangRtcSession* session,SrsSdpResponseType* srs,char*
 	char apiStr[256]={0};
 	char streamurl[256]={0};
 
-	yang_sprintf(apiStr,"http://%s:%d/rtc/v1/%s/",session->context.streamConfig->remoteIp, session->context.streamConfig->remotePort,roleStr);
-	yang_sprintf(streamurl,"webrtc://%s:%d/%s/%s",session->context.streamConfig->remoteIp,
+	yang_sprintf (apiStr,"http://%s:%d/rtc/v1/%s/",session->context.streamConfig->remoteIp, session->context.streamConfig->remotePort,roleStr);
+	yang_sprintf (streamurl,"webrtc://%s:%d/%s/%s",session->context.streamConfig->remoteIp,
 			session->context.streamConfig->remotePort, session->context.streamConfig->app, session->context.streamConfig->stream);
 
 	YangJsonWriter writer;
@@ -109,7 +109,7 @@ int32_t yang_srs_getSignal(YangRtcSession* session,SrsSdpResponseType* srs,char*
 	char apiurl[256] ;
 	yang_memset(apiurl,0,sizeof(apiurl));
 
-	yang_sprintf(apiurl, "rtc/v1/%s/", roleStr);
+	yang_sprintf (apiurl, "rtc/v1/%s/", roleStr);
 	err=yang_sdp_querySrs(session,srs,role==YangRecvonly?1:0,(char*)session->context.streamConfig->remoteIp,session->context.streamConfig->remotePort,apiurl, srsSdp);
 
 

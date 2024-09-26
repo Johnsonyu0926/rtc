@@ -135,14 +135,14 @@ for (my $i = 0; $i < $n; $i++) {
         my $length = 0;
         # Format using fixed-with because we use strcmp later.
         foreach (unpack("C*",$r)) {
-            $z .= sprintf("0x%02X,", $_);
+            $z .= sprintf ("0x%02X,", $_);
             $length++;
         }
         $obj_der{$obj{$nid{$i}}} = $z;
         $obj_len{$obj{$nid{$i}}} = $length;
 
         push(@lvalues,
-            sprintf("    %-45s  /* [%5d] %s */\n",
+            sprintf ("    %-45s  /* [%5d] %s */\n",
                 $z, $lvalues, $obj{$nid{$i}}));
         $out .= ", $length, &so[$lvalues]";
         $lvalues += $length;

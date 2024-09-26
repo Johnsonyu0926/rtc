@@ -641,10 +641,10 @@ ___
 114,  7,185, 85,248,238,172, 10, 54, 73, 42,104, 60, 56,241,164,
  64, 40,211,123,187,201, 67,193, 21,227,173,244,119,199,128,158);
 
-sub S1110 { my $i=shift; $i=@SBOX[$i]; $i=$i<<24|$i<<16|$i<<8; sprintf("0x%08x",$i); }
-sub S4404 { my $i=shift; $i=($i<<1|$i>>7)&0xff; $i=@SBOX[$i]; $i=$i<<24|$i<<16|$i; sprintf("0x%08x",$i); }
-sub S0222 { my $i=shift; $i=@SBOX[$i]; $i=($i<<1|$i>>7)&0xff; $i=$i<<16|$i<<8|$i; sprintf("0x%08x",$i); }
-sub S3033 { my $i=shift; $i=@SBOX[$i]; $i=($i>>1|$i<<7)&0xff; $i=$i<<24|$i<<8|$i; sprintf("0x%08x",$i); }
+sub S1110 { my $i=shift; $i=@SBOX[$i]; $i=$i<<24|$i<<16|$i<<8; sprintf ("0x%08x",$i); }
+sub S4404 { my $i=shift; $i=($i<<1|$i>>7)&0xff; $i=@SBOX[$i]; $i=$i<<24|$i<<16|$i; sprintf ("0x%08x",$i); }
+sub S0222 { my $i=shift; $i=@SBOX[$i]; $i=($i<<1|$i>>7)&0xff; $i=$i<<16|$i<<8|$i; sprintf ("0x%08x",$i); }
+sub S3033 { my $i=shift; $i=@SBOX[$i]; $i=($i>>1|$i<<7)&0xff; $i=$i<<24|$i<<8|$i; sprintf ("0x%08x",$i); }
 
 $code.=<<___;
 .align	64

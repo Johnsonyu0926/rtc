@@ -27,7 +27,7 @@ int32_t yang_getLibpath(char* path){
 		if(getcwd(tmp, 255)) {
 #endif
          
-			sprintf(path,"%s",tmp);
+			sprintf (path,"%s",tmp);
 			return 0;
 		}
 		return 1;
@@ -69,10 +69,10 @@ void* YangLoadLib::loadObject(const char *sofile)
 	}
 
 #ifdef _WIN32
-	sprintf(file1, "%s/lib/%s.dll", file_path_getcwd, sofile);
+	sprintf (file1, "%s/lib/%s.dll", file_path_getcwd, sofile);
     m_handle =  LoadLibraryA(file1);
 #else
-    sprintf(file1, "%s/lib/%s.so", file_path_getcwd, sofile);
+    sprintf (file1, "%s/lib/%s.so", file_path_getcwd, sofile);
   
     m_handle = dlopen(file1, RTLD_NOW|RTLD_LOCAL);
 #endif

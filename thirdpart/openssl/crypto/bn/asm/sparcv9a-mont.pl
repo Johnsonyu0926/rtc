@@ -879,7 +879,7 @@ $code =~ s/\`([^\`]*)\`/eval($1)/gem;
 # is implicit and is just _a_ numerical value loaded to %asi register,
 # which assembler can't recognize as VIS specific...
 $code =~ s/fzeros\s+%f([0-9]+)/
-	   sprintf(".word\t0x%x\t! fzeros %%f%d",0x81b00c20|($1<<25),$1)
+	   sprintf (".word\t0x%x\t! fzeros %%f%d",0x81b00c20|($1<<25),$1)
 	  /gem;
 
 print $code;

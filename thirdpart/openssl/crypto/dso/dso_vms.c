@@ -293,7 +293,7 @@ void vms_bind_sym(DSO *dso, const char *symname, void **sym)
 # if __INITIAL_POINTER_SIZE == 64
     /* Copy the symbol name to storage with a 32-bit pointer. */
     symname_32p = symname_32;
-    strcpy(symname_32p, symname);
+    strncpy(symname_32p, symname);
 # endif                         /* __INITIAL_POINTER_SIZE == 64 [else] */
 
     symname_dsc.dsc$w_length = strlen(SYMNAME);
@@ -397,8 +397,8 @@ static char *vms_merger(DSO *dso, const char *filespec1,
     /* Copy the file names to storage with a 32-bit pointer. */
     filespec1_32p = filespec1_32;
     filespec2_32p = filespec2_32;
-    strcpy(filespec1_32p, filespec1);
-    strcpy(filespec2_32p, filespec2);
+    strncpy(filespec1_32p, filespec1);
+    strncpy(filespec2_32p, filespec2);
 # endif                         /* __INITIAL_POINTER_SIZE == 64 [else] */
 
     fab = cc$rms_fab;
@@ -459,7 +459,7 @@ static char *vms_name_converter(DSO *dso, const char *filename)
     int len = strlen(filename);
     char *not_translated = OPENSSL_malloc(len + 1);
     if (not_translated != NULL)
-        strcpy(not_translated, filename);
+        strncpy(not_translated, filename);
     return not_translated;
 }
 

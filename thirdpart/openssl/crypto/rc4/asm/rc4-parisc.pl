@@ -98,7 +98,7 @@ sub unrolledloopbody {
 for ($i=0;$i<4;$i++) {
 $code.=<<___;
 	ldo	1($XX[0]),$XX[1]
-	`sprintf("$LDX	%$TY(%$key),%$dat1") if ($i>0)`
+	`sprintf ("$LDX	%$TY(%$key),%$dat1") if ($i>0)`
 	and	$mask,$XX[1],$XX[1]
 	$LDX	$YY($key),$TY
 	$MKX	$YY,$key,$ix
@@ -107,7 +107,7 @@ $code.=<<___;
 	$ST	$TX[0],0($ix)
 	comclr,<> $XX[1],$YY,%r0	; conditional
 	copy	$TX[0],$TX[1]		; move
-	`sprintf("%sdep	%$dat1,%d,8,%$acc",$i==1?"z":"",8*($i-1)+7) if ($i>0)`
+	`sprintf ("%sdep	%$dat1,%d,8,%$acc",$i==1?"z":"",8*($i-1)+7) if ($i>0)`
 	$ST	$TY,0($iy)
 	addl	$TX[0],$TY,$TY
 	addl	$TX[1],$YY,$YY

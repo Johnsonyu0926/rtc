@@ -33,7 +33,7 @@ void YangH264EncoderSoft::loadLib() {
 					"x264_param_apply_profile");
 	char s[30];
 	memset(s, 0, 30);
-	sprintf(s, "x264_encoder_open_%d", X264_BUILD);
+	sprintf (s, "x264_encoder_open_%d", X264_BUILD);
 	yang_x264_encoder_open = (x264_t* (*)(x264_param_t*)) m_lib.loadFunction(s);
 	yang_x264_picture_alloc = (int32_t (*)(x264_picture_t *pic, int32_t i_csp,
 			int32_t i_width, int32_t i_height)) m_lib.loadFunction(

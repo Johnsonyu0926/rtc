@@ -910,7 +910,7 @@ if ($flavour =~ /64/) {			######## 64-bit code
 	my ($mnemonic,$arg)=@_;
 
 	$arg =~ m/[qv]([0-9]+)[^,]*,\s*[qv]([0-9]+)/o	&&
-	sprintf ".inst\t0x%08x\t//%s %s",
+	sprintf  ".inst\t0x%08x\t//%s %s",
 			$opcode{$mnemonic}|$1|($2<<5),
 			$mnemonic,$arg;
     };
@@ -955,7 +955,7 @@ if ($flavour =~ /64/) {			######## 64-bit code
 	    # since ARMv7 instructions are always encoded little-endian.
 	    # correct solution is to use .inst directive, but older
 	    # assemblers don't implement it:-(
-	    sprintf ".byte\t0x%02x,0x%02x,0x%02x,0x%02x\t@ %s %s",
+	    sprintf  ".byte\t0x%02x,0x%02x,0x%02x,0x%02x\t@ %s %s",
 			$word&0xff,($word>>8)&0xff,
 			($word>>16)&0xff,($word>>24)&0xff,
 			$mnemonic,$arg;
@@ -966,7 +966,7 @@ if ($flavour =~ /64/) {			######## 64-bit code
 	my $arg=shift;
 
 	$arg =~ m/q([0-9]+),\s*\{q([0-9]+)\},\s*q([0-9]+)/o &&
-	sprintf	"vtbl.8	d%d,{q%d},d%d\n\t".
+	sprintf 	"vtbl.8	d%d,{q%d},d%d\n\t".
 		"vtbl.8	d%d,{q%d},d%d", 2*$1,$2,2*$3, 2*$1+1,$2,2*$3+1;
     }
 
@@ -974,14 +974,14 @@ if ($flavour =~ /64/) {			######## 64-bit code
 	my $arg=shift;
 
 	$arg =~ m/q([0-9]+),\s*q([0-9]+)\[([0-3])\]/o &&
-	sprintf	"vdup.32	q%d,d%d[%d]",$1,2*$2+($3>>1),$3&1;
+	sprintf 	"vdup.32	q%d,d%d[%d]",$1,2*$2+($3>>1),$3&1;
     }
 
     sub unvmov32 {
 	my $arg=shift;
 
 	$arg =~ m/q([0-9]+)\[([0-3])\],(.*)/o &&
-	sprintf	"vmov.32	d%d[%d],%s",2*$1+($2>>1),$2&1,$3;
+	sprintf 	"vmov.32	d%d[%d],%s",2*$1+($2>>1),$2&1,$3;
     }
 
     foreach(split("\n",$code)) {
@@ -992,7 +992,7 @@ if ($flavour =~ /64/) {			######## 64-bit code
 	s/\/\/\s?/@ /o;				# new->old style commentary
 
 	# fix up remaining new-style suffixes
-	s/\{q([0-9]+)\},\s*\[(.+)\],#8/sprintf "{d%d},[$2]!",2*$1/eo	or
+	s/\{q([0-9]+)\},\s*\[(.+)\],#8/sprintf  "{d%d},[$2]!",2*$1/eo	or
 	s/\],#[0-9]+/]!/o;
 
 	s/[v]?(aes\w+)\s+([qv].*)/unaes($1,$2)/geo	or

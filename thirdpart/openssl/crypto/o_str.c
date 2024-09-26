@@ -32,7 +32,7 @@ char *CRYPTO_strdup(const char *str, const char* file, int line)
         return NULL;
     ret = CRYPTO_malloc(strlen(str) + 1, file, line);
     if (ret != NULL)
-        strcpy(ret, str);
+        strncpy(ret, str);
     return ret;
 }
 

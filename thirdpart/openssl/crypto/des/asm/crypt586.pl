@@ -58,7 +58,7 @@ sub fcrypt_body
 		&D_ENCRYPT($i,$L,$R,$i*2,$trans,"eax","ebx","ecx","edx");
 
 		&comment("");
-		&comment("Round ".sprintf("%d",$i+1));
+		&comment("Round ".sprintf ("%d",$i+1));
 		&D_ENCRYPT($i+1,$R,$L,($i+1)*2,$trans,"eax","ebx","ecx","edx");
 		}
 	 &mov("ebx",	&swtmp(0));
@@ -141,7 +141,7 @@ sub D_ENCRYPT
 
 sub n2a
 	{
-	sprintf("%d",$_[0]);
+	sprintf ("%d",$_[0]);
 	}
 
 # now has a side affect of rotating $a by $shift

@@ -101,7 +101,7 @@ int32_t yang_closeRtc(){
 
 void my_texture_set_localurl(char* url,int urlLen){
   memset(url,0,urlLen);
-  sprintf(url,"webrtc://%s:1985/live/livestream","192.168.3.5");
+  sprintf (url,"webrtc://%s:1985/live/livestream","192.168.3.5");
 }
 void my_texture_put_data(YangTexture* self, uint8_t* data,int width,int height){
   memcpy(self->buffer,data,self->width*self->height*4);

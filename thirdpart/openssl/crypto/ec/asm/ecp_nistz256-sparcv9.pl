@@ -88,7 +88,7 @@ for(1..37) {
 			push @line,(@tbl[$j*16+$i/4]>>(($i%4)*8))&0xff;
 		}
 		$code.=".byte\t";
-		$code.=join(',',map { sprintf "0x%02x",$_} @line);
+		$code.=join(',',map { sprintf  "0x%02x",$_} @line);
 		$code.="\n";
 	}
 }
@@ -3040,7 +3040,7 @@ my %visopf = (	"addxc"		=> 0x011,
 	    $_=$bias{$1}+$2;
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			0x81b00000|$rd<<25|$rs1<<14|$opf<<5|$rs2,
 			$ref;
     } else {

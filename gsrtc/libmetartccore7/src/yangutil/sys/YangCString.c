@@ -51,11 +51,11 @@ int32_t yang_cstr_split(char *src, char *delim, YangStrings* istr)
 }
 
 void yang_itoa(int32_t num,char* data,int32_t n){
-	yang_sprintf(data,"%d",num);
+	yang_sprintf (data,"%d",num);
 }
 
 void yang_itoa2(uint32_t num,char* data,int32_t n){
-	yang_sprintf(data,"%u",num);
+	yang_sprintf (data,"%u",num);
 }
 
 int32_t yang_get_line(char* buf,char *line, int32_t line_size)
@@ -111,7 +111,7 @@ void yang_cstr_replace(char *str,char* dst, char *macth, char *rep)
   char *p=NULL,*p1=NULL;
 
   if(!(p = yang_strstr(str, macth)))  {// Is 'orig' even in 'str'?
-	  yang_strcpy(dst,str);
+	  yang_strncpy(dst,str);
     return;
   }
   int32_t dstlen=p-str;

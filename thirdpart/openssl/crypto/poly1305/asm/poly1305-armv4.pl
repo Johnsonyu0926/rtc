@@ -1244,7 +1244,7 @@ ___
 foreach (split("\n",$code)) {
 	s/\`([^\`]*)\`/eval $1/geo;
 
-	s/\bq([0-9]+)#(lo|hi)/sprintf "d%d",2*$1+($2 eq "hi")/geo	or
+	s/\bq([0-9]+)#(lo|hi)/sprintf  "d%d",2*$1+($2 eq "hi")/geo	or
 	s/\bret\b/bx	lr/go						or
 	s/\bbx\s+lr\b/.word\t0xe12fff1e/go;	# make it possible to compile with -march=armv4
 

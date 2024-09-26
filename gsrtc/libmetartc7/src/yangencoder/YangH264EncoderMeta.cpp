@@ -28,7 +28,7 @@ void YangH264EncoderMeta::loadLib() {
 			const char *tune)) m_lib.loadFunction("x264_param_default_preset");
 	char s[30];
 	memset(s, 0, 30);
-	sprintf(s, "x264_encoder_open_%d", X264_BUILD);
+	sprintf (s, "x264_encoder_open_%d", X264_BUILD);
 	yang_x264_encoder_open = (x264_t* (*)(x264_param_t*)) m_lib.loadFunction(s);
 	yang_x264_param_apply_profile =
 			(int32_t (*)(x264_param_t*, const char *profile)) m_lib.loadFunction(

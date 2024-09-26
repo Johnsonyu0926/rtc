@@ -42,7 +42,7 @@ Contributors:
 #			include <stdbool.h>
 #		endif
 #	endif
-#   define snprintf sprintf_s
+#   define snprintf sprintf _s
 #	include <io.h>
 #	include <windows.h>
 #else
@@ -86,7 +86,7 @@ static FILE *mpw_tmpfile(void)
 		return NULL;
 	}
 
-	strcpy((char *)tmpfile_path, "/tmp/");
+	strncpy((char *)tmpfile_path, "/tmp/");
 
 	for(i=strlen((char *)tmpfile_path); i<sizeof(tmpfile_path)-8; i++){
 		tmpfile_path[i] = alphanum[tmpfile_path[i]%(sizeof(alphanum)-1)];

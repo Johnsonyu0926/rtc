@@ -299,11 +299,11 @@ const char *RAND_file_name(char *buf, size_t size)
     if (use_randfile) {
         if (len + 1 >= size)
             return NULL;
-        strcpy(buf, s);
+        strncpy(buf, s);
     } else {
         if (len + 1 + strlen(RFILE) + 1 >= size)
             return NULL;
-        strcpy(buf, s);
+        strncpy(buf, s);
 #ifndef OPENSSL_SYS_VMS
         strcat(buf, "/");
 #endif

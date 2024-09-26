@@ -257,8 +257,8 @@ public:
         int s = time % (3600 * 24) % 3600 % 60;
         char buf[64] = {0};
         char cmd[128] = {0};
-        sprintf(buf, "%d:%d:%d:%d", d, t, m, s);
-        sprintf(cmd, "madplay %s -r -t %s", path.c_str(), buf);
+        sprintf (buf, "%d:%d:%d:%d", d, t, m, s);
+        sprintf (cmd, "madplay %s -r -t %s", path.c_str(), buf);
         if (async) {
             CUtils::async_wait(1, 0, 0, [=] {
                 PlayStatus::getInstance().setPlayId(asns::AUDIO_TASK_PLAYING);

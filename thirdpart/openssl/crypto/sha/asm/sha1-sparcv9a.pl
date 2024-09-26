@@ -576,7 +576,7 @@ my %visopf = (	"fmul8ulx16"	=> 0x037,
 	    }
 	}
 
-	return	sprintf ".word\t0x%08x !%s",
+	return	sprintf  ".word\t0x%08x !%s",
 			0x81b00000|$rd<<25|$rs1<<14|$opf<<5|$rs2,
 			$ref;
     } else {
@@ -592,7 +592,7 @@ my $ref="$mnemonic\t$rs1,$rs2,$rd";
 	if (/%([goli])([0-7])/)	{ $_=$bias{$1}+$2; }
 	else			{ return $ref; }
     }
-    return  sprintf ".word\t0x%08x !%s",
+    return  sprintf  ".word\t0x%08x !%s",
 		    0x81b00300|$rd<<25|$rs1<<14|$rs2,
 		    $ref;
 }

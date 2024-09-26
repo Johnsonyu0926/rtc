@@ -6947,7 +6947,7 @@
      indents.
      [Ben Laurie (CHATS)]
 
-  *) Convert sprintf()/BIO_puts() to BIO_printf().
+  *) Convert sprintf ()/BIO_puts() to BIO_printf().
      [Ben Laurie (CHATS)]
 
   *) buffer_gets() could terminate with the buffer only half

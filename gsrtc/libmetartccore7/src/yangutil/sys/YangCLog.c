@@ -46,7 +46,7 @@ void yang_setCLogFile(int32_t isSetLogFile) {
 #else
         if (getcwd(file_path_getcwd, 255)) {
 #endif
-            yang_sprintf(file1, "%s/yang_log.log", file_path_getcwd);
+            yang_sprintf (file1, "%s/yang_log.log", file_path_getcwd);
             yang_setCLogFile2(yangtrue, file1);
 
 		}
@@ -99,9 +99,9 @@ void yang_clog(int32_t level, const char *fmt, ...) {
 		yang_memset(sf, 0, 4196);
         int32_t sfLen=0;
         if(level==YANG_LOG_ERROR&&ntm)
-             sfLen = yang_sprintf(sf, "[%02d:%02d:%02d] Yang %s: %s\n",ntm->tm_hour,ntm->tm_min,ntm->tm_sec, YANG_LOG_LEVEL_NAME[level], buf);
+             sfLen = yang_sprintf (sf, "[%02d:%02d:%02d] Yang %s: %s\n",ntm->tm_hour,ntm->tm_min,ntm->tm_sec, YANG_LOG_LEVEL_NAME[level], buf);
         else
-             sfLen = yang_sprintf(sf, "Yang %s: %s\n", YANG_LOG_LEVEL_NAME[level], buf);
+             sfLen = yang_sprintf (sf, "Yang %s: %s\n", YANG_LOG_LEVEL_NAME[level], buf);
 		if (g_fmsg){
 			fwrite(sf, sfLen, 1, g_fmsg);
 			fflush(g_fmsg);
@@ -141,9 +141,9 @@ void yang_clog2(int32_t level, const char *fmt, ...) {
 		yang_memset(sf, 0, Yang_Log_Cachesize);
         int32_t sfLen=0;
         if(level==YANG_LOG_ERROR&&ntm)
-             sfLen = yang_sprintf(sf, "[%02d:%02d:%02d] Yang %s: %s\n",ntm->tm_hour,ntm->tm_min,ntm->tm_sec, YANG_LOG_LEVEL_NAME[level], buf);
+             sfLen = yang_sprintf (sf, "[%02d:%02d:%02d] Yang %s: %s\n",ntm->tm_hour,ntm->tm_min,ntm->tm_sec, YANG_LOG_LEVEL_NAME[level], buf);
         else
-             sfLen = yang_sprintf(sf, "Yang %s: %s\n", YANG_LOG_LEVEL_NAME[level], buf);
+             sfLen = yang_sprintf (sf, "Yang %s: %s\n", YANG_LOG_LEVEL_NAME[level], buf);
 		if (g_fmsg){
 			fwrite(sf, sfLen, 1, g_fmsg);
 			fflush(g_fmsg);
@@ -175,7 +175,7 @@ int32_t yang_error_wrap(int32_t errcode, const char *fmt, ...) {
 
 		char sf[4196];
 		yang_memset(sf, 0, 4196);
-        int32_t sfLen = yang_sprintf(sf, "[%02d:%02d:%02d] Yang Error(%d): %s\n",ntm->tm_hour,ntm->tm_min,ntm->tm_sec, errcode, buf);
+        int32_t sfLen = yang_sprintf (sf, "[%02d:%02d:%02d] Yang Error(%d): %s\n",ntm->tm_hour,ntm->tm_min,ntm->tm_sec, errcode, buf);
     	if (g_fmsg){
     			fwrite(sf, sfLen, 1, g_fmsg);
     			fflush(g_fmsg);

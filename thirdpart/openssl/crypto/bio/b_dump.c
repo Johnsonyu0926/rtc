@@ -49,7 +49,7 @@ int BIO_dump_indent_cb(int (*cb) (const void *data, size_t len, void *u),
         for (j = 0; j < dump_width; j++) {
             if (SPACE(buf, n, 3)) {
                 if (((i * dump_width) + j) >= len) {
-                    strcpy(buf + n, "   ");
+                    strncpy(buf + n, "   ");
                 } else {
                     ch = ((unsigned char)*(s + i * dump_width + j)) & 0xff;
                     BIO_snprintf(buf + n, 4, "%02x%c", ch,
@@ -59,7 +59,7 @@ int BIO_dump_indent_cb(int (*cb) (const void *data, size_t len, void *u),
             }
         }
         if (SPACE(buf, n, 2)) {
-            strcpy(buf + n, "  ");
+            strncpy(buf + n, "  ");
             n += 2;
         }
         for (j = 0; j < dump_width; j++) {

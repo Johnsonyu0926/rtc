@@ -46,7 +46,7 @@ Contributors:
 #			include <stdbool.h>
 #		endif
 #	endif
-#   define snprintf sprintf_s
+#   define snprintf sprintf _s
 #	include <io.h>
 #	include <windows.h>
 #else

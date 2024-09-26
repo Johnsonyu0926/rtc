@@ -50,7 +50,7 @@ int32_t yang_http_post(yangbool isWhip,YangIpFamilyType familyType,char *rets, c
 			"Content-Type: application/%s\r\n"
 			"Content-Length: %u\r\n"
 			"\r\n%s";
-	int32_t len = yang_sprintf(buf, s, api, ip, port,isWhip?"sdp":"json;charset=UTF-8", plen, data);
+	int32_t len = yang_sprintf (buf, s, api, ip, port,isWhip?"sdp":"json;charset=UTF-8", plen, data);
 
 	int32_t nBytes = yang_socket_send(socketfd, buf, len);
 

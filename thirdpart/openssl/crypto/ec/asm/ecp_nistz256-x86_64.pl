@@ -4730,7 +4730,7 @@ print <<___;
 ecp_nistz256_precomputed:
 ___
 while (@line=splice(@arr,0,16)) {
-	print ".long\t",join(',',map { sprintf "0x%08x",$_} @line),"\n";
+	print ".long\t",join(',',map { sprintf  "0x%08x",$_} @line),"\n";
 }
 print <<___;
 .size	ecp_nistz256_precomputed,.-ecp_nistz256_precomputed

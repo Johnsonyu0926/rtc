@@ -524,9 +524,9 @@ namespace asns {
                 return SendFast(OPERATION_FAIL_ERROR, pClient);
             }
             char buf[64] = {0};
-            sprintf(buf, "dspset /dev/ttyS2 %s %s", name.c_str(), sw.c_str());
+            sprintf (buf, "dspset /dev/ttyS2 %s %s", name.c_str(), sw.c_str());
             CUtils::cmd_system(buf);
-            sprintf(buf, "cm set_val sys %s %s", name.c_str(), sw.c_str());
+            sprintf (buf, "cm set_val sys %s %s", name.c_str(), sw.c_str());
             CUtils::cmd_system(buf);
             return SendTrue(pClient);
         }

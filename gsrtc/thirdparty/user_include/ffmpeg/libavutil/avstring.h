@@ -147,13 +147,13 @@ static inline size_t av_strnlen(const char *s, size_t len)
 
 /**
  * Print arguments following specified format into a large enough auto
- * allocated buffer. It is similar to GNU asprintf().
+ * allocated buffer. It is similar to GNU asprintf ().
  * @param fmt printf-compatible format string, specifying how the
  *            following parameters are used.
  * @return the allocated string
  * @note You have to free the string yourself with av_free().
  */
-char *av_asprintf(const char *fmt, ...) av_printf_format(1, 2);
+char *av_asprintf (const char *fmt, ...) av_printf_format(1, 2);
 
 /**
  * Convert a number to an av_malloced string.

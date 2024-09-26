@@ -292,7 +292,7 @@ char *glue_strings(const char *list[], size_t *out_len)
         return NULL;
 
     for (i = 0; list[i] != NULL; i++)
-        p += strlen(strcpy(p, list[i]));
+        p += strlen(strncpy(p, list[i]));
 
     return ret;
 }

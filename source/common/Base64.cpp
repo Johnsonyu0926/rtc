@@ -59,7 +59,7 @@ int MultiByteToWideChar(UINT page, DWORD flags, LPCSTR src, int srcLen, LPWSTR d
 	if (!dst)
 		return srcLen*2;
 
-//	lstrcpynAtoW(dst, src ,srcLen);
+//	lstrncpynAtoW(dst, src ,srcLen);
 
 	return srcLen*2;
 }
@@ -157,12 +157,12 @@ int CBase64::Decode(const char *p6Bits, char *szDecoded)
 	cTempHigh=(cFirst6Bits<<2);
 	cTempLow=cSecond6Bits>>4;
 	cFirstLetter=cTempHigh|cTempLow;
-	//Çó³öµÚÒ»¸öOK
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½OK
 
 
 	if(p6Bits[2]=='=')
 	{
-		sprintf(szDecoded,"%c",cFirstLetter);
+		sprintf (szDecoded,"%c",cFirstLetter);
 		szDecoded[1]='\0';
 		return TRUE;		
 	}
@@ -178,7 +178,7 @@ int CBase64::Decode(const char *p6Bits, char *szDecoded)
 
 	if(p6Bits[3]=='=')
 	{
-		sprintf(szDecoded,"%c%c",cFirstLetter,cSecondLetter);
+		sprintf (szDecoded,"%c%c",cFirstLetter,cSecondLetter);
 		szDecoded[2]='\0';//
 		return TRUE;
 	}
@@ -190,7 +190,7 @@ int CBase64::Decode(const char *p6Bits, char *szDecoded)
 	cTempHigh=cThird6Bits<<6;
 	cThirdLetter=cTempHigh|cFourth6Bits;
 	
-	sprintf(szDecoded,"%c%c%c",cFirstLetter,cSecondLetter,cThirdLetter);
+	sprintf (szDecoded,"%c%c%c",cFirstLetter,cSecondLetter,cThirdLetter);
 	
 	szDecoded[3]='\0';
 	
@@ -203,12 +203,12 @@ int CBase64::RecvBodyAndDecode(CString strFileName,
 							   CString strBoundary)
 {
 	char szTmpBoundary[1024];
-	strcpy(szTmpBoundary,LPCTSTR(strBoundary));
+	strncpy(szTmpBoundary,LPCTSTR(strBoundary));
 
-	//½áÊø±ê¼Ç£ºnEndFlag
-	//Ò»°ãÎª\r\n\r\n½áÊø
-	//Èç¹û¸ÃÐÐ²»×ã76¸ö×Ö·û+\r\n
-	//Èç¹ûÁ¬ÐøÁ½¸ö\r\n
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç£ï¿½nEndFlag
+	//Ò»ï¿½ï¿½Îª\r\n\r\nï¿½ï¿½ï¿½ï¿½
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð²ï¿½ï¿½ï¿½76ï¿½ï¿½ï¿½Ö·ï¿½+\r\n
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\r\n
 
 	char szBuf[4096+1];
 	int nRecv=0;
@@ -238,7 +238,7 @@ int CBase64::RecvBodyAndDecode(CString strFileName,
 				break;
 			}
 		}
-		//ÔÙÈ¡ÏÂÒ»¸öµÄ·Ö½çÏß
+		//ï¿½ï¿½È¡ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ä·Ö½ï¿½ï¿½ï¿½
 		
 		
 		if(strncmp(szBuf,"\r\n",2)==0)
@@ -255,7 +255,7 @@ int CBase64::RecvBodyAndDecode(CString strFileName,
 				bEndBody=TRUE;
 				if(strBoundary.GetLength()==0)				
 				break;
-					//Ã¿ÐÐÎª78¸ö×Ö·û
+					//Ã¿ï¿½ï¿½Îª78ï¿½ï¿½ï¿½Ö·ï¿½
 			}
 
 		}
@@ -288,7 +288,7 @@ int CBase64::Decode(CString strBody, CString strFileName)
 
 	int i=0;
 	char szSrc[5];
-	CString strDecoded;//½âÂëºóµÄ´®´æ·ÅµØ
+	CString strDecoded;//ï¿½ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½Åµï¿½
 
 	FILE* fp;
 	fp=fopen(LPCTSTR(strFileName),"w");
@@ -309,7 +309,7 @@ int CBase64::Decode(CString strBody, CString strFileName)
 		if(strBody[i]=='\r')
 			i+=2;
 		if(i>=strBody.GetLength())
-			break;//ÕýºÃÔÚ×îºó
+			break;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		else
 			if(strBody[i]=='\r')
 				break;
@@ -318,17 +318,17 @@ int CBase64::Decode(CString strBody, CString strFileName)
 
 		i++;
 		if(i>=n)
-			break;//ÕýºÃÔÚ×îºó
+			break;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 		szSrc[1]=strBody[i];
 		i++;
 		if(i>=n)
-			break;//ÕýºÃÔÚ×îºó
+			break;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 		szSrc[2]=strBody[i];
 		i++;
 		if(i>=n)
-			break;//ÕýºÃÔÚ×îºó
+			break;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 		szSrc[3]=strBody[i];
 		szSrc[4]='\0';
@@ -430,13 +430,13 @@ int CBase64::Decode(char *p6Bits, FILE *fp)
 	cTempHigh=(cFirst6Bits<<2);
 	cTempLow=cSecond6Bits>>4;
 	cFirstLetter=cTempHigh|cTempLow;
-	//Çó³öµÚÒ»¸öOK
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½OK
 
 
 	fputc(cFirstLetter,fp);
 	if(p6Bits[2]=='=')
 	{
-		//sprintf(szDecoded,"%c",cFirstLetter);
+		//sprintf (szDecoded,"%c",cFirstLetter);
 		//szDecoded[1]='\0';
 		
 		return TRUE;		
@@ -454,7 +454,7 @@ int CBase64::Decode(char *p6Bits, FILE *fp)
 	fputc(cSecondLetter,fp);
 	if(p6Bits[3]=='=')
 	{
-		//sprintf(szDecoded,"%c%c",cFirstLetter,cSecondLetter);
+		//sprintf (szDecoded,"%c%c",cFirstLetter,cSecondLetter);
 		//szDecoded[2]='\0';//
 		
 		return TRUE;
@@ -467,7 +467,7 @@ int CBase64::Decode(char *p6Bits, FILE *fp)
 	cTempHigh=cThird6Bits<<6;
 	cThirdLetter=cTempHigh|cFourth6Bits;
 	
-	//sprintf(szDecoded,"%c%c%c",cFirstLetter,cSecondLetter,cThirdLetter);
+	//sprintf (szDecoded,"%c%c%c",cFirstLetter,cSecondLetter,cThirdLetter);
 	
 	//szDecoded[3]='\0';
 	fputc(cThirdLetter,fp);
@@ -501,7 +501,7 @@ int CBase64::DecodingString(char *szSrc, FILE *fp)
 	while(i<nLength)
 	{
 	
-		strcpy(sz6Bits,"");
+		strncpy(sz6Bits,"");
 		strncpy(sz6Bits,p,4);
 		sz6Bits[4]='\0';
 		Decode(sz6Bits,fp);
@@ -617,7 +617,7 @@ void CBase64::write_bits(UINT nBits,
 	}
 }
 
-int CBase64::Decode(const char* p6Bits,char* szDecoded,int& nBytes/*·µ»Ø×Ö½ÚÊý*/)
+int CBase64::Decode(const char* p6Bits,char* szDecoded,int& nBytes/*ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½*/)
 {
 	
 	char cFirst6Bits=AsciiTo6Bits(p6Bits[0]);//18;//'S';
@@ -629,15 +629,15 @@ int CBase64::Decode(const char* p6Bits,char* szDecoded,int& nBytes/*·µ»Ø×Ö½ÚÊý*/
 	cTempHigh=(cFirst6Bits<<2);
 	cTempLow=cSecond6Bits>>4;
 	cFirstLetter=cTempHigh|cTempLow;
-	//Çó³öµÚÒ»¸öOK
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½OK
 
 	szDecoded[0]=cFirstLetter;
-	//±£´æ
+	//ï¿½ï¿½ï¿½ï¿½
 
 
 	if(p6Bits[2]=='=')
 	{
-		//sprintf(szDecoded,"%c",cFirstLetter);
+		//sprintf (szDecoded,"%c",cFirstLetter);
 		
 
 		szDecoded[1]='\0';
@@ -656,11 +656,11 @@ int CBase64::Decode(const char* p6Bits,char* szDecoded,int& nBytes/*·µ»Ø×Ö½ÚÊý*/
 
 
 	szDecoded[1]=cSecondLetter;
-	//±£´æ
+	//ï¿½ï¿½ï¿½ï¿½
 
 	if(p6Bits[3]=='=')
 	{
-		//sprintf(szDecoded,"%c%c",cFirstLetter,cSecondLetter);
+		//sprintf (szDecoded,"%c%c",cFirstLetter,cSecondLetter);
 		
 		szDecoded[2]='\0';//
 		nBytes=2;
@@ -674,7 +674,7 @@ int CBase64::Decode(const char* p6Bits,char* szDecoded,int& nBytes/*·µ»Ø×Ö½ÚÊý*/
 	cTempHigh=cThird6Bits<<6;
 	cThirdLetter=cTempHigh|cFourth6Bits;
 	
-	//sprintf(szDecoded,"%c%c%c",cFirstLetter,cSecondLetter,cThirdLetter);
+	//sprintf (szDecoded,"%c%c%c",cFirstLetter,cSecondLetter,cThirdLetter);
 	szDecoded[2]=cThirdLetter;
 
 	szDecoded[3]='\0';//end flag
@@ -738,9 +738,9 @@ int CBase64::DecodeString(char* szSrc,char* szDecoded,int& nLineBytes)
 
 int CBase64::DecodeBody(CString strSrc,CMemFile& mmfile)
 {
-	//·Ö½âµÄ½á¹û´æÈëCMemFile& mmfileÖÐ
+	//ï¿½Ö½ï¿½Ä½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½CMemFile& mmfileï¿½ï¿½
 	
-	//ÖÐ¼äÔÝ´æ
+	//ï¿½Ð¼ï¿½ï¿½Ý´ï¿½
 	/*
 	FILE* fp;
 	fp=fopen("bodysrc.txt","w");
@@ -763,12 +763,12 @@ int CBase64::DecodeBody(CString strSrc,CMemFile& mmfile)
 
 	while((nFind=strSrc.Find("\r\n"))>0)
 	{
-		//¿ªÊ¼´¦ÀíÒ»¸ö´®
+		//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
 
 		char szBuf[77];
 		memset(szBuf,0,77);
 
-		strcpy(szBuf,(LPCTSTR)strSrc.Mid(0,nFind));
+		strncpy(szBuf,(LPCTSTR)strSrc.Mid(0,nFind));
 		szBuf[nFind]='\0';
 
 		//if(!DecodeStr(szBuf,szDecoded))
@@ -787,10 +787,10 @@ int CBase64::DecodeBody(CString strSrc,CMemFile& mmfile)
 		}
 
 		mmfile.Write(szDecoded,nLineBytes);
-		//´æÈëCMemFile¶ÔÏóÖÐ
+		//ï¿½ï¿½ï¿½ï¿½CMemFileï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
-		strSrc=strSrc.Mid(nFind+2);//½ØÈ¥Ç°´®
+		strSrc=strSrc.Mid(nFind+2);//ï¿½ï¿½È¥Ç°ï¿½ï¿½
 
 	}
 
@@ -799,7 +799,7 @@ int CBase64::DecodeBody(CString strSrc,CMemFile& mmfile)
 	//good!
 }
 
-//¶ÔÒ»¸ö×Ö·û´®½øÐÐ±àÂë£¬±àÂë½á¹û´æÈëCString¶ÔÏóÖÐ·µ»Ø
+//ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ë£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½CStringï¿½ï¿½ï¿½ï¿½ï¿½Ð·ï¿½ï¿½ï¿½
 CString CBase64::Encode(LPCTSTR szEncoding, int nSize)
 {
 	CString sOutput;
@@ -852,7 +852,7 @@ UINT CBase64::read_bits(int nNumBits, int * pBitsRead, int& lp)
     return (UINT)lScratch & m_nMask[nNumBits];
 }
 
-//½âÂë£ºUTF7
+//ï¿½ï¿½ï¿½ë£ºUTF7
 int CBase64::DecodeEx(const char *szSrc, int nSize, BYTE *pBuf)
 {
 
@@ -867,7 +867,7 @@ int CBase64::DecodeEx(const char *szSrc, int nSize, BYTE *pBuf)
 	}
 	*/
 	char szTmp[1024];
-	strcpy(szTmp,szSrc);
+	strncpy(szTmp,szSrc);
 
 	int nLack=nSize-(nSize/4)*4;
 	int i=0;
@@ -1275,7 +1275,7 @@ int CUtf7::Encode(BYTE *bToEncode, int nSize, CString& strEncoded)
 
 int CUtf7::Decode(CString strSrc, CString &strDecoded)
 {
-	//·µ»ØÖµ£ºTRUE/FALSE£»³É¹¦/Ê§°Ü¡£
+	//ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½TRUE/FALSEï¿½ï¿½ï¿½É¹ï¿½/Ê§ï¿½Ü¡ï¿½
 
 	HandleTheDecodeString(strSrc);
 
@@ -1317,7 +1317,7 @@ int CUtf7::Decode(CString strSrc, CString &strDecoded)
 int CUtf7::Encode(const char* p,char* pBuf)
 {
 	//for example
-	//p= "abc²Ý¸åd"
+	//p= "abcï¿½Ý¸ï¿½d"
 	//
 	int nTotal=0;
 	while(*p)
@@ -1334,7 +1334,7 @@ int CUtf7::Encode(const char* p,char* pBuf)
 		}
 		else
 		{
-			//*p="²Ý¸å"
+			//*p="ï¿½Ý¸ï¿½"
 			
 			char szBuf[1024];
 			int nLen=DealWithUtf7(p,szBuf);
@@ -1380,7 +1380,7 @@ int CUtf7::IsPrintable(char c)
 
 int CUtf7::DealWithUtf7(const char* p,char* pBuf)
 {
-	//current p point to "²Ý¸å"
+	//current p point to "ï¿½Ý¸ï¿½"
 	int nTotal=0;
 	while(*p)
 	{
@@ -1411,10 +1411,10 @@ int CUtf7::DealWithUtf7(const char* p,char* pBuf)
 ////////////decode
 int CUtf7::Decode(const char* p,char* pBuf)
 {
-	//½âÂë¡£
-	//&×÷ÎªUTF7±àÂëµÄ¿ªÊ¼±êÖ¾
-	//µ«Ò²²»Ò»¶¨,ÓÐÐ©¼´Ê¹ÓÐ&ºÍ-±êÖ¾£¬µ«½âÂë²»³É¹¦µÄ
-	//Ò²Ö»ÄÜÔ­ÑùÏÔÊ¾¡£
+	//ï¿½ï¿½ï¿½ë¡£
+	//&ï¿½ï¿½ÎªUTF7ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½Ê¼ï¿½ï¿½Ö¾
+	//ï¿½ï¿½Ò²ï¿½ï¿½Ò»ï¿½ï¿½,ï¿½ï¿½Ð©ï¿½ï¿½Ê¹ï¿½ï¿½&ï¿½ï¿½-ï¿½ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë²»ï¿½É¹ï¿½ï¿½ï¿½
+	//Ò²Ö»ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½
 
 	int nTotal=0;
 	while(*p)
@@ -1433,7 +1433,7 @@ int CUtf7::Decode(const char* p,char* pBuf)
 			qFind=strchr(p,'-');//end flag!
 			if(!qFind)
 			{
-				//Èç¹ûÃ»ÓÐ½áÊø±êÖ¾£¬Ö±½Ó±£´æ¡£
+				//ï¿½ï¿½ï¿½Ã»ï¿½Ð½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾ï¿½ï¿½Ö±ï¿½Ó±ï¿½ï¿½æ¡£
 				memcpy(pBuf,"&",1);
 				nTotal+=1;
 				continue;
@@ -1443,12 +1443,12 @@ int CUtf7::Decode(const char* p,char* pBuf)
 			char szBuf[1024];
 			memcpy(szBuf,p,qFind-p);
 			szBuf[qFind-p]='\0';
-			//szBufÎª&ºÍ-Ö®¼äµÄ×Ö·û
+			//szBufÎª&ï¿½ï¿½-Ö®ï¿½ï¿½ï¿½ï¿½Ö·ï¿½
 
 			CString strDecoded;
 			int nRetCode=Decode(szBuf,(char*)(LPCTSTR)strDecoded);
 
-			//Èç¹û½âÂë³É¹¦
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¹ï¿½
 			if(nRetCode)
 			{
 				memcpy(pBuf+nTotal,(LPCTSTR)strDecoded,
@@ -1458,7 +1458,7 @@ int CUtf7::Decode(const char* p,char* pBuf)
 			else
 			{
 				//if nRetCode==FALSE;
-				//Èç¹û½âÂëÊ§°Ü£¬ÔòÏÔÊ¾ÎªÎ´½âÂëÇ°´®
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ÎªÎ´ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½
 
 				memcpy(pBuf+nTotal,"&",1);
 				nTotal++;
@@ -1481,7 +1481,7 @@ int CUtf7::Decode(const char* p,char* pBuf)
 
 int CUtf7::HandleTheEncodedString(CString& strEncoded)
 {
-	//¶Ô±àÂëºóµÄ´®½øÐÐÔÙ¼Ó¹¤
+	//ï¿½Ô±ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¼Ó¹ï¿½
 
 	int nFind=strEncoded.Find("AAA==");
 	if(nFind>=0)
@@ -1537,14 +1537,14 @@ int CUtf7::HandleTheEncodedString(CString& strEncoded)
 int CUtf7::HandleTheDecodeString(CString& strSrc)
 {
 
-	//¶ÔÒª±àÂëµÄ´®×÷Ô¤´¦Àí
-	//±ÈÈçÔÚ´®ºó¼ÓÉÏ"AAA="»òÓÃA²¹È«ËÄÎ»
-	//µ¥¸öºº×ÖÎÊÌâ´ý¶¨
+	//ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½Ô¤ï¿½ï¿½ï¿½ï¿½
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"AAA="ï¿½ï¿½ï¿½ï¿½Aï¿½ï¿½È«ï¿½ï¿½Î»
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-	//´«Èë²ÎÊýSTRSRCÊÇÖ¸& - Õâ¼äµÄ´®
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½STRSRCï¿½ï¿½Ö¸& - ï¿½ï¿½ï¿½Ä´ï¿½
 	int nLen=strSrc.GetLength();
 	strSrc.Replace(',','/');
-	//½«ËùÓÐµÄ","Ìæ»»³É"/"
+	//ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½","ï¿½æ»»ï¿½ï¿½"/"
 
 	
 	int nOffset=nLen-(nLen/4)*4;

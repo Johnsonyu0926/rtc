@@ -3780,7 +3780,7 @@ foreach(split("\n",$code)) {
 	    }
 
 	    #emit
-	    print ".byte\t",join(',',map (sprintf("0x%02x",$_),@bytes)),"\n";
+	    print ".byte\t",join(',',map (sprintf ("0x%02x",$_),@bytes)),"\n";
 	    next;
 	}
 	$consts=0 if (m/Lconsts:/o);	# end of table

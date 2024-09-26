@@ -1024,8 +1024,8 @@ foreach (split("\n",$code)) {
 	s/_ror(\s+)(%r[0-9]+),/shd$1$2,$2,/				or
 
 	s/_srm(\s+%r[0-9]+),([0-9]+),/
-		$SIZE_T==4 ? sprintf("extru%s,%d,8,",$1,31-$2)
-		:            sprintf("extrd,u%s,%d,8,",$1,63-$2)/e;
+		$SIZE_T==4 ? sprintf ("extru%s,%d,8,",$1,31-$2)
+		:            sprintf ("extrd,u%s,%d,8,",$1,63-$2)/e;
 
 	s/(\.LEVEL\s+2\.0)W/$1w/	if ($gnuas && $SIZE_T==8);
 	s/\.SPACE\s+\$TEXT\$/.text/	if ($gnuas && $SIZE_T==8);

@@ -572,7 +572,7 @@ file C<formletter.tmpl>:
 
 	It has come to our attention that you are delinquent in your
 	{$monthname[$last_paid_month]} payment.  Please remit
-	${sprintf("%.2f", $amount)} immediately, or your patellae may
+	${sprintf ("%.2f", $amount)} immediately, or your patellae may
 	be needlessly endangered.
 
 			Love,
@@ -1266,7 +1266,7 @@ An example:
 
 	$text = Text::Template->fill_this_in( <<'EOM', PACKAGE => Q);
 	Dear {$name},
-	You owe me \\${sprintf('%.2f', $amount)}.  
+	You owe me \\${sprintf ('%.2f', $amount)}.  
 	Pay or I will break your {$part}.
 		Love,
 		Grand Vizopteryx of Irkutsk.
