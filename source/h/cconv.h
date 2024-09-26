@@ -1,12 +1,17 @@
-#include <stdio.h>
+#ifndef CCONV_H
+#define CCONV_H
+
+#include <string>
 #include "doorsbase.h"
 
-#define BUFLEN 2000 
-class CConv
-{
-	public:
-		BOOL Utf8Encoding(char* szSrc,char* szDest);
+constexpr size_t BUFLEN = 2000;
 
-	private:
-		BOOL outbin(char* outbin,char* szDest);
+class CConv {
+public:
+    bool Utf8Encoding(const std::string& szSrc, std::string& szDest);
+
+private:
+    bool outbin(const std::string& outbin, std::string& szDest);
 };
+
+#endif // CCONV_H
