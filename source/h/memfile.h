@@ -1,28 +1,23 @@
-#ifndef _MEMFILE_H__
-#define _MEMFILE_H__
+#ifndef MEMFILE_H
+#define MEMFILE_H
 
-class CMemFile
-{
+#include <vector>
+#include <cstring>
+
+class CMemFile {
 public:
-	CMemFile();
-	~CMemFile();
+    CMemFile();
+    ~CMemFile();
 
-	void SeekToBegin();
-	int Read(char* szValue, int nSize);
-	void Write(const char *szBuf, int nSize);
-
-public:
+    void SeekToBegin();
+    int Read(char *szValue, int nSize);
+    void Write(const char *szBuf, int nSize);
 
 private:
-	char *m_szBuf;
-	int m_nTotal;
-	BOOL m_bFirstAdd;
-
-	int m_nPos;  //记载当前指针指向内容的位置
-
-private:
-
+    std::vector<char> m_szBuf;
+    int m_nTotal;
+    bool m_bFirstAdd;
+    int m_nPos;
 };
 
-#endif
-
+#endif // MEMFILE_H
