@@ -1,34 +1,21 @@
-#ifndef __CQSEARCH_H__
-#define __CQSEARCH_H__
-#include <qsearch.h>
-#include "doorsbase.h"
-class CQSearch
-{
-public:
-	CQSearch(){}
-	~CQSearch() {
-		
-		qsearch_destructor(m_obj);
-		DS_TRACE("[CQSearch::~CQSearch] unload the plugin...");
-		qsearch_unload_plugin(m_plugin);
-	}
-public:
-	void AddContent(char* szContent) ;
-	//after add content, Init to load the plugin... 
-	BOOL Init(char* szPlugin,char* szAlgo,char* szFile);
+#ifndef CQSEARCH_H
+#define CQSEARCH_H
 
-	//Now , we can call this interface to search what you want.
+#include <string>
 
-	BOOL Search(char* pBuf,int nSize,char* szFoundKey,int nSize);
+class CCQSearch {
+public:
+    CCQSearch();
+    virtual ~CCQSearch() = default;
+
+    bool Init();
+    bool Search(const std::string& szQuery);
 
 private:
-	static int cb(void *cb_data, void *ptrn_data, size_t match_offset);
-	qsearch_plugin_t* m_plugin;
+    void ParseQuery(const std::string& szQuery);
+    void ExecuteSearch();
 
-	qsearch_algo_t *m_algo, **m_list;
-	qsearch_obj_t *m_obj;
-
-	static BOOL m_bFound;
-	static char m_szFoundKey[128];
+    std::string m_szQuery;
 };
-#endif
+
+#endif // CQSEARCH_H
