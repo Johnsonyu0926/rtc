@@ -1,81 +1,73 @@
-#ifndef	_CSTRING_H__
-#define _CSTRING_H__
+#ifndef CSTRING_H
+#define CSTRING_H
 
+#include <string>
+#include <memory>
 #include "Share.h"
 #include "doorsbase.h"
 
-#define	MAX_PRINTABLE_STRING_LENGTH	5000
+constexpr int MAX_PRINTABLE_STRING_LENGTH = 5000;
 
-class CString
-{
+class CString {
 public:
-	CString();
-	~CString();
-	CString(CString& rhs);
-	CString(const char *szBuf);
+    CString();
+    ~CString();
 
-public:
-	operator LPCTSTR ( ) const
-	{
-		return m_szBuf;
-	}
+    CString(const CString& rhs);
+    CString(const char* szBuf);
 
-	char operator [](int nIndex) const
-	{
-		if (!m_szBuf || nIndex <0 || nIndex >=m_nTotal || m_nTotal<=0)
-			return GAP_INITIALIZER;
+    operator const char*() const { return m_szBuf.get(); }
 
-		return m_szBuf[nIndex];
-	}
+    char operator[](int nIndex) const {
+        if (!m_szBuf || nIndex < 0 || nIndex >= m_nTotal || m_nTotal <= 0)
+            return GAP_INITIALIZER;
+        return m_szBuf[nIndex];
+    }
 
-	CString& operator =(CString& rhs);
-	CString& operator =(const char *szBuf);
-	
-	const CString operator +(CString& rhs);
-	const CString operator +(const char *szBuf);
+    CString& operator=(const CString& rhs);
+    CString& operator=(const char* szBuf);
+    CString operator+(const CString& rhs) const;
+    CString operator+(const char* szBuf) const;
+    CString& operator+=(const CString& rhs);
+    CString& operator+=(const char* szBuf);
+    CString& operator+=(char szCh);
 
-	CString& operator +=(CString& rhs);
-	CString& operator +=(const char *szBuf);
-	CString& operator +=(const char szCh);
-	
-	long GetLength();
+    long GetLength() const;
+    bool IsEmpty() const;
+    void Empty();
 
-	BOOL IsEmpty();
-	void Empty();
-		
-	const char GetAt(int nIndex);
-	void SetAt(int nIndex, const char ch);
-	void Replace(const char szSourceCh, const char szDimCh);
+    char GetAt(int nIndex) const;
+    void SetAt(int nIndex, char ch);
+    void Replace(char szSourceCh, char szDimCh);
 
-	int Compare(const char *szBuf);//0´ú±íÁ½ÕßÏàµÈ£¬ÆäËû´ú±íÁ½Õß²»µÈ
-	int CompareNoCase(const char *szBuf);//0´ú±íÁ½ÕßÏàµÈ£¬ÆäËû´ú±íÁ½Õß²»µÈ
+    int Compare(const char* szBuf) const; // 0ä»£è¡¨ä¸¤è€…ç›¸ç­‰ï¼Œå…¶ä»–ä»£è¡¨ä¸¤è€…ä¸ç­‰
+    int CompareNoCase(const char* szBuf) const; // 0ä»£è¡¨ä¸¤è€…ç›¸ç­‰ï¼Œå…¶ä»–ä»£è¡¨ä¸¤è€…ä¸ç­‰
 
-	const CString Mid(int nFirst);
-	const CString Mid(int nFirst, int nCount);
-	const CString Right(int nCount);
-	const CString Left(int nCount);
+    CString Mid(int nFirst) const;
+    CString Mid(int nFirst, int nCount) const;
+    CString Right(int nCount) const;
+    CString Left(int nCount) const;
 
-	void MakeUpper();
-	void MakeLower();
+    void MakeUpper();
+    void MakeLower();
 
-	void TrimLeft();
-	void TrimRight();
+    void TrimLeft();
+    void TrimRight();
 
-	int Find(const char *szValue, int nStart=0);//>=0´ú±íÕÒµ½£¬ <0´ú±íÃ»ÕÒµ½
-	int Find(const char szCh, int sStat=0);
+    int Find(const char* szValue, int nStart = 0) const; // >= 0ä»£è¡¨æ‰¾åˆ°ï¼Œ< 0ä»£è¡¨æ²¡æ‰¾åˆ°
+    int Find(char szCh, int sStat = 0) const;
 
-	void Format(char *pFormat, ...);
+    void Format(const char* pFormat, ...);
 
 private:
-	BOOL GetValue(char *szValue);
-	BOOL AddValue(const char *szValue, long nLen);
-	BOOL AddValue(const char szCh, long nLen);
+    bool GetValue(char* szValue) const;
+    bool AddValue(const char* szValue, long nLen);
+    bool AddValue(char szCh, long nLen);
 
 private:
-	char *m_szBuf;
-	BOOL m_bFirstAdd;
-	long m_nTotal;
-
+    std::unique_ptr<char[]> m_szBuf;
+    bool m_bFirstAdd;
+    long m_nTotal;
 };
 
-#endif
+#endif // CSTRING_H
