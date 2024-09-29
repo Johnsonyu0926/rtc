@@ -133,8 +133,6 @@ private:
     bool m_bAutoDelete;
     bool m_bJoinable;
 };
-
-#endif // DOORS_BASE_H
 class CThread {
 public:
     CThread();
@@ -199,7 +197,6 @@ private:
     std::string m_filename;
 };
 
-#endif // DOORS_BASE_H
 class CDatabase {
 public:
     CDatabase();
