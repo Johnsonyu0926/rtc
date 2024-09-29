@@ -385,7 +385,7 @@ CString CBase64::Encode(LPCTSTR szEncoding, int nSize) {
 
     nDigit = read_bits(nNumBits, &nNumBits, lp);
     while (nNumBits > 0) {
-        sOutput += m_sBase64Alphabet[(int)nDigit];
+        sOutput += m_sBase64Alphabet[(int) nDigit];
         nDigit = read_bits(nNumBits, &nNumBits, lp);
     }
     while (sOutput.GetLength() % 4 != 0) {
@@ -408,7 +408,7 @@ UINT CBase64::read_bits(int nNumBits, int *pBitsRead, int &lp) {
         m_nBitsRemaining = 0;
     } else {
         lScratch = m_lBitStorage >> (m_nBitsRemaining - nNumBits);
-        *pBitsRead = nNumBits;
+        *pBitsRead = nNumBits;*********
         m_nBitsRemaining -= nNumBits;
     }
     return (UINT) lScratch & m_nMask[nNumBits];
