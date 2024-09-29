@@ -1,5 +1,5 @@
-#ifndef _MEMFILE_H__
-#define _MEMFILE_H__
+#ifndef MEMFILE_H
+#define MEMFILE_H
 
 #include <vector>
 #include <cstring>
@@ -20,4 +20,4 @@ private:
     int m_nPos;
 };
 
-#endif // _MEMFILE_H__
+#endif // MEMFILE_H
