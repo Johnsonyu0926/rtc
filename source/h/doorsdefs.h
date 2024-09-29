@@ -1,39 +1,39 @@
-#ifndef DOORS_DEFS_H
-#define DOORS_DEFS_H
+#ifndef __DOORS_DEFS_H__
+#define __DOORS_DEFS_H__
 
 #include <cstdint>
 
-using LONGLONG = int64_t;
-using ULONG = uint32_t;
-using INT32 = int32_t;
-using INT = int;
-using UINT = uint32_t;
-using DWORD = uint32_t;
-using BOOL = int;
-using BYTE = uint8_t;
-using WORD = uint16_t;
-using SHORT = int16_t;
-using USHORT = uint16_t;
-using FLOAT = float;
-using LONG = int32_t;
-using LPBOOL = BOOL*;
-using LPBYTE = BYTE*;
-using LPWORD = WORD*;
-using LPDWORD = DWORD*;
-using LPINT32 = INT32*;
-using LPINT = INT*;
-using VOID = void;
-using LPVOID = void*;
-using LPCVOID = const void*;
-using LPCSTR = const char*;
-using LPCTSTR = LPCSTR;
-using LPSTR = char*;
-using LPTSTR = LPSTR;
-using LPCWSTR = const uint16_t*;
-using LPWSTR = uint16_t*;
-using TCHAR = char;
-using WCHAR = uint16_t;
-using SOCKET = int;
+typedef int64_t LONGLONG;
+typedef uint32_t ULONG;
+typedef int32_t INT32;
+typedef int INT;
+typedef uint32_t UINT;
+typedef uint32_t DWORD;
+typedef int BOOL;
+typedef uint8_t BYTE;
+typedef uint16_t WORD;
+typedef int16_t SHORT;
+typedef uint16_t USHORT;
+typedef float FLOAT;
+typedef int32_t LONG;
+typedef BOOL *LPBOOL;
+typedef BYTE *LPBYTE;
+typedef WORD *LPWORD;
+typedef DWORD *LPDWORD;
+typedef INT32 *LPINT32;
+typedef INT *LPINT;
+typedef void VOID;
+typedef void *LPVOID;
+typedef const void *LPCVOID;
+typedef const char *LPCSTR;
+typedef LPCSTR LPCTSTR;
+typedef char *LPSTR;
+typedef LPSTR LPTSTR;
+typedef const uint16_t *LPCWSTR;
+typedef uint16_t *LPWSTR;
+typedef char TCHAR;
+typedef uint16_t WCHAR;
+typedef int SOCKET;
 
 #ifndef TRUE
 #define TRUE 1
@@ -63,8 +63,7 @@ class COracleReader;
 
 class IDsObject {
 public:
-    IDsObject() = default;
-    virtual ~IDsObject() = default;
+    virtual ~IDsObject() {}
     virtual int AddRef() = 0;
     virtual int ReleaseRef() = 0;
 };
@@ -72,10 +71,12 @@ public:
 class CDsObject : public IDsObject {
 public:
     CDsObject() : m_dwRef(0) {}
-    virtual ~CDsObject() = default;
+    virtual ~CDsObject() {}
+
     int AddRef() override {
         return ++m_dwRef;
     }
+
     int ReleaseRef() override {
         if (--m_dwRef == 0) {
             delete this;
@@ -111,14 +112,21 @@ public:
     virtual WORD GetPort() = 0;
     virtual DWORD GetRealToTime() = 0;
     virtual void SetRealToTime(DWORD dwTime) = 0;
-    virtual void SetInterval(DWORD interval) = 0;
+    virtual void SetInterval(DWORD dwInterval) = 0;
     virtual void SetSrcToDst(LPCSTR pSrcIP, LPCSTR pDstIP) = 0;
     virtual LPCSTR GetSrcAddr() = 0;
     virtual LPCSTR GetDstAddr() = 0;
+    virtual BOOL CheckSrcAndDstAddr(LPCSTR lpSrcIPAddr, LPCSTR lpDstIPAddr) = 0;
+    virtual void SetLogTime(int nLogTime) = 0;
+    virtual int GetLogTime() = 0;
+    virtual int GetCacheCount() = 0;
+    virtual void SetCacheCount(int nCount) = 0;
+    virtual void SetOracle(COracleReader *oracle) = 0;
+    virtual COracleReader *GetOracle() = 0;
 };
 
 extern "C" {
-    void DsCreateNetworkFilter(IDsNetworkFilter** ppNetFilter, DWORD* pdwTime);
+    void DsCreateNetworkFilter(IDsNetworkFilter **ppNetFilter, DWORD *pdwTime);
 }
 
-#endif // DOORS_DEFS_H
+#endif // __DOORS_DEFS_H__
