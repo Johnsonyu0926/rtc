@@ -133,6 +133,8 @@ private:
     bool m_bAutoDelete;
     bool m_bJoinable;
 };
+
+#endif // DOORS_BASE_H
 class CThread {
 public:
     CThread();
@@ -196,6 +198,8 @@ private:
     std::map<std::string, std::map<std::string, std::string>> m_data;
     std::string m_filename;
 };
+
+#endif // DOORS_BASE_H
 class CDatabase {
 public:
     CDatabase();
