@@ -1,73 +1,79 @@
-#ifndef ICAP_H
-#define ICAP_H
+#ifndef LOG_H
+#define LOG_H
 
 #include <string>
+#include <fstream>
 #include <memory>
-#include "doorsbase.h"
+#include <iostream>
+#include <mutex>
+#include <ctime>
+#include <sstream>
 
-struct ContentList {
-    std::string Content;
-    int ContentLen;
-    int id;
-    std::shared_ptr<ContentList> Next;
-};
-
-class CIcap {
+class CLogger {
 public:
-    CIcap()
-        : MyList(std::make_shared<ContentList>()), pList(MyList),
-          m_nContentLen(0), count(0) {
-        MyList->Content = "";
-        MyList->ContentLen = 0;
-        MyList->Next = nullptr;
-        m_pContent = nullptr;
+    enum class LogLevel {
+        DEBUG,
+        INFO,
+        WARNING,
+        ERROR
+    };
+
+    static CLogger& getInstance() {
+        static CLogger instance;
+        return instance;
     }
 
-    ~CIcap() {
-        if (m_pContent) {
-            delete[] m_pContent;
-            m_pContent = nullptr;
+    void setLogFile(const std::string& filename) {
+        std::lock_guard<std::mutex> guard(m_mutex);
+        m_logFile = std::make_shared<std::ofstream>(filename, std::ios::app);
+    }
+
+    void log(LogLevel level, const std::string& message) {
+        std::lock_guard<std::mutex> guard(m_mutex);
+
+        if (m_logFile && m_logFile->is_open()) {
+            *m_logFile << getTimestamp() << " [" << logLevelToString(level) << "] " << message << std::endl;
+        } else {
+            std::cerr << getTimestamp() << " [" << logLevelToString(level) << "] " << message << std::endl;
         }
     }
 
-    void AddContent(const std::string& szContent) {
-        DS_TRACE("ADD CONTENT \n" << count);
-        count++;
-        auto NewNode = std::make_shared<ContentList>();
-        NewNode->Content = szContent;
-        NewNode->ContentLen = szContent.length();
-        NewNode->id = count;
-        NewNode->Next = nullptr;
-        pList->Next = NewNode;
-        pList = pList->Next;
-        m_nContentLen += szContent.length();
-    }
-
-    void SetIcapServer(const std::string& szServer, int nServerPort) {
-        strncpy(m_szIcapServer, szServer.c_str(), sizeof(m_szIcapServer));
-        m_nIcapServerPort = nServerPort;
-    }
-
-    // 使用 respmod 发送到 icap 服务器并检查响应。
-    BOOL RespMod(char *pszAddress, int argflag, char *szVirus, int nLen);
-
-    void PrintContent() {
-        for (int i = 0; i < count; i++) {
-            DS_TRACE("I IS : " << i);
-        }
-    }
-
-    BOOL ReleaseList();
+    void debug(const std::string& message) { log(LogLevel::DEBUG, message); }
+    void info(const std::string& message) { log(LogLevel::INFO, message); }
+    void warning(const std::string& message) { log(LogLevel::WARNING, message); }
+    void error(const std::string& message) { log(LogLevel::ERROR, message); }
 
 private:
-    char *m_pContent;
-    int m_nContentLen;
-    char m_szIcapServer[32];
-    int m_nIcapServerPort;
-    std::shared_ptr<ContentList> MyList;
-    std::shared_ptr<ContentList> pList;
-    bool IsFirst;
-    int count;
+    CLogger() = default;
+    ~CLogger() = default;
+    CLogger(const CLogger&) = delete;
+    CLogger& operator=(const CLogger&) = delete;
+
+    std::string getTimestamp() {
+        auto now = std::time(nullptr);
+        std::tm tm;
+#ifdef _WIN32
+        localtime_s(&tm, &now);
+#else
+        localtime_r(&now, &tm);
+#endif
+        std::ostringstream oss;
+        oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
+        return oss.str();
+    }
+
+    std::string logLevelToString(LogLevel level) {
+        switch (level) {
+            case LogLevel::DEBUG: return "DEBUG";
+            case LogLevel::INFO: return "INFO";
+            case LogLevel::WARNING: return "WARNING";
+            case LogLevel::ERROR: return "ERROR";
+            default: return "UNKNOWN";
+        }
+    }
+
+    std::shared_ptr<std::ofstream> m_logFile;
+    std::mutex m_mutex;
 };
 
-#endif // ICAP_H
+#endif // LOG_H
