@@ -1,8 +1,8 @@
-#ifndef SHARE_H
-#define SHARE_H
+#ifndef _SHARE_H__
+#define _SHARE_H__
 
+#include "doorsbase.h"
 #include <string>
-#include <memory>
 
 constexpr int MAX_ATTACH_COUNT = 1024;
 
@@ -56,4 +56,4 @@ struct BodyPart {
 
 using Gap_BodyPart_t = BodyPart*;
 
-#endif // SHARE_H
+#endif // _SHARE_H__
