@@ -1,40 +1,54 @@
 #pragma once
 
-#include "json.hpp"
-#include "AcquisitionNoise.hpp"
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <nlohmann/json.hpp>
 
-namespace asns {
-    class CVolumeAdaptSchemaData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CVolumeAdaptSchemaData, monitorStatus, frequency, calcCycle,
-                                                    schema)
+using json = nlohmann::json;
 
-        void set_data() const {
-            AcquisitionNoise::getInstance().setMonitorStatus(monitorStatus);
-            AcquisitionNoise::getInstance().setFrequency(frequency);
-            AcquisitionNoise::getInstance().setCalcCycle(calcCycle);
-			if (calcCycle < static_cast<int>(AcquisitionNoise::getInstance().noiseDeque.size())) {
-			    const size_t n = AcquisitionNoise::getInstance().noiseDeque.size() - calcCycle;
-			    for(size_t i = 0; i < n; ++i) {
-			        AcquisitionNoise::getInstance().noiseDeque.pop_back();
-			    }
-			}
-            AcquisitionNoise::getInstance().schema.assign(schema.cbegin(), schema.cend());
-            AcquisitionNoise::getInstance().file_update();
+class VolumeAdaptSchemaSet {
+public:
+    VolumeAdaptSchemaSet() = default;
+    ~VolumeAdaptSchemaSet() = default;
+
+    std::string get_schema() const { return schema; }
+    void set_schema(const std::string &schema) { this->schema = schema; }
+
+    bool load_file() {
+        std::ifstream i(SCHEMACONFIG);
+        if (!i.is_open()) {
+            std::cerr << "Failed to open config file: " << SCHEMACONFIG << std::endl;
+            return false;
         }
 
-        void do_data() {
-            monitorStatus = AcquisitionNoise::getInstance().getMonitorStatus();
-            frequency = AcquisitionNoise::getInstance().getFrequency();
-            calcCycle = AcquisitionNoise::getInstance().getCalcCycle();
-            schema.assign(AcquisitionNoise::getInstance().schema.cbegin(),
-                          AcquisitionNoise::getInstance().schema.cend());
+        try {
+            json js;
+            i >> js;
+            schema = js.at("schema").get<std::string>();
+        } catch (const json::exception &ex) {
+            std::cerr << "JSON parse error: " << ex.what() << std::endl;
+            return false;
         }
 
-    public:
-        int monitorStatus{};
-        int frequency{};
-        int calcCycle{};
-        std::vector<CSchema> schema;
-    };
-}
+        return true;
+    }
+
+    bool file_update() {
+        std::ofstream o(SCHEMACONFIG);
+        if (!o.is_open()) {
+            std::cerr << "Failed to open config file: " << SCHEMACONFIG << std::endl;
+            return false;
+        }
+
+        json js;
+        js["schema"] = schema;
+
+        o << js.dump(4) << std::endl;
+        return true;
+    }
+
+private:
+    const std::string SCHEMACONFIG = "/mnt/cfg/schema.json";
+    std::string schema = "default";
+};
