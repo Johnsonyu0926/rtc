@@ -1,139 +1,89 @@
 #pragma once
 
 #include <deque>
-#include "volume.hpp"
-
-class CSchema {
-public:
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CSchema, min, max, volume)
-
-    CSchema() = default;
-
-    CSchema(const int min, const int max, const int vol) : min(), max(), volume() {}
-
-public:
-    int min;
-    int max;
-    int volume;
-};
+#include <numeric>
+#include <cmath>
+#include <fstream>
+#include <chrono>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include "utils.h"
 
 class AcquisitionNoise {
 public:
-    AcquisitionNoise(const AcquisitionNoise &) = delete;
-
-    AcquisitionNoise &operator=(const AcquisitionNoise &) = delete;
-
-    static AcquisitionNoise &getInstance() {
+    static AcquisitionNoise& getInstance() {
         static AcquisitionNoise instance;
         return instance;
     }
 
-    int get_noise_adaptive_volume() {
-        for (const auto &it: schema) {
-            if (decibel > it.min && decibel < it.max) {
-                return it.volume;
-            }
-        }
-        return -1;
+    AcquisitionNoise(const AcquisitionNoise&) = delete;
+    AcquisitionNoise& operator=(const AcquisitionNoise&) = delete;
+
+    void updateNoise(const std::deque<double>& noiseDeque) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        this->noiseDeque = noiseDeque;
     }
 
-    void noise_auto_set_volume(){
-        int volume = get_noise_adaptive_volume();
-        if(volume != -1) {
-            asns::CVolumeSet volumeSet;
-            volumeSet.load();
-            if (volume != volumeSet.getVolume()) {
-                volumeSet.configVolume(volume);
-            }
-        }
-    }
-    int file_load() {
-        std::ifstream i(NOISE_FILE_NAME);
-        if (!i.is_open()) {
-            LOG(WARNING) << NOISE_FILE_NAME << " file load error!";
-            return 0;
-        }
-        json js;
-        try {
-            i >> js;
-            monitorStatus = js.at("monitorStatus").get<int>();
-            frequency = js.at("frequency").get<int>();
-            calcCycle = js.at("calcCycle").get<int>();
-            schema = js.at("schema").get<std::vector<CSchema>>();
-            LOG(INFO) << "schema:" << schema.size();
-        } catch (json::parse_error &ex) {
-            LOG(ERROR) << "parse error at byte " << ex.byte;
-            i.close();
-            return 0;
-        }
-        i.close();
-        return 1;
+    std::deque<double> getNoiseDeque() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return noiseDeque;
     }
 
-    void file_update() {
-        std::ofstream o(NOISE_FILE_NAME);
-        if (!o.is_open()) {
-            LOG(ERROR) << NOISE_FILE_NAME << " stream open fail!";
-            return;
-        }
-        json js;
-        js["monitorStatus"] = monitorStatus;
-        js["frequency"] = frequency;
-        js["calcCycle"] = calcCycle;
-        js["schema"] = schema;
-        o << js << std::endl;
-        o.close();
+    void setMonitorStatus(bool status) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        monitorStatus = status;
     }
 
-    void setDecibel(const double decibel) {
-        this->decibel = decibel;
-    }
-
-    double getDecibel() const {
-        return decibel;
-    }
-
-    void setMonitorStatus(const int monitorStatus) {
-        this->monitorStatus = monitorStatus;
-    }
-
-    int getMonitorStatus() const {
+    bool getMonitorStatus() const {
+        std::lock_guard<std::mutex> lock(mutex_);
         return monitorStatus;
     }
 
-    void setFrequency(const int frequency) {
-        this->frequency = frequency;
+    void setFrequency(int freq) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        frequency = freq;
     }
 
     int getFrequency() const {
+        std::lock_guard<std::mutex> lock(mutex_);
         return frequency;
     }
 
-    void setCalcCycle(const int calcCycle) {
-        this->calcCycle = calcCycle;
+    void setCalcCycle(int cycle) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        calcCycle = cycle;
     }
 
     int getCalcCycle() const {
+        std::lock_guard<std::mutex> lock(mutex_);
         return calcCycle;
     }
 
-    void noiseDequeClear() {
-        noiseDeque.clear();
-        decibel = 0;
+    void setDecibel(double dec) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        decibel = dec;
     }
 
-    ~AcquisitionNoise() = default;
+    double getDecibel() const {
+        std::lock_guard<std::mutex> lock(mutex_);
+        return decibel;
+    }
 
-    std::deque<double> noiseDeque{};
-    std::vector<CSchema> schema;
+    void file_update() {
+        std::lock_guard<std::mutex> lock(mutex_);
+        std::ofstream ofs("/mnt/cfg/noise.json");
+        json j = {{"noiseDeque", noiseDeque}, {"monitorStatus", monitorStatus}, {"frequency", frequency}, {"calcCycle", calcCycle}, {"decibel", decibel}};
+        ofs << j.dump(4);
+    }
+
 private:
-    AcquisitionNoise() = default;
+    AcquisitionNoise() : monitorStatus(false), frequency(0), calcCycle(0), decibel(0.0) {}
 
-    const std::string NOISE_FILE_NAME = "/mnt/cfg/noise.json";
-
-private:
-    int monitorStatus{0};
-    int frequency{0};
-    int calcCycle{0};
-    double decibel{0};
+    mutable std::mutex mutex_;
+    std::deque<double> noiseDeque;
+    bool monitorStatus;
+    int frequency;
+    int calcCycle;
+    double decibel;
 };
