@@ -1,9 +1,11 @@
-#ifndef _GAPMIME_H__
-#define _GAPMIME_H__
+#ifndef GAPMIME_H
+#define GAPMIME_H
 
-#include "Base64.h"
 #include <string>
 #include <vector>
+#include <array>
+#include <memory>
+#include "Base64.h"
 
 class CGAPMime {
 public:
@@ -23,24 +25,23 @@ public:
     std::string GetDate() const { return m_szDate; }
 
 private:
-    std::string GetValueFromKey(const std::string &szLine, const std::string &szKey);
-    bool GetContentType(int &nContentType, std::string &pBoundary, int &nEncodingType, std::string &pFileName);
-    bool GetContentType(const std::string &szBuf, std::string &szContentType);
-    int GetContentType(const std::string &szContentType, int &nContentType);
-    bool GetLine(std::string &szBuf);
-    int GetFieldValue(const std::string &szBuf, int nPos, std::string &szValue);
-    int GetEncodingType(const std::string &szBuf, int &nEncodingType);
-
-    int DealWithTheContentType(int nContentType, const std::string &szBoundary, int nEncodingType, const std::string &szFileName);
-    int DealWithMultPart(int nContentType, const std::string &szBoundary, int nEncodingType, const std::string &szFileName);
-    int DealWithSinglePart(int nContentType, const std::string &szBoundary, int nEncodingType, const std::string &szFileName);
-    int GotoBoundary(const std::string &szBoundary);
-    int DealWithTextPlain(int nContextType, int nEncodingType, const std::string &szBoundary);
-    int DealWithOct(int nEncodingType, const std::string &szBoundary, const std::string &szFileName);
-    int DealWith7BitsPlainText(int nContextType, const std::string &szBoundary);
-    int DealWithBase64PlainText(const std::string &szBoundary);
-    int DealWithQP(const std::string &szBoundary);
-    int RecvBodyAndDecode(const std::string &szFileName, const std::string &szBoundary);
+    std::string GetValueFromKey(const std::string& szLine, const std::string& szKey);
+    bool GetContentType(int& nContentType, std::string& pBoundary, int& nEncodingType, std::string& pFileName);
+    bool GetContentType(const std::string& szBuf, std::string& szContentType);
+    int GetContentType(const std::string& szContentType, int &nContentType);
+    bool GetLine(std::string& szBuf);
+    int GetFieldValue(const std::string& szBuf, int nPos, std::string& szValue);
+    int GetEncodingType(const std::string& szBuf, int &nEncodingType);
+    int DealWithTheContentType(int nContentType, const std::string& szBoundary, int nEncodingType, const std::string& szFileName);
+    int DealWithMultPart(int nContentType, const std::string& szBoundary, int nEncodingType, const std::string& szFileName);
+    int DealWithSinglePart(int nContentType, const std::string& szBoundary, int nEncodingType, const std::string& szFileName);
+    int GotoBoundary(const std::string& szBoundary);
+    int DealWithTextPlain(int nContextType, int nEncodingType, const std::string& szBoundary);
+    int DealWithOct(int nEncodingType, const std::string& szBoundary, const std::string& szFileName);
+    int DealWith7BitsPlainText(int nContextType, const std::string& szBoundary);
+    int DealWithBase64PlainText(const std::string& szBoundary);
+    int DealWithQP(const std::string& szBoundary);
+    int RecvBodyAndDecode(const std::string& szFileName, const std::string& szBoundary);
 
 private:
     const uint8_t *m_pBody;
@@ -50,18 +51,20 @@ private:
     std::array<std::string, 128> m_szAttachmentName;
     long m_nPartCount;
     Gap_BodyPart_t m_pBodyPart;
-    Gap_BodyPart_t BodyContentCreate();
-    Gap_BodyPart_t BodyContentInsert(Gap_BodyPart_t pBodyPart, Gap_BodyPart_t szBodyPart);
-    void BodyContentDestroy(Gap_BodyPart_t *pBodyPart);
-    void BodyContentDestroyAll(Gap_BodyPart_t *pBodyPart);
-    Gap_BodyPart_t BodyContentDelete(Gap_BodyPart_t pBodyPart, int nPart);
+
     std::string m_szSubject;
     std::string m_szCc;
     std::string m_szTo;
     std::string m_szFrom;
     std::string m_szDate;
+
+    Gap_BodyPart_t BodyContentCreate();
+    Gap_BodyPart_t BodyContentInsert(Gap_BodyPart_t pBodyPart, Gap_BodyPart_t szBodyPart);
+    void BodyContentDestroy(Gap_BodyPart_t *pBodyPart);
+    void BodyContentDestroyAll(Gap_BodyPart_t *pBodyPart);
+    Gap_BodyPart_t BodyContentDelete(Gap_BodyPart_t pBodyPart, int nPart);
 };
 
 extern void ToMakeUpper(char *pStr);
 
-#endif // _GAPMIME_H__
+#endif // GAPMIME_H
