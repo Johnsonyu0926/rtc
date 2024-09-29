@@ -1,59 +1,49 @@
 # Makefile for audioserver 
-# Billy Shi.
-# 2022/10/28
+# Miksa Wu.
+# 2020/10/28
 #
 ##############################################################################
 #
 
-include ../../config/unix/Make.defines
-
-#INCLUDE_OPTIONS = -I./../h -I ../../h -I. -I/usr/local/include/mysql 
-#INCLUDE_OPTIONS = -I./../h -I ../../h -I. -I/usr/local/ssl/include 
-CFLAGS += -I./../h -I../../h -I. -I../../../thirdpart/openssl/include  -I../../../thirdpart/mosquitto/lib/cpp
-CFLAGS += -I../../../thirdpart/mosquitto/include
-CFLAGS += -I ./include -I./include/HPR -I./include/ezviz/ezDevSDK 
+# Compiler options
+CXXFLAGS += -I./../h -I../../h -I. -I../../../thirdpart/openssl/include  -I../../../thirdpart/mosquitto/lib/cpp
+CXXFLAGS += -I../../../thirdpart/mosquitto/include
+CXXFLAGS += -I ./include -I./include/HPR -I./include/ezviz/ezDevSDK 
 LDFLAGS += -L ./mipsel-openwrt-linux/lib/dynamic -L ./mips_r3000/ -L ../../../thirdpart/openssl 
 LDFLAGS += -L ./lib -lHCEBase -lhpr -lezDevSDK_boot -lezDevSDK_Common_Module -lez_model -lmicrokernel -lezDevSDK_talk
 LDFLAGS += -lez_model -lezDevSDK_sub
 LDFLAGS += -lezDevSDK_alarm -lezDevSDK_base_func -lezDevSDK_boot -lezDevSDK_cloud
-LDFLAGS +=-lezDevSDK_comm
-LDFLAGS +=-lezDevSDK_door_lock
-LDFLAGS +=-lezDevSDK_leave_message
-LDFLAGS +=-lezDevSDK_secure
-LDFLAGS +=-lezDevSDK_smart_control
-LDFLAGS +=-lezDevSDK_special
-LDFLAGS +=-lezDevSDK_thirdparty
-LDFLAGS +=-lpthread
-LDFLAGS +=-lmosquittopp
-LDFLAGS +=-lmosquitto
-#LDFLAGS += /home/cmf/lib/libmosquitto.so.1
-#LDFLAGS += /home/cmf/lib/cpp/libmosquittopp.so.1
+LDFLAGS += -lezDevSDK_comm
+LDFLAGS += -lezDevSDK_door_lock
+LDFLAGS += -lezDevSDK_leave_message
+LDFLAGS += -lezDevSDK_secure
+LDFLAGS += -lezDevSDK_smart_control
+LDFLAGS += -lezDevSDK_special
+LDFLAGS += -lezDevSDK_thirdparty
+LDFLAGS += -lpthread
+LDFLAGS += -lmosquittopp
+LDFLAGS += -lmosquitto
 LDFLAGS += ./lib/libmbedtls.a ./lib/libmbedcrypto.a ./lib/libmbedx509.a ./mipsel-openwrt-linux/lib/libsrt.a ./mipsel-openwrt-linux/lib/libdevp2pcore.a
 
+CXXFLAGS += -DUNIX -D_DEBUG -O2 -s -Wall -Werror -std=c++11
 
-
-CXXFLAGS += $(INCLUDE_OPTIONS) -DUNIX -D_DEBUG -O2 -s -Wall -Werror -std=c++11 $(CFLAGS)
-#LIBS		= -L/usr/local/lib/mysql -lmysqlclient
-ifdef PLAT_DIR
-LIBS		= -lssl -lcrypto  -L$(USR_DIR_OPENSRC)/openssl
-else
-LIBS		= -lssl -lcrypto  -L$(USR_DIR_OPENSRC)/openssl_x86
-endif
-
+# Output directories
 BINDIR          = ./../../../bin
-INTDIR	= $(BINDIR)/OBJ
-SRCDIR	= ./../audioserver
+INTDIR          = $(BINDIR)/OBJ
+SRCDIR          = ./../audioserver
 
-OBJS = 				\
-	$(INTDIR)/serverthread.o	\
-	$(INTDIR)/easylogging++.o	\
-	$(INTDIR)/audio.o	\
-	$(INTDIR)/talk.o	\
-	$(INTDIR)/clientthread.o
+# Object files
+OBJS =          \
+    $(INTDIR)/serverthread.o    \
+    $(INTDIR)/easylogging++.o   \
+    $(INTDIR)/audio.o           \
+    $(INTDIR)/talk.o            \
+    $(INTDIR)/clientthread.o
 
-BIND_OBJS =			\
-	$(INTDIR)/doorsbase.o
+BIND_OBJS =     \
+    $(INTDIR)/doorsbase.o
 
+# Target
 TARGET = $(BINDIR)/audioserver
 
 #####################################################################
@@ -63,63 +53,56 @@ all: server
 server: checkbindir checkdir $(TARGET) 
 
 #####################################################################
-# Check dir
+# Check directories
 checkbindir:
-	@if test ! -d $(BINDIR) ; \
-		then \
-	mkdir $(BINDIR) ; \
-	fi
-
+    @if test ! -d $(BINDIR) ; \
+    then \
+    mkdir $(BINDIR) ; \
+    fi
 
 checkdir: 
-	@if test ! -d $(INTDIR) ; \
-	then \
-		mkdir $(INTDIR) ; \
-	fi
+    @if test ! -d $(INTDIR) ; \
+    then \
+    mkdir $(INTDIR) ; \
+    fi
 
 #####################################################################
-# clean
+# Clean
 clean: cleansvr
 
 cleansvr:
-	rm -f $(TARGET)
-	rm -f $(OBJS)
+    rm -f $(TARGET)
+    rm -f $(OBJS)
 
 #####################################################################
-# (TARGET)
+# Build target
 $(TARGET) : $(OBJS) $(BIND_OBJS)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJS) $(BIND_OBJS) $(LIBS) -lpthread 
-
+    $(CXX) $(CXXFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJS) $(BIND_OBJS) $(LIBS) -lpthread 
 
 #####################################################################
-# (OBJS) 
+# Object files 
 $(INTDIR)/serverthread.o: $(SRCDIR)/serverthread.cpp
-	$(CXX) $(CXXFLAGS) -g -c -o $@ $(SRCDIR)/serverthread.cpp
+    $(CXX) $(CXXFLAGS) -g -c -o $@ $(SRCDIR)/serverthread.cpp
 $(INTDIR)/easylogging++.o: $(SRCDIR)/easylogging++.cc
-	$(CXX) $(CXXFLAGS) -g -c -o $@ $(SRCDIR)/easylogging++.cc
+    $(CXX) $(CXXFLAGS) -g -c -o $@ $(SRCDIR)/easylogging++.cc
 $(INTDIR)/clientthread.o: $(SRCDIR)/clientthread.cpp
-	$(CXX) $(CXXFLAGS) -g -c -o $@ $(SRCDIR)/clientthread.cpp
+    $(CXX) $(CXXFLAGS) -g -c -o $@ $(SRCDIR)/clientthread.cpp
 $(INTDIR)/audio.o: $(SRCDIR)/audio.cpp
-	$(CXX) $(CXXFLAGS) -g -c -o $@ $(SRCDIR)/audio.cpp
+    $(CXX) $(CXXFLAGS) -g -c -o $@ $(SRCDIR)/audio.cpp
 $(INTDIR)/talk.o: $(SRCDIR)/talk.cpp
-	$(CXX) $(CXXFLAGS) -g -c -o $@ $(SRCDIR)/talk.cpp
+    $(CXX) $(CXXFLAGS) -g -c -o $@ $(SRCDIR)/talk.cpp
 
 ####################################################################
-#(BIND_OBJS)
+# Build common objects
 $(BIND_OBJS):
-	cd ../common;	\
-	make;
+    cd ../common; \
+    make;
 
 romfs:
-	${STRIP} -o $(ROOTFS_DIR)/sbin/audioserver $(TARGET)  
-	mkdir -p $(ROOTFS_DIR)/usr/lib
-	cp ./mipsel-openwrt-linux/lib/dynamic/*.so $(ROOTFS_DIR)/usr/lib
-	cp ./lib/*.so $(ROOTFS_DIR)/usr/lib
-	cp ./lib/libmos* -a $(ROOTFS_DIR)/usr/lib
-	cp ./mips_r3000/*.so $(ROOTFS_DIR)/usr/lib
-	cp ./asctrl.sh $(ROOTFS_DIR)/sbin
-	cp ./vol.sh $(ROOTFS_DIR)/sbin
-	cp ./conv.sh $(ROOTFS_DIR)/sbin
-	cp ./tts.sh $(ROOTFS_DIR)/sbin
-	cp ./dodownload.sh $(ROOTFS_DIR)/sbin
-	cp -a ./mp3/ $(ROOTFS_DIR)/usr/lib
+    ${STRIP} -o $(ROOTFS_DIR)/sbin/audioserver $(TARGET)  
+    mkdir -p $(ROOTFS_DIR)/usr/lib
+    cp ./mipsel-openwrt-linux/lib/dynamic/*.so $(ROOTFS_DIR)/usr/lib
+    cp ./lib/*.so $(ROOTFS_DIR)/usr/lib
+    cp ./lib/libmos* -a $(ROOTFS_DIR)/usr/lib
+    cp ./mips_r3000/*.so $(ROOTFS_DIR)/usr/lib
+    cp ./asctrl.sh $(ROOT
