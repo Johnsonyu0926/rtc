@@ -1,4 +1,20 @@
 #!/bin/sh
-tts -t "$1" -p $2 -l $3 -o2 2>&1 >/dev/null
-ffmpeg -y -f s16le -ar 16000 -ac 1 -i /tmp/tts.wav -filter:a "volume=15dB" /tmp/output.wav 2>&1 >/dev/null
-ffplay -autoexit -nodisp /tmp/output.wav 2>&1 >/dev/null
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <text>"
+    exit 1
+fi
+
+TEXT="$1"
+TTS_COMMAND="tts --text \"$TEXT\" --out_path /tmp/tts_output.wav"
+
+eval $TTS_COMMAND
+
+if [ $? -eq 0 ]; then
+    ffplay -autoexit /tmp/tts_output.wav
+else
+    echo "Failed to generate TTS audio."
+    exit 1
+fi
+
+rm -f /tmp/tts_output.wav
