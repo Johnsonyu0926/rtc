@@ -1,11 +1,85 @@
 #pragma once
 
-#include "add_mqtt_custom_audio_file.hpp"
-#include "json.hpp"
-#include "audiocfg.hpp"
-#include "utils.h"
+#include <string>
+#include <nlohmann/json.hpp>
+#include "mqtt.hpp"
+#include "gpioSet.hpp"
 
-/*
+using json = nlohmann::json;
+
+class MqttGpioSet {
+public:
+    MqttGpioSet(const std::string &clientId, const std::string &host, int port)
+        : clientId(clientId), host(host), port(port) {}
+
+    bool loadConfig(const std::string &configPath) {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            json j;
+            configFile >> j;
+
+            gpioConfig = j.at("gpioConfig").get<GpioSet>();
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
+
+    bool saveConfig(const std::string &configPath) const {
+        try {
+            json j = {
+                {"gpioConfig", gpioConfig}
+            };
+
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
+
+    void initializeClient() {
+        mqttClient = std::make_unique<MqttClient>(clientId, host, port);
+    }
+
+    void setCallback(const std::function<void(const std::string &topic, const std::string &message)> &callback) {
+        mqttClient->setMessageCallback(callback);
+    }
+
+    bool connect() {
+        return mqttClient->connect();
+    }
+
+    void disconnect() {
+        mqttClient->disconnect();
+    }
+
+    bool subscribe(const std::string &topic) {
+        return mqttClient->subscribe(topic);
+    }
+
+    bool publish(const std::string &topic, const std::string &message) {
+        return mqttClient->publish(topic, message);
+    }
+
+    void loopForever() {
+        mqttClient->loopForever();
+    }
+
+private:
+    std::string clientId;
+    std::string host;
+    int port;
+    GpioSet gpioConfig;
+    std::unique_ptr<MqttClient> mqttClient;
+};
  * {
     "downloadUrl":"http://172.16.1.20:9999/data/voice/cd5710aa-aef4-4e86-b0a0-2e430c1a2dc9.mp3", // 音频文件下载路径
     "fileName":"103.mp3", // 文件存储名称
@@ -16,70 +90,5 @@ curl --location --request GET 'http://218.108.199.238:9999/data/test01.mp3' --ou
  {
     "audioUploadRecordId":434, // 文件上传记录唯一ID
 }
- */
-namespace asns {
-    template<typename Quest, typename Result>
-    class CReQuest;
-
-    template<typename T>
-    class CResult;
-
-    class CFileUploadResultData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CFileUploadResultData, audioUploadRecordId)
-
-        template<typename Quest, typename Result, typename T>
-        int do_success(const CReQuest<Quest, Result> &c, CResult<T> &r) {
-            audioUploadRecordId = c.data.audioUploadRecordId;
-            CUtils utils;
-            CAudioCfgBusiness cfg;
-            unsigned long long availableDisk = utils.get_available_Disk(cfg.getAudioFilePath());
-            LOG(INFO) << "disk size:" << availableDisk << "kb";
-            int disk = availableDisk - 500;
-            if (!c.data.fileSize.empty()) {
-                int size = std::atoll(c.data.fileSize.c_str());
-                if (size != 0 && size > disk) {
-                    r.resultId = 2;
-                    r.result = "Lack of space";
-                    return 2;
-                }
-            }
-            std::string res = utils.get_upload_result(c.data.downloadUrl.c_str(), cfg.getAudioFilePath().c_str(),
-                                                      c.data.fileName.c_str());
-            if (res.compare("success") == 0) {
-                CAddMqttCustomAudioFileData data;
-                data.setName(c.data.fileName);
-                data.setAudioUploadRecordId(c.data.audioUploadRecordId);
-                CAddMqttCustomAudioFileBusiness business;
-                utils.bit_rate_32_to_48(cfg.getAudioFilePath() + c.data.fileName);
-                if (!business.exist(c.data.fileName)) {
-                    business.business.push_back(data);
-                    business.saveJson();
-                }
-                r.resultId = 1;
-                r.result = "success";
-                return 1;
-            } else {
-                r.resultId = 2;
-                r.result = res;
-                return 2;
-            }
-        }
-
-    private:
-        int audioUploadRecordId;
-    };
-
-    class CFileUploadData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CFileUploadData, downloadUrl, fileName, audioUploadRecordId,
-                                                    storageType, fileSize)
-
-    public:
-        std::string downloadUrl;
-        std::string fileName;
-        int audioUploadRecordId;
-        int storageType;
-        std::string fileSize{""};
-    };
+ *
 }
