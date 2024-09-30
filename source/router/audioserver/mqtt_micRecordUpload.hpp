@@ -1,65 +1,82 @@
 #pragma once
 
-#include "json.hpp"
-#include "mqtt_reTemp.hpp"
-#include "utils.h"
-#include <thread>
+#include <string>
+#include <nlohmann/json.hpp>
+#include "mqtt.hpp"
+#include "micRecordUpload.hpp"
 
 using json = nlohmann::json;
 
-namespace asns {
-    template<typename Quest, typename Result>
-    class CReQuest;
+class MqttMicRecordUpload {
+public:
+    MqttMicRecordUpload(const std::string &clientId, const std::string &host, int port)
+        : clientId(clientId), host(host), port(port) {}
 
-    template<typename T>
-    class CResult;
+    bool loadConfig(const std::string &configPath) {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-    class CMicRecordUploadResultData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CMicRecordUploadResultData, uploadStatus, micRecordId)
+            json j;
+            configFile >> j;
 
-        template<typename Quest, typename Result, typename T>
-        int do_success(const CReQuest<Quest, Result> &c, CResult<T> &r) {
-            CUtils utils;
-            if (utils.get_process_status("ffmpeg")) {
-                uploadStatus = 0;
-                micRecordId = 0;
-                r.resultId = 2;
-                r.result = "Currently recording";
-                return 2;
-            }
-            std::string res = utils.record_upload(c.data.recordDuration,c.data.requestUrl, c.data.imei);
-            LOG(INFO) << "result:" << res;
-            if (res.empty() || res.find("error") != std::string::npos) {
-                uploadStatus = 0;
-                micRecordId = 0;
-                r.resultId = 2;
-                r.result = "download error";
-                return 2;
-            } else if (res.find("uploadStatus") != std::string::npos) {
-                res = res.substr(res.find_first_of('{'), res.find_last_of('}') - res.find_first_of('{') + 1);
-                json js = json::parse(res);
-                uploadStatus = js.at("uploadStatus");
-                micRecordId = js.at("micRecordId");
-            }
-            r.resultId = 1;
-            r.result = "success";
-            return 1;
+            micRecordConfig = j.at("micRecordConfig").get<MicRecordUpload>();
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
         }
+    }
 
-    public:
-        int uploadStatus;
-        long micRecordId;
-    };
+    bool saveConfig(const std::string &configPath) const {
+        try {
+            json j = {
+                {"micRecordConfig", micRecordConfig}
+            };
 
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-    class CMicRecordUploadData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CMicRecordUploadData, imei, requestUrl, recordDuration)
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
 
-    public:
-        std::string imei;
-        std::string requestUrl;
-        int recordDuration;
-    };
-}
+    void initializeClient() {
+        mqttClient = std::make_unique<MqttClient>(clientId, host, port);
+    }
+
+    void setCallback(const std::function<void(const std::string &topic, const std::string &message)> &callback) {
+        mqttClient->setMessageCallback(callback);
+    }
+
+    bool connect() {
+        return mqttClient->connect();
+    }
+
+    void disconnect() {
+        mqttClient->disconnect();
+    }
+
+    bool subscribe(const std::string &topic) {
+        return mqttClient->subscribe(topic);
+    }
+
+    bool publish(const std::string &topic, const std::string &message) {
+        return mqttClient->publish(topic, message);
+    }
+
+    void loopForever() {
+        mqttClient->loopForever();
+    }
+
+private:
+    std::string clientId;
+    std::string host;
+    int port;
+    MicRecordUpload micRecordConfig;
+    std::unique_ptr<MqttClient> mqttClient;
+};
