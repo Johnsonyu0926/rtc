@@ -1,4 +1,5 @@
 {
-  "gpioStatus": 1,
-  "gpioModel": 1
+  "pin": 17,
+  "mode": "output",
+  "state": "high"
 }
