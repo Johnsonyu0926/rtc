@@ -1,82 +1,102 @@
 #pragma once
 
-#include "json.hpp"
-#include "audiocfg.hpp"
-#include "utils.h"
-#include "public.hpp"
+#include <string>
+#include <fstream>
+#include <nlohmann/json.hpp>
 
-//{"duration":"5","uploadUrl":"http://192.168.85.1:8091/iot/1v1/api/v1/micRecordUpload","cmd":"MicRecord"}
-namespace asns {
+using json = nlohmann::json;
 
-    class CMicRecordResult {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CMicRecordResult, cmd, resultId, msg)
+class MicRecord {
+public:
+    MicRecord() = default;
+    MicRecord(const std::string &id, const std::string &name, const std::string &path)
+        : id(id), name(name), path(path) {}
 
-        void do_success() {
-            cmd = "MicRecord";
-            resultId = 1;
-            msg = "success";
-        }
+    std::string getId() const { return id; }
+    void setId(const std::string &newId) { id = newId; }
 
-        void do_fail(const std::string& str) {
-            cmd = "MicRecord";
-            resultId = 2;
-            msg = str;
-        }
+    std::string getName() const { return name; }
+    void setName(const std::string &newName) { name = newName; }
 
-    private:
-        std::string cmd;
-        int resultId;
-        std::string msg;
-    };
+    std::string getPath() const { return path; }
+    void setPath(const std::string &newPath) { path = newPath; }
 
-    class CMicRecord {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CMicRecord, cmd, duration, uploadUrl)
+    json toJson() const {
+        return json{
+            {"id", id},
+            {"name", name},
+            {"path", path}};
+    }
 
-        int do_req(CSocket *pClient) {
-            CAudioCfgBusiness bus;
-            bus.load();
-            std::string imei = bus.business[0].deviceID;
-            CUtils utils;
-            if (utils.get_process_status("ffmpeg")) {
-                CMicRecordResult result;
-                result.do_fail("Currently recording");
-                json js = result;
-                std::string res = js.dump();
-                return pClient->Send(res.c_str(), res.length());
+    static MicRecord fromJson(const json &j) {
+        return MicRecord(
+            j.at("id").get<std::string>(),
+            j.at("name").get<std::string>(),
+            j.at("path").get<std::string>());
+    }
+
+private:
+    std::string id;
+    std::string name;
+    std::string path;
+};
+
+class MicRecordManager {
+public:
+    MicRecordManager(const std::string &configPath) : configPath(configPath) {}
+
+    bool load() {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            json j;
+            configFile >> j;
+
+            for (const auto &item : j) {
+                records.push_back(MicRecord::fromJson(item));
             }
-            int time = std::atoi(duration.c_str());
-            std::string url = uploadUrl;
-            std::string strImei = imei;
-            utils.async_wait(1, 0, 0, [=] {
-                CUtils utils;
-                std::string res = utils.record_upload(time, url, strImei);
-                LOG(INFO) << "result:" << res;
-                if (res.find("true") != std::string::npos) {
-                    CMicRecordResult result;
-                    result.do_success();
-                    json js = result;
-                    std::string res = js.dump();
-                    pClient->Send(res.c_str(), res.length());
-                } else {
-                    CMicRecordResult result;
-                    result.do_fail("post error");
-                    json js = result;
-                    std::string res = js.dump();
-                    pClient->Send(res.c_str(), res.length());
-                }
-            });
-            return 1;
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
         }
+    }
 
-    private:
-        std::string cmd;
-        std::string duration;
-        std::string uploadUrl;
-    };
+    bool save() const {
+        try {
+            json j;
+            for (const auto &record : records) {
+                j.push_back(record.toJson());
+            }
 
-    class CSThread;
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
 
-}
+    void addRecord(const MicRecord &record) {
+        records.push_back(record);
+    }
+
+    void removeRecord(const std::string &id) {
+        records.erase(std::remove_if(records.begin(), records.end(),
+            [&id](const MicRecord &record) { return record.getId() == id; }), records.end());
+    }
+
+    MicRecord* findRecord(const std::string &id) {
+        auto it = std::find_if(records.begin(), records.end(),
+            [&id](const MicRecord &record) { return record.getId() == id; });
+        return (it != records.end()) ? &(*it) : nullptr;
+    }
+
+private:
+    std::string configPath;
+    std::vector<MicRecord> records;
+};
