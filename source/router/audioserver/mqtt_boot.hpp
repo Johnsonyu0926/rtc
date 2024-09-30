@@ -1,11 +1,86 @@
 #pragma once
 
-#include "json.hpp"
-#include "audiocfg.hpp"
-#include "volume.hpp"
-#include "utils.h"
+#include <string>
+#include <vector>
+#include <nlohmann/json.hpp>
+#include "mqtt.hpp"
+#include "boot.hpp"
 
-/**
+using json = nlohmann::json;
+
+class MqttBoot {
+public:
+    MqttBoot(const std::string &clientId, const std::string &host, int port)
+        : clientId(clientId), host(host), port(port) {}
+
+    bool loadConfig(const std::string &configPath) {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            json j;
+            configFile >> j;
+
+            bootConfig = j.at("bootConfig").get<std::vector<Boot>>();
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
+
+    bool saveConfig(const std::string &configPath) const {
+        try {
+            json j = {
+                {"bootConfig", bootConfig}
+            };
+
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
+
+    void initializeClient() {
+        mqttClient = std::make_unique<MqttClient>(clientId, host, port);
+    }
+
+    void setCallback(const std::function<void(const std::string &topic, const std::string &message)> &callback) {
+        mqttClient->setMessageCallback(callback);
+    }
+
+    bool connect() {
+        return mqttClient->connect();
+    }
+
+    void disconnect() {
+        mqttClient->disconnect();
+    }
+
+    bool subscribe(const std::string &topic) {
+        return mqttClient->subscribe(topic);
+    }
+
+    bool publish(const std::string &topic, const std::string &message) {
+        return mqttClient->publish(topic, message);
+    }
+
+    void loopForever() {
+        mqttClient->loopForever();
+    }
+
+private:
+    std::string clientId;
+    std::string host;
+    int port;
+    std::vector<Boot> bootConfig;
+    std::unique_ptr<MqttClient> mqttClient;
+};
 * {
         "sdcardSpace":16225000, // sd卡剩余空间
         "lng":"120.2168731", // 经纬度
@@ -26,62 +101,3 @@
         "v5":0 // 继电器当前状态
     }
 */
-
-namespace asns {
-    class CBootData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CBootData, sdcardSpace, flashSpace, iotVersion, version, volume, v5,
-                                                    v12, v24,
-                                                    volt, storageType, imei, topic, cmd, hardwareModelId,
-                                                    hardwareVersion, ipAddress, baud)
-
-
-        void do_success() {
-            CUtils utils;
-            CAudioCfgBusiness cfg;
-            cfg.load();
-            CVolumeSet volumeSet;
-            volumeSet.load();
-            sdcardSpace = 16225000;
-            flashSpace = utils.get_available_Disk("/mnt/");
-            iotVersion = "COMMON";
-            version = cfg.business[0].codeVersion;
-            volume = volumeSet.getVolume();
-            v5 = 0;
-            v12 = 0;
-            v24 = 0;
-            volt = 971;
-            storageType = 1;
-            imei = cfg.business[0].serial;
-            topic = asns::REQUEST_TOPIC + imei;
-            cmd = "start";
-            hardwareModelId = 2;
-            if (utils.is_ros_platform()) {
-                hardwareVersion = "7621";
-            } else {
-                hardwareVersion = "7688";
-            }
-            ipAddress = utils.get_addr();
-            baud = cfg.business[0].iBdVal;
-        }
-
-    private:
-        long sdcardSpace;
-        long flashSpace;
-        std::string iotVersion;
-        std::string version;
-        int volume;
-        int v5;
-        int v12;
-        int v24;
-        int volt;
-        int storageType;
-        std::string imei;
-        std::string topic;
-        std::string cmd;
-        int hardwareModelId;
-        std::string hardwareVersion;
-        std::string ipAddress;
-        int baud;
-    };
-}
