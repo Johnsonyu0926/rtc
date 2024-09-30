@@ -1,82 +1,87 @@
 #pragma once
 
+#include <string>
+#include <vector>
+#include <fstream>
 #include <iostream>
-#include "json.hpp"
-#include "utils.h"
-#include "public.hpp"
+#include <nlohmann/json.hpp>
 
-#define NON_PLAY_PRIORITY 100
-
-extern int g_playing_priority;
 using json = nlohmann::json;
 
-namespace asns {
-    class CStartTTSAudioData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CStartTTSAudioData, indexCode, command, TTSContent, audioLevel, audioOutID,
-                                       ttscontent)
+class TtsConfig {
+public:
+    TtsConfig() = default;
+    TtsConfig(const std::string &apiKey, const std::string &url, const std::string &voice)
+        : apiKey(apiKey), url(url), voice(voice) {}
 
-    public:
-        std::string indexCode;
-        std::string command;
-        std::string TTSContent;
-        int audioLevel;
-        std::vector<int> audioOutID;
-        std::string ttscontent;
-    };
+    std::string getApiKey() const { return apiKey; }
+    void setApiKey(const std::string &newApiKey) { apiKey = newApiKey; }
 
-    class CStartTTSAudioResult {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CStartTTSAudioResult, status, code, errorMsg, data)
+    std::string getUrl() const { return url; }
+    void setUrl(const std::string &newUrl) { url = newUrl; }
 
-        void do_success(const std::string &msg) {
-            status = 200;
-            code = "0x00000000";
-            errorMsg = msg;
-            data = {};
+    std::string getVoice() const { return voice; }
+    void setVoice(const std::string &newVoice) { voice = newVoice; }
+
+    json toJson() const {
+        return json{
+            {"apiKey", apiKey},
+            {"url", url},
+            {"voice", voice}};
+    }
+
+    static TtsConfig fromJson(const json &j) {
+        return TtsConfig(
+            j.at("apiKey").get<std::string>(),
+            j.at("url").get<std::string>(),
+            j.at("voice").get<std::string>());
+    }
+
+private:
+    std::string apiKey;
+    std::string url;
+    std::string voice;
+};
+
+class TtsConfigManager {
+public:
+    TtsConfigManager(const std::string &configPath) : configPath(configPath) {}
+
+    bool load() {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            json j;
+            configFile >> j;
+
+            config = TtsConfig::fromJson(j);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
         }
+    }
 
-    private:
-        int status;
-        std::string code;
-        std::string errorMsg;
-        json data;
-    };
+    bool save() const {
+        try {
+            json j = config.toJson();
 
-    class CStartTTSAudio {
-    public:
-        std::string parse(const std::string &res) {
-            try {
-                json js = json::parse(res);
-                data = js;
-            } catch (json::parse_error &ex) {
-                LOG(ERROR) << "parse error at byte " << ex.byte;
-                return "";
-            }
-            LOG(INFO) << "g_playing_priority:" << g_playing_priority << "TTS level:" << data.audioLevel;
-            if (g_playing_priority <= data.audioLevel) {
-                CStartTTSAudioResult result;
-                result.do_success("A high-priority play task has been created");
-                json s = result;
-                LOG(INFO) << "hk tts res:" << s.dump();
-                return s.dump();
-            }
-            AudioPlayUtil::audio_stop();
-            g_playing_priority = data.audioLevel;
-            std::string txt = data.ttscontent;
-            CUtils::async_wait(1, 0, 0, [txt] {
-                LOG(INFO) << "hk tts:" << txt;
-                AudioPlayUtil::tts_num_play(1,txt);
-                g_playing_priority = NON_PLAY_PRIORITY;
-            });
-            CStartTTSAudioResult result;
-            result.do_success("success");
-            json s = result;
-            LOG(INFO) << "hk tts res:" << s.dump();
-            return s.dump();
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
         }
+    }
 
-    private:
-        CStartTTSAudioData data;
-    };
-}
+    TtsConfig getConfig() const { return config; }
+    void setConfig(const TtsConfig &newConfig) { config = newConfig; }
+
+private:
+    std::string configPath;
+    TtsConfig config;
+};
