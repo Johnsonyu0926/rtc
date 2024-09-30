@@ -1,76 +1,58 @@
-#ifndef __CSERVERSET_H__
-#define __CSERVERSET_H__
+#pragma once
 
-#include <iostream>
+#include <string>
 #include "json.hpp"
-#include "audiocfg.hpp"
 #include "utils.h"
-
-using namespace std;
 
 namespace asns {
 
-    class CServerSetResult {
-    private:
-        string cmd;
-        int resultId;
-        string msg;
+class CServerSetResult {
+public:
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(CServerSetResult, cmd, resultId, msg)
 
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CServerSetResult, cmd, resultId, msg)
+    void do_fail(const std::string& str) {
+        cmd = "ServerSet";
+        resultId = 2;
+        msg = str;
+    }
 
-        void do_success() {
-            cmd = "ServerSet";
-            resultId = 1;
-            msg = "ServerSet handle success";
-        };
-    };
+    void do_success() {
+        cmd = "ServerSet";
+        resultId = 1;
+        msg = "ServerSet success";
+    }
 
-    class CServerSet {
-    private:
-        string cmd;
-        string serverAddress;
-        string serverPort;
-        string deviceCode;
-        string password;
+private:
+    std::string cmd;
+    int resultId;
+    std::string msg;
+};
 
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CServerSet, cmd, serverAddress, serverPort, deviceCode, password)
+class CServerSet {
+public:
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(CServerSet, cmd, serverConfig)
 
-        int do_req(CSocket *pClient) {
-            CAudioCfgBusiness cfg;
-            cfg.load();
-
-            cfg.business[0].server = serverAddress;
-            cfg.business[0].port = atoi(serverPort.c_str());
-            cfg.business[0].deviceID = deviceCode;
-            cfg.business[0].password = password;
-            cfg.saveToJson();
-
-            CUtils utils;
-            if (utils.is_ros_platform()) {
-                char buf[64] = {0};
-                sprintf (buf, "cm set_val sys server %s", serverAddress.c_str());
-                system(buf);
-                sprintf (buf, "cm set_val sys port %s", serverPort.c_str());
-                system(buf);
-                sprintf (buf, "cm set_val sys password %s", password.c_str());
-                system(buf);
-                sprintf (buf, "cm set_val sys deviceid %s", deviceCode.c_str());
-                system(buf);
+    int do_req(CSocket *pClient) {
+        CUtils utils;
+        CServerSetResult res;
+        res.do_success();
+        if (serverConfig.empty()) {
+            res.do_fail("serverConfig is empty");
+        } else {
+            std::string str = utils.hex_to_string(serverConfig);
+            if (Rs485::_uart_work(str.c_str(), str.length()) != 1) {
+                res.do_fail("serverConfig write fail");
             }
-            LOG(INFO) << "serverAddress" << serverAddress << ",serverPort:" << serverPort << ",deviceCode:"
-                                     << deviceCode
-                                     << ",password:" << password;
-            CServerSetResult res;
-            res.do_success();
-            json j = res;
-            std::string s = j.dump();
-            pClient->Send(s.c_str(), s.length());
-            utils.cmd_system("asctrl.sh restart");
-            return 1;
         }
-    };
+        json j = res;
+        std::string s = j.dump();
+        pClient->Send(s.c_str(), s.length());
+        return 1;
+    }
 
-} // namespace tcpserver
-#endif
+private:
+    std::string cmd;
+    std::string serverConfig;
+};
+
+} // namespace asns
