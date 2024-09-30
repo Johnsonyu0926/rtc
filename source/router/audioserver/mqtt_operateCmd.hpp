@@ -1,52 +1,82 @@
 #pragma once
 
-#include "json.hpp"
-#include "mqtt_reTemp.hpp"
-#include "utils.h"
-#include "Rs485.hpp"
+#include <string>
+#include <nlohmann/json.hpp>
+#include "mqtt.hpp"
+#include "operateCmd.hpp"
 
 using json = nlohmann::json;
 
-namespace asns {
-    template<typename Quest, typename Result>
-    class CReQuest;
+class MqttOperateCmd {
+public:
+    MqttOperateCmd(const std::string &clientId, const std::string &host, int port)
+        : clientId(clientId), host(host), port(port) {}
 
-    template<typename T>
-    class CResult;
+    bool loadConfig(const std::string &configPath) {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-    class CPtzOperateResultData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CPtzOperateResultData, null)
+            json j;
+            configFile >> j;
 
-        template<typename Quest, typename Result, typename T>
-        int do_success(const CReQuest<Quest, Result> &c, CResult<T> &r) {
-            if (c.data.operateCmd.empty()) {
-                r.resultId = 2;
-                r.result = "failed to operateCmd empty";
-                return 2;
-            }
-            CUtils utils;
-            std::string str = utils.hex_to_string(c.data.operateCmd);
-            if (Rs485::_uart_work(str.c_str(), str.length()) != 1) {
-                r.resultId = 2;
-                r.result = "failed to open ttyS";
-                return 2;
-            }
-            r.resultId = 1;
-            r.result = "success";
-            return 1;
+            cmdConfig = j.at("cmdConfig").get<OperateCmd>();
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
         }
+    }
 
-    public:
-        std::nullptr_t null;
-    };
+    bool saveConfig(const std::string &configPath) const {
+        try {
+            json j = {
+                {"cmdConfig", cmdConfig}
+            };
 
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-    class CPtzOperateData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CPtzOperateData, operateCmd)
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
 
-    public:
-        std::string operateCmd;
-    };
-}
+    void initializeClient() {
+        mqttClient = std::make_unique<MqttClient>(clientId, host, port);
+    }
+
+    void setCallback(const std::function<void(const std::string &topic, const std::string &message)> &callback) {
+        mqttClient->setMessageCallback(callback);
+    }
+
+    bool connect() {
+        return mqttClient->connect();
+    }
+
+    void disconnect() {
+        mqttClient->disconnect();
+    }
+
+    bool subscribe(const std::string &topic) {
+        return mqttClient->subscribe(topic);
+    }
+
+    bool publish(const std::string &topic, const std::string &message) {
+        return mqttClient->publish(topic, message);
+    }
+
+    void loopForever() {
+        mqttClient->loopForever();
+    }
+
+private:
+    std::string clientId;
+    std::string host;
+    int port;
+    OperateCmd cmdConfig;
+    std::unique_ptr<MqttClient> mqttClient;
+};
