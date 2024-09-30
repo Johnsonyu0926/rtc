@@ -1,6 +1,6 @@
 /**  @file   DevComPublicDef.h
  *   @note   HangZhou Hikvision System Technology Co., Ltd. All Right Reserved. 
- *   @brief  �豸��Э�����һЩ�����Ķ��壬������ÿ������������ݣ�����ʵ��
+ *   @brief  设备端协议组件一些公共的定义，不定义每个组件独有内容，不做实现
  *   
  *   @author shijianfengyf2
  *   @modify shijianfengyf2
@@ -15,11 +15,11 @@
 #include "HPR/HPR_Types.h"
 #include "HPR/HPR_Utils.h"
 
-#define MAX_PRINT_BYTES             1024               //һ�δ�ӡ����ֽ���
+#define MAX_PRINT_BYTES             1024               //一次打印最大字节数
 
-//����gcc�Լ�g++�������£�attribute�����ԣ���ǰ����Ϊhidden
+//定义gcc以及g++编译器下，attribute的属性，当前设置为hidden
 #ifndef NET_COM_ATTRIBUTE_VISIBILITY
-    #define NET_COM_ATTRIBUTE_VISIBILITY //���ֺ��ʹ�õı�������֧��������ܣ�����ȶ���ɿյģ��Ժ��и���һ��������ʹ��
+    #define NET_COM_ATTRIBUTE_VISIBILITY //发现后端使用的编译器不支持这个功能，因此先定义成空的，以后有更进一步需求，再使用
     //#ifdef OS_POSIX
     //    #define NET_COM_ATTRIBUTE_VISIBILITY  __attribute__ ((visibility("hidden")))
     //#else  // !OS_POSIX
@@ -27,7 +27,7 @@
     //#endif // !other os
 #endif // NET_COM_ATTRIBUTE_VISIBILITY
 
-//����ӿ��Լ��ർ����
+//定义接口以及类导出宏
 #ifndef NET_COM_EXPORT_TYPE
     #ifdef __cplusplus
         #ifdef NETSDK_EXPORTS
@@ -43,7 +43,7 @@
 #endif // !NET_COM_EXPORT_TYPE
 
 
-//����ӿ��Լ��ർ����
+//定义接口以及类导出宏
 #ifndef NET_COM_API
     #define NET_COM_API NET_COM_EXPORT_TYPE NET_COM_ATTRIBUTE_VISIBILITY
     #define NET_COM_CLASS NET_COM_CLASS_EXPORT_TYPE NET_COM_ATTRIBUTE_VISIBILITY
@@ -62,7 +62,7 @@
 #define EHOME_COM_STORAGE_BUILDVERSION          (MAKESDKBUILDVERSION(2, 2, 2, 6))
 #define EHOME_COM_MODEL_BUILDVERSION            "V2.0.0.0"
 
-//����sdk��build�汾��
+//生成sdk的build版本号
 #define MAKESDKBUILDVERSION(main_version, sub_version, build_no1, build_no2) \
     HPR_UINT32( \
     (HPR_UINT32(main_version & 0xff) << 24) | \
@@ -88,7 +88,7 @@
 #endif //_DEBUG
 #endif //OS_POSIX
 
-//����Դ���ȵ��ַ�����ʽ��������windows/linux���ṩ�˲�ͬ�汾
+//含有源长度的字符串格式化函数，windows/linux各提供了不同版本
 #if defined OS_WINDOWS
     #define LOG_SNPRINTF        _snprintf
     #define LOG_VSNPRINTF       _vsnprintf
@@ -125,15 +125,15 @@ if (m_pPrivate != NULL)\
     }
 
 
-//#define EHOME_IP_LEN 64 //IPv4��IPv6��ַ�����ַ�����ʾ��64���ֽ��Ѿ��㹻
+//#define EHOME_IP_LEN 64 //IPv4和IPv6地址，用字符串表示，64个字节已经足够
 
-#define GET_DATA_NOTNULL(a, b)   (a != 0 ? a : b)   //���ղ���˳������ȡ��0����ֵ
+#define GET_DATA_NOTNULL(a, b)   (a != 0 ? a : b)   //按照参数顺序，优先取非0的数值
 
 #define EHOME_MTU_LEN 1500
 
 #ifndef  EBASE_NEWOBJECT
     #ifdef OS_WINDOWS
-        #pragma warning(disable: 4291) //����new(::std::nothrow)��VC���뾯��
+        #pragma warning(disable: 4291) //消除new(::std::nothrow)的VC编译警告
     #endif
 
     #define EBASE_NEWOBJECT
@@ -146,19 +146,19 @@ if (m_pPrivate != NULL)\
 #define NEWARRAY(p, x, size)    {p = new(::std::nothrow) x[size];}
 #define DELARRAY(p)             {if(NULL != p) delete[] p;} 
 
-//����˺���Ϊ��ĳ�����ݲ�ʹ��ʱ�����ѡ��ʹ���벻������
+//定义此宏是为在某参数暂不使用时将其框选以使编译不出警告
 #define UNREFERENCEDPARAMETER_INSDK(x)    {(x) = (x);}
 
 #define SDK_INVALID_ID (-1)
 
-#define SESSIONKEY_LEN		                                       16		    //	�豸�Ự��Կ���� ,Ĭ����16���ֽ� 
+#define SESSIONKEY_LEN		                                       16		    //	设备会话秘钥长度 ,默认是16个字节 
 
-#define ARRAY_SIZE(A)    (sizeof(A)/sizeof((A)[0]))    // �����С
+#define ARRAY_SIZE(A)    (sizeof(A)/sizeof((A)[0]))    // 数组大小
 
 #define TOPIC_OBERSER_CNT 64
 #define SSL_AUTH_INFO_PATH_LEN_MAX        128
 
-//�������ͣ���socket�������
+//连接类型，与socket密切相关
 typedef enum tagInterLinkTypeEnum
 {
     ENUM_LINK_TYPE_ERROR = -1,
@@ -172,12 +172,12 @@ typedef enum tagInterLinkTypeEnum
 typedef enum enumSSL_AUTH_TYPE
 {
     SSL_AUTH_TYPE_UNKNOOW = -1,
-    SSL_AUTH_TYPE_TWO_WAY = 0,     //˫����֤
-    SSL_AUTH_TYPE_ONE_WAY = 1,   //������֤���ͻ�����֤�����
-    SSL_AUTH_TYPE_NO_AUTH = 2,   //����֤
+    SSL_AUTH_TYPE_TWO_WAY = 0,     //双向认证
+    SSL_AUTH_TYPE_ONE_WAY = 1,   //单向认证，客户端认证服务端
+    SSL_AUTH_TYPE_NO_AUTH = 2,   //无认证
 }SSL_AUTH_TYPE;
 
-//����ṹ�������չ����Ϊֻ��core�ڲ�ʹ����
+//这个结构体可以扩展，因为只在core内部使用了
 typedef struct tagConnectCond
 {
     char*      pServerIP;
@@ -185,10 +185,10 @@ typedef struct tagConnectCond
     HPR_UINT16 wLocalPort;
     char*      pLocalIP;
     HPR_BOOL   bIsNeedBind;
-    HPR_UINT32 dwConnectTimeOut;    //���ӳ�ʱ��Ĭ��3500ms��֮���Բ���3000ms������Ϊ3000ms�Ǻܶ�ϵͳconnect��һ��������ʱ�򣬶��500ms���൱�ڸ���һ�������Ļ���
-    HPR_UINT32 dwSendTimeOut;       //���ͳ�ʱ��Ĭ��5000ms
-    HPR_UINT32 dwRecvTimeOut;       //���ճ�ʱ��Ĭ��5000ms
-    LINK_TYPE_ENUM linkType;        //��������
+    HPR_UINT32 dwConnectTimeOut;    //链接超时，默认3500ms，之所以不是3000ms，是因为3000ms是很多系统connect第一次重连的时候，多给500ms，相当于给了一次重连的机会
+    HPR_UINT32 dwSendTimeOut;       //发送超时，默认5000ms
+    HPR_UINT32 dwRecvTimeOut;       //接收超时，默认5000ms
+    LINK_TYPE_ENUM linkType;        //连接类型
     char       szClientCertPath[SSL_AUTH_INFO_PATH_LEN_MAX];
     char       szClientPriKeyPath[SSL_AUTH_INFO_PATH_LEN_MAX];
     char       szCACert[SSL_AUTH_INFO_PATH_LEN_MAX];
