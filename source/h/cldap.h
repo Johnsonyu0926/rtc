@@ -4,66 +4,58 @@
 #include <lber.h>
 #include <ldap.h>
 #include "doorsbase.h"
+#include <string>
 
 #define AUTH_SUCCESS 0
 #define AUTH_USER_NOT_EXIST 1
 #define AUTH_PASSWORD_ERROR 2
 #define AUTH_LDAP_SERVER_ERROR 3
-#define LDAP_PORT 389
-#define LDAP_HOST "192.168.100.194"
-#define BASE "o=doors,c=cn"
-#define ADMIN_BINDDN "cn=admin,o=doors,c=cn"
-#define ADMIN_PASSWD "admin123"
 
-#define HTTP_PROXY 0x01
-#define HOME_PROXY 0X02
-#define BASE_DOMAIN "o=rd,c=cn"
-#define GROUP_BASE "ou=Groups,o=gst,c=CN"
-#define HTTP_GROUP_DN "cn=httpgrp,ou=Groups,ou=giantsound,c=cn"
-#define HOME_GROUP_DN "cn=domesticgrp,ou=Groups,ou=giatnsound,c=cn"
-#define FTP_GROUP_DN "cn=ftpgrp,ou=Groups,ou=giatnsound,c=cn"
-#define SOCKS_GROUP_DN "cn=socksgrp,ou=Groups,ou=giatnsound,c=cn"
+constexpr int LDAP_PORT = 389;
+constexpr const char* LDAP_HOST = "192.168.100.194";
+constexpr const char* BASE = "o=doors,c=cn";
+constexpr const char* ADMIN_BINDDN = "cn=admin,o=doors,c=cn";
+constexpr const char* ADMIN_PASSWD = "admin123";
+constexpr const char* BASE_DOMAIN = "o=rd,c=cn";
+constexpr const char* GROUP_BASE = "ou=Groups,o=gst,c=CN";
+constexpr const char* HTTP_GROUP_DN = "cn=httpgrp,ou=Groups,ou=giantsound,c=cn";
+constexpr const char* HOME_GROUP_DN = "cn=domesticgrp,ou=Groups,ou=giatnsound,c=cn";
+constexpr const char* FTP_GROUP_DN = "cn=ftpgrp,ou=Groups,ou=giatnsound,c=cn";
+constexpr const char* SOCKS_GROUP_DN = "cn=socksgrp,ou=Groups,ou=giatnsound,c=cn";
 
 class CLdap {
 public:
-    CLdap()
-        : m_pLdap(nullptr), m_pMessage(nullptr) {
-        strncpy(m_szBase, BASE, sizeof(m_szBase));
-        strncpy(m_szLdapHost, LDAP_HOST, sizeof(m_szLdapHost));
-        m_nLdapPort = LDAP_PORT;
-        strncpy(m_szAdminBindDN, ADMIN_BINDDN, sizeof(m_szAdminBindDN));
-        strncpy(m_szAdminPasswd, ADMIN_PASSWD, sizeof(m_szAdminPasswd));
-    }
+    CLdap();
     ~CLdap() = default;
 
-    int Init(const std::string& szHost = LDAP_HOST, int nPort = LDAP_PORT, const std::string& szBindDN = ADMIN_BINDDN, const std::string& szPswd = ADMIN_PASSWD, int nAuthMethod = LDAP_AUTH_SIMPLE);
-    int LdapSearchEx(const std::string& szBaseDN, const std::string& szFilter, LDAPMessage** pRet, std::string& szDN);
-    int LdapSearch(const std::string& szBaseDN, const std::string& szFilter, LDAPMessage** pRet);
-    int LdapSearch(const std::string& szFilter);
+    int Init(const std::string& host = LDAP_HOST, int port = LDAP_PORT, const std::string& bindDN = ADMIN_BINDDN, const std::string& password = ADMIN_PASSWD, int authMethod = LDAP_AUTH_SIMPLE);
+    int LdapSearchEx(const std::string& baseDN, const std::string& filter, LDAPMessage** ret, std::string& dn);
+    int LdapSearch(const std::string& baseDN, const std::string& filter, LDAPMessage** ret);
+    int LdapSearch(const std::string& filter);
     void ShowProperties(LDAP* ld, const std::string& dn);
     void PrintMessage();
-    int LdapModify(const std::string& szModifyDN, LDAPMod** pMods);
-    int LdapAdd(const std::string& szModifyDN, LDAPMod* pAttrs[]);
-    void FreeMods(LDAPMod** pMods);
-    int LdapDelete(const std::string& szDN);
-    int LdapModifyDN(const std::string& szOldDN, const std::string& szNewDN);
-    int DeleteUser(const std::string& szCommonName, const std::string& szOu);
-    int ModifyUserAttribute(const std::string& szDN, const std::string& szAttr, const std::string& szValue);
-    int ModifyUserAttribute(const std::string& szCommonName, const std::string& szOuName, const std::string& szAttr, const std::string& szValue);
-    int AddAttr(const std::string& szBaseDN, const std::string& szAttrType, const std::string& szAttrValue);
-    int AddMemberInProxyGroup(const std::string& szMemberDN, long nStatus);
-    int DisableUserHttp(const std::string& szCN, const std::string& szOu, int nProxyType = HTTP_PROXY);
-    int EnableUserHttp(const std::string& szCN, const std::string& szOu, int nProxyType = HTTP_PROXY);
-    int EnableUserHttp(const std::string& szDN, int nProxyType = HTTP_PROXY);
-    int DisableUserHttp(const std::string& szDN, int nProxyType = HTTP_PROXY);
+    int LdapModify(const std::string& modifyDN, LDAPMod** mods);
+    int LdapAdd(const std::string& modifyDN, LDAPMod* attrs[]);
+    void FreeMods(LDAPMod** mods);
+    int LdapDelete(const std::string& dn);
+    int LdapModifyDN(const std::string& oldDN, const std::string& newDN);
+    int DeleteUser(const std::string& commonName, const std::string& ou);
+    int ModifyUserAttribute(const std::string& dn, const std::string& attr, const std::string& value);
+    int ModifyUserAttribute(const std::string& commonName, const std::string& ouName, const std::string& attr, const std::string& value);
+    int AddAttr(const std::string& baseDN, const std::string& attrType, const std::string& attrValue);
+    int AddMemberInProxyGroup(const std::string& memberDN, long status);
+    int DisableUserHttp(const std::string& cn, const std::string& ou, int proxyType = HTTP_PROXY);
+    int EnableUserHttp(const std::string& cn, const std::string& ou, int proxyType = HTTP_PROXY);
+    int EnableUserHttp(const std::string& dn, int proxyType = HTTP_PROXY);
+    int DisableUserHttp(const std::string& dn, int proxyType = HTTP_PROXY);
     int LdapUnBind();
-    bool IsExistUserID(const std::string& szUserID);
-    int LdapAddOu(const std::string& szOuName, const std::string& szBaseDN = "ou=zju,o=edu,c=cn");
-    int Auth(const std::string& szUID, const std::string& szPasswd);
+    bool IsExistUserID(const std::string& userID);
+    int LdapAddOu(const std::string& ouName, const std::string& baseDN = "ou=zju,o=edu,c=cn");
+    int Auth(const std::string& uid, const std::string& passwd);
 
 private:
-    LDAP* LdapOpen(const std::string& szHost, int nPort = 389);
-    int LdapBind(const std::string& szBindDN, const std::string& szPasswd, int nAuthMethod = LDAP_AUTH_SIMPLE);
+    LDAP* LdapOpen(const std::string& host, int port = 389);
+    int LdapBind(const std::string& bindDN, const std::string& passwd, int authMethod = LDAP_AUTH_SIMPLE);
 
     LDAP* m_pLdap;
     LDAPMessage* m_pMessage;
