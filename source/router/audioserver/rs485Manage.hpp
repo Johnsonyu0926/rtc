@@ -1,160 +1,58 @@
 #pragma once
-#include "directional_sound_column.hpp"
 
-class RSBusinessManage {
+#include <string>
+#include "json.hpp"
+#include "utils.h"
+
+namespace asns {
+
+class CRs485ManageResult {
 public:
-    int do_str_req() {
-        asns::CBusiness bus;
-        int opcode = std::stoi(m_str[3]);
-        cout << "opcode: " << opcode << endl;
-        switch (opcode) {
-            case asns::TCPNETWORKSET:
-                LOG(INFO) << "TCPNetworkSet";
-                bus.TCPNetworkSet(m_str);
-                break;
-            case asns::UPDATEPWD:
-                LOG(INFO) << "UpdatePwd";
-                bus.UpdatePwd(m_str);
-                break;
-            case asns::NETWORKSET:
-                LOG(INFO) << "NetworkSet";
-                bus.NetworkSet(m_str);
-                break;
-            case asns::LOGIN:
-                LOG(INFO) << "LOGIN";
-                bus.Login(m_str);
-                break;
-            case asns::SETDEVICEADDRRESS:
-                LOG(INFO) << "设置设备地址";
-                break;
-            case asns::AUDIOPLAY:
-                LOG(INFO) << "AudioPlay";
-                bus.AudioPlay(m_str);
-                break;
-            case asns::AUDIOSTOP:
-                LOG(INFO) << "AudioStop";
-                bus.AudioStop();
-                break;
-            case asns::VOLUMSET:
-                LOG(INFO) << "VolumeSet";
-                bus.VolumeSet(m_str);
-                break;
-            case asns::REBOOT:
-                LOG(INFO) << "Reboot";
-                bus.Reboot();
-                break;
-            case asns::GETDEVICESTATUS:
-                LOG(INFO) << "GetDeviceStatus";
-                bus.GetDeviceStatus();
-                break;
-            case asns::TTSPLAY:
-                LOG(INFO) << "TtsPlay";
-                bus.TtsPlay(m_str);
-                break;
-            case asns::LIGHTSWITCH:
-                LOG(INFO) << "闪灯开关";
-                break;
-            case asns::FILEUPLOAD:
-                LOG(INFO) << "fileUpload";
-                bus.FileUpload(m_str);
-                break;
-            case asns::RESTORE:
-                LOG(INFO) << "Restore";
-                bus.Restore();
-                break;
-            case asns::AUDIONUMORTPLAY:
-                LOG(INFO) << "AudioNumberOrTimePlay";
-                bus.AudioNumberOrTimePlay(m_str);
-                break;
-            case asns::TTSNUMORTPLAY:
-                LOG(INFO) << "Tts Number or Time Play";
-                bus.TtsNumTimePlay(m_str);
-                break;
-            case asns::GETDEVICEBASEINFO:
-                LOG(INFO) << "GetDeviceBaseInfo";
-                bus.GetDeviceBaseInfo();
-                break;
-            case asns::RECORD:
-                LOG(INFO) << "Record";
-                bus.Record(m_str);
-                break;
-            case asns::REMOTEUPGRADE:
-                LOG(INFO) << "远程升级";
-                break;
-            case asns::GETAUDIOLIST:
-                LOG(INFO) << "GetAudioList";
-                bus.GetAudioList(m_str);
-                break;
-            case asns::LIGHTCONFIG:
-                LOG(INFO) << "FlashConfig";
-                bus.FlashConfig(m_str);
-                break;
-            case asns::RECORDBEGIN:
-                LOG(INFO) << "RecordBegin";
-                bus.RecordBegin(m_str);
-                break;
-            case asns::RECORDEND:
-                LOG(INFO) << "RecordEnd";
-                bus.RecordEnd(m_str);
-                break;
-            case asns::AUDIOFILEUPLOAD:
-                LOG(INFO) << "AudioFileUpload";
-                bus.AudioFileUpload(m_str);
-                break;
-            case asns::REMOTEFILEUPGRADE:
-                LOG(INFO) << "RemoteFileUpgrade";
-                bus.RemoteFileUpgrade(m_str);
-                break;
-            case asns::DSPMANAGE:
-                LOG(INFO) << "DSP Management";
-                bus.DspManagement(m_str);
-                break;
-            default:
-                LOG(INFO) << "switch F4";
-                asns::CBusiness::SendFast(asns::NONSUPPORT_ERROR);
-                break;
-        }
-        return 1;
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(CRs485ManageResult, cmd, resultId, msg)
+
+    void do_fail(const std::string& str) {
+        cmd = "Rs485Manage";
+        resultId = 2;
+        msg = str;
     }
 
-    int handle_receive(const char *buf) {
+    void do_success() {
+        cmd = "Rs485Manage";
+        resultId = 1;
+        msg = "Rs485Manage success";
+    }
+
+private:
+    std::string cmd;
+    int resultId;
+    std::string msg;
+};
+
+class CRs485Manage {
+public:
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(CRs485Manage, cmd, rs485Config)
+
+    int do_req(CSocket *pClient) {
         CUtils utils;
-        m_str = utils.string_split(buf);
-        if (m_str[0].compare("AA") != 0 || m_str[m_str.size() - 1].compare("EF") != 0) {
-            asns::CBusiness::SendFast(asns::BEGIN_END_CODE_ERROR);
-            return 0;
-        } else if (std::stoi(m_str[1]) != static_cast<int>(m_str.size() - 3)) {
-            asns::CBusiness::SendFast(asns::LENGTH_ERROR);
-            return 0;
-        } else if (m_str[m_str.size() - 2].compare("BB") != 0) {
-            asns::CBusiness::SendFast(asns::CHECK_CODE_ERROR);
-            return 0;
-        }
-        return do_str_req();
-    }
-
-    int worker() {
-        int fd = Rs485::_uart_open();
-        if (fd < 0) {
-            return -1;
-        }
-
-        int read_count = 0;
-        char buf[1024] = {0};
-        while (!AcquisitionNoise::getInstance().getMonitorStatus()) {
-            memset(buf, 0, sizeof(buf));
-            read_count = Rs485::_uart_read(buf, sizeof(buf));
-
-            if (read_count < 0) {
-                LOG(INFO) << "failed to read ! errno ="<< errno << " strerror=" << strerror(errno);
-                return 0;
+        CRs485ManageResult res;
+        res.do_success();
+        if (rs485Config.empty()) {
+            res.do_fail("rs485Config is empty");
+        } else {
+            std::string str = utils.hex_to_string(rs485Config);
+            if (Rs485::_uart_work(str.c_str(), str.length()) != 1) {
+                res.do_fail("rs485Config write fail");
             }
-            LOG(INFO) <<"recv request:"<< buf << "len: "<< read_count << ", handle it...";
-            handle_receive(buf);
         }
+        json j = res;
+        std::string s = j.dump();
+        pClient->Send(s.c_str(), s.length());
         return 1;
     }
 
 private:
-    std::vector<std::string> m_str;
+    std::string cmd;
+    std::string rs485Config;
 };
+
+} // namespace asns
