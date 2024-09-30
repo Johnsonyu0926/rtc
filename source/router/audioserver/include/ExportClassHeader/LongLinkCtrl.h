@@ -1,69 +1,54 @@
-/**  @file   LongLinkCtrl.h
- *   @note   HangZhou Hikvision System Technology Co., Ltd. All Right Reserved. 
- *   @brief 
- *   
- *   @author shijianfengyf2
- *   @modify shijianfengyf2
- *   @date   2018/09/06
- *   
- *   @note:
- */
 #ifndef _DEVCOM_EBASE_TRANMIT_LONGLINKCTRL_H_
 #define _DEVCOM_EBASE_TRANMIT_LONGLINKCTRL_H_
 
 #include "DevComPublicDef.h"
+using namespace std;
 
-namespace DevEBase
-{
-  //  class CLinkBase;
+namespace DevEBase {
+    
     class CLongLinkCtrlPrivate;
 
-    typedef HPR_BOOL(*LongCfgRecvDataCB)(HPR_VOIDPTR pUserdata, void const *pRecvdata, HPR_UINT32 nDatalen, HPR_UINT32 nStatus);
+    typedef bool(*LongCfgRecvDataCB)(void* pUserdata, const void* pRecvdata, uint32_t nDatalen, uint32_t nStatus);
 
-    //虚基类，长连接封装，只涉及多线程操作，数据收发接口的定义
-    class NET_COM_CLASS CLongLinkCtrl
-    {
+    //铏氬熀绫伙紝闀胯繛鎺ュ皝瑁咃紝鍙秹鍙婂绾跨▼鎿嶄綔锛屾暟鎹敹鍙戞帴鍙ｇ殑瀹氫箟
+    class CLongLinkCtrl {
     public:
         CLongLinkCtrl();
         virtual ~CLongLinkCtrl();
 
-        //---------------连接相关操作-----------------
-        virtual HPR_BOOL CreateLink(const CONNECT_COND *pConnectCond);
-        virtual HPR_BOOL Stop();
-        HPR_BOOL HasCreateLink() const;
+        //杩炴帴鐩稿叧鎿嶄綔
+        virtual bool CreateLink(const CONNECT_COND* pConnectCond);
+        virtual bool Stop();
+        bool HasCreateLink() const;
 
-        //---------------线程相关操作-----------------
-        HPR_BOOL StartRecvThread(LongCfgRecvDataCB fRecvCallBack, HPR_VOIDPTR pParam);
-        //停止线程
-        HPR_VOID StopRecvThread();
-        //这个函数只对m_bExitRecvThread进行赋值，不会等待接收线程退出。使用环境，当上层回调函数中发现底层接收数据有错误时，调用该接口来结束接收线程。因为StopRecvThread
-        //函数中会等待接收线程退出，如果在上层的回调函数中来调用，会导致死锁。所以增加了ExitRecvThread这个函数
-        HPR_VOID ExitRecvThread();
-        //回调函数使能
-        HPR_BOOL EnableRecvCallBack(HPR_BOOL bRecvCallBack);
-        HPR_BOOL ResumeRecvThread();
-        HPR_VOID SuspendRecvThread();
+        //绾跨▼鐩稿叧鎿嶄綔
+        bool StartRecvThread(LongCfgRecvDataCB fRecvCallBack, void* pParam);
+        void StopRecvThread();
+        void ExitRecvThread();
+        bool EnableRecvCallBack(bool bRecvCallBack);
+        bool ResumeRecvThread();
+        void SuspendRecvThread();
 
-        HPR_INT32 SendData(const HPR_UINT8* pBuff, HPR_UINT32 dwBuffLen, HPR_UINT32 dwTimeOut);
-        HPR_BOOL GetLocalIP(void *pStru, HPR_UINT32 dwSize) const;
-        HPR_BOOL GetSocket(void *pStru, HPR_UINT32 dwSize) const;
+        int32_t SendData(const uint8_t* pBuff, uint32_t dwBuffLen, uint32_t dwTimeOut);
+        bool GetLocalIP(void* pStru, uint32_t dwSize) const;
+        bool GetSocket(void* pStru, uint32_t dwSize) const;
 
     protected:
-        HPR_VOID CheckFreezeThread(HPR_VOID);
-        HPR_BOOL NeedAllocRecvBuffer(HPR_VOID) const;
-        HPR_VOID FreezeThread(HPR_VOID);
-        HPR_VOID UnfreezeThread(HPR_VOID);
+        void CheckFreezeThread();
+        bool NeedAllocRecvBuffer() const;
+        void FreezeThread();
+        void UnfreezeThread();
 
-        //接收数据线程
-        static HPR_VOIDPTR CALLBACK RecvThreadCallbackStatic(HPR_VOIDPTR pParam);
+        static void* CALLBACK RecvThreadCallbackStatic(void* pParam);
         virtual void RecvThreadCallback();
-        HPR_BOOL CloseLink();
-        HPR_VOID DestroyLink();
+        bool CloseLink();
+        void DestroyLink();
 
-        HPR_BOOL CheckResource() const;
+        bool CheckResource() const;
 
-        CLongLinkCtrlPrivate *m_pPrivate;
+        CLongLinkCtrlPrivate* m_pPrivate;
     };
+
 }
 
 #endif // !_DEVCOM_EBASE_TRANMIT_LONGLINKCTRL_H_
