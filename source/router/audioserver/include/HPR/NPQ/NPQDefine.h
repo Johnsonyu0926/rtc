@@ -1,14 +1,3 @@
-/**  @file    NPQDefine.h
- *   @note   HangZhou Hikvision System Technology Co., Ltd. All Right Reserved. 
- *   @brief     ºØ≥…NPQø‚”√µΩµƒ∫Í£¨Ω·ππÃÂ£¨√∂æŸ∂®“Â
- *   
- *   @author zhaolin
- *   @modify zhaolin
- *   @date   2016/12/16
- *   
- *   @note:
- */
-
 #ifndef _NPQ_DEFINE_H_
 #define _NPQ_DEFINE_H_
 
@@ -16,134 +5,104 @@
 #include "HPR_Types.h"
 #include "NPQos.h"
 
-typedef enum
-{
-    NPQ_MODE_DIRECT_CONNECT = 0, //÷±¡¨
-    NPQ_MODE_BY_SMS = 1          //π˝¡˜√ΩÃÂ
-}PROTO_NPQ_MODE;
+enum class ProtoNPQMode {
+    DIRECT_CONNECT = 0,
+    BY_SMS = 1
+};
 
-//¥ÌŒÛ¬Î
-#define NET_ERR_NPQ_BASE_INDEX      8000                                //NPQø‚¥ÌŒÛ¬Î
-#define NET_ERR_NPQ_PARAM           (NET_ERR_NPQ_BASE_INDEX + 1)        //NPQø‚≤Œ ˝”–ŒÛ
-#define NET_ERR_NPQ_SYSTEM          (NET_ERR_NPQ_BASE_INDEX + 2)        //NPQø‚≤Ÿ◊˜œµÕ≥µ˜”√¥ÌŒÛ(∞¸¿®◊ ‘¥…Í«Î ß∞‹ªÚƒ⁄≤ø¥ÌŒÛµ»£©
-#define NET_ERR_NPQ_GENRAL          (NET_ERR_NPQ_BASE_INDEX + 3)        //NPQø‚ƒ⁄≤øÕ®”√¥ÌŒÛ
-#define NET_ERR_NPQ_PRECONDITION    (NET_ERR_NPQ_BASE_INDEX + 4)        //NPQø‚µ˜”√À≥–Ú¥ÌŒÛ
-#define NET_ERR_NPQ_NOTSUPPORT      (NET_ERR_NPQ_BASE_INDEX + 5)        //NPQø‚π¶ƒ‹≤ª÷ß≥÷
+// ÈîôËØØÁ†Å
+constexpr int NET_ERR_NPQ_BASE_INDEX = 8000;
+enum NPQError {
+    PARAM = NET_ERR_NPQ_BASE_INDEX + 1,
+    SYSTEM = NET_ERR_NPQ_BASE_INDEX + 2,
+    GENERAL = NET_ERR_NPQ_BASE_INDEX + 3,
+    PRECONDITION = NET_ERR_NPQ_BASE_INDEX + 4,
+    NOTSUPPORT = NET_ERR_NPQ_BASE_INDEX + 5,
+    NOTCALLBACK = NET_ERR_NPQ_BASE_INDEX + 100,
+    LOADLIB = NET_ERR_NPQ_BASE_INDEX + 101,
+    STEAM_CLOSE = NET_ERR_NPQ_BASE_INDEX + 104,
+    MAX_LINK = NET_ERR_NPQ_BASE_INDEX + 110,
+    STREAM_CFG = NET_ERR_NPQ_BASE_INDEX + 111
+};
 
-#define NET_ERR_NPQ_NOTCALLBACK     (NET_ERR_NPQ_BASE_INDEX + 100)      // ˝æ›√ª”–ªÿµ˜…œ¿¥
-#define NET_ERR_NPQ_LOADLIB         (NET_ERR_NPQ_BASE_INDEX + 101)      //NPQø‚º”‘ÿ ß∞‹
-#define NET_ERR_NPQ_STEAM_CLOSE (NET_ERR_NPQ_BASE_INDEX + 104) //±æ¬∑¬Î¡˜NPQπ¶ƒ‹Œ¥ø™∆Ù
-#define NET_ERR_NPQ_MAX_LINK (NET_ERR_NPQ_BASE_INDEX + 110) //NPQ»°¡˜¬∑ ˝¥ÔµΩ…œœﬁ
-#define NET_ERR_NPQ_STREAM_CFG (NET_ERR_NPQ_BASE_INDEX + 111) //±‡¬Î≤Œ ˝¥Ê‘⁄≥ÂÕª≈‰÷√
+typedef int32_t (CALLBACK *HC_NPQ_Create)(NPQ_QOS_ROLE enType);
+typedef int32_t (CALLBACK *HC_NPQ_Destroy)(int32_t id);
+typedef int32_t (CALLBACK *HC_NPQ_Start)(int32_t id);
+typedef int32_t (CALLBACK *HC_NPQ_Stop)(int32_t id);
+typedef int32_t (CALLBACK *HC_NPQ_RegisterDataCallBack)(int32_t id, void (CALLBACK *fnRegisterDataCallBack)(int32_t id, int32_t iDataType, unsigned char* pData, uint32_t nDataLen, void* pUser), void* pUser);
+typedef int32_t (CALLBACK *HC_NPQ_InputData)(int32_t id, int32_t iDataType, unsigned char* pData, uint32_t nDataLen);
+typedef int32_t (CALLBACK *HC_NPQ_InputRawData)(int32_t id, MuxParam* pMuxParam, InputBuf* pstInputData);
+typedef int32_t (CALLBACK *HC_NPQ_SetParam)(int32_t id, void* pParam);
+typedef int32_t (CALLBACK *HC_NPQ_GetStat)(int32_t id, NPQ_MAIN_TYPE enMainType, void* pStat);
+typedef int32_t (CALLBACK *HC_NPQ_SetNotifyParam)(int32_t id, NPQ_SET_NOTIFY_PARAM* pNotifyParam);
+typedef int32_t (CALLBACK *HC_NPQ_GetVersion)(char* szVersion, int nLen);
 
-typedef HPR_INT32(CALLBACK *HC_NPQ_Create)(NPQ_QOS_ROLE enType);
-typedef HPR_INT32(CALLBACK *HC_NPQ_Destroy)(HPR_INT32 id);
-typedef HPR_INT32(CALLBACK *HC_NPQ_Start)(HPR_INT32 id);
-typedef HPR_INT32(CALLBACK *HC_NPQ_Stop)(HPR_INT32 id);
-typedef HPR_INT32(CALLBACK *HC_NPQ_RegisterDataCallBack)(HPR_INT32 id, HPR_VOID(CALLBACK *fnRegisterDataCallBack)(HPR_INT32 id, HPR_INT32 iDataType, unsigned char* pData, HPR_UINT32 nDataLen, HPR_VOIDPTR pUser), HPR_VOIDPTR pUser);
-typedef HPR_INT32(CALLBACK *HC_NPQ_InputData)(HPR_INT32 id, HPR_INT32 iDataType, unsigned char* pData, HPR_UINT32 nDataLen);
-typedef HPR_INT32(CALLBACK *HC_NPQ_InputRawData)(HPR_INT32 id, MUX_PARAM* pMuxParam, INPUT_BUF* pstInputData);
-typedef HPR_INT32(CALLBACK *HC_NPQ_SetParam)(HPR_INT32 id, HPR_VOIDPTR pParam);
-typedef HPR_INT32(CALLBACK *HC_NPQ_GetStat)(HPR_INT32 id, NPQ_MAIN_TYPE enMainType, HPR_VOIDPTR pStat);
-typedef HPR_INT32(CALLBACK *HC_NPQ_SetNotifyParam)(HPR_INT32 id, NPQ_SET_NOTIFY_PARAM* pNotifyParam);
-typedef HPR_INT32(CALLBACK *HC_NPQ_GetVersion)(char* szVersion, int nLen);
+struct NetUtilsNPQPackParam {
+    uint32_t pack_size;
+    uint32_t track_index;
+    uint32_t syc_video_track;
+    uint32_t system_format;
+    uint32_t system_format_subtype;
+    uint32_t video_format;
+    uint32_t audio_format;
+    uint32_t privt_format;
+    uint32_t is_hik_stream;
+    uint32_t encrypt_type;
+    uint32_t frame_type;
+    uint32_t time_stamp;
+    float duration;
+    uint32_t frame_num;
+    HKSystemTime global_time;
 
+    struct {
+        uint16_t width_orig;
+        uint16_t height_orig;
+        uint16_t width_play;
+        uint16_t height_play;
+        float frame_rate;
+        uint16_t interlace;
+        uint16_t b_frame_num;
+        uint32_t is_svc_stream;
+    } video;
 
-typedef struct tagNET_UTILS_NPQ_PACK_PARAM
-{
-    // πÃ∂®µƒ≤Œ ˝
-    HPR_UINT32        pack_size;             // PS°¢TS∫ÕRTP…Ë÷√◊Ó¥Û∞¸≥§£¨0Œ™ƒ¨»œ≥§∂»
-    HPR_UINT32        track_index;           // πÏµ¿∫≈
-    HPR_UINT32        syc_video_track;       // πÿ¡™µƒ ”∆µπÏµ¿∫≈
+    struct {
+        uint16_t channels;
+        uint16_t bits_per_sample;
+        uint32_t samples_rate;
+        uint32_t bit_rate;
+    } audio;
 
-    HPR_UINT32        system_format;         // ƒø±Í∑‚◊∞∏Ò Ω
-    HPR_UINT32        system_format_subtype; // ƒø±Í¿‡–Õµƒ◊”∏Ò Ω£¨ƒø«∞÷ª π”√”⁄MP4£¨∆‰À˚∑‚◊∞≤ª  ”√
+    struct {
+        uint32_t privt_type;
+        uint32_t data_type;
+    } privt;
+};
 
-    HPR_UINT32        video_format;          //  ”∆µ¿‡–Õ
-    HPR_UINT32        audio_format;          // “Ù∆µ¿‡–Õ
-    HPR_UINT32        privt_format;          // ÀΩ”– ˝æ›¿‡–Õ
+typedef void (CALLBACK *NPQTransCB)(int32_t id, int32_t iDataType, unsigned char* pData, uint32_t nDataLen, void* pUser);
 
-    // ≤Œøº÷°–≈œ¢£¨∑«πÃ∂®≤Œ ˝
-    HPR_UINT32        is_hik_stream;         //  «∑Ò∑˚∫œ∫£øµ∂®“Â
-    HPR_UINT32        encrypt_type;          // º”√‹¿‡–Õ
-    HPR_UINT32        frame_type;            // µ±«∞÷°¿‡–Õ I/P/B/audio/privt
-    HPR_UINT32        time_stamp;            //  ±º‰¥¡
-    float               duration;              // ÷° ±≥§
-    HPR_UINT32        frame_num;             // ÷°∫≈
-    HK_SYSTEMTIME       global_time;           // »´æ÷ ±º‰£®∫£øµ¬Î¡˜≤≈”–£©
+struct NetUtilsNPQStateSingle {
+    uint32_t dwRttUs;
+    uint32_t dwRealRttUs;
+    uint32_t dwBitRate;
+    uint8_t byLossFraction;
+    uint8_t byLossFraction2;
+    uint8_t byRes[126];
+};
 
-    //  ”∆µ≤Œ ˝
-    struct
-    {
-        HPR_UINT16  width_orig;            // ∑÷±Ê¬ £¨‘≠ ºøÌ
-        HPR_UINT16  height_orig;           // ∑÷±Ê¬ £¨‘≠ º∏ﬂ
-        HPR_UINT16  width_play;            // ∑÷±Ê¬ £¨≤√ºÙøÌ
-        HPR_UINT16  height_play;           // ∑÷±Ê¬ £¨≤√ºÙ∏ﬂ
-        float           frame_rate;            // ÷°¬ 
-        HPR_UINT16  interlace;             //  «∑Ò≥°±‡¬Î
-        HPR_UINT16  b_frame_num;           // ◊Èƒ£ Ω÷–£¨B÷°µƒ∏ˆ ˝
-        HPR_UINT32    is_svc_stream;         //  «∑ÒSVC¬Î¡˜
-    }video;
+struct NetUtilsNPQState {
+    uint32_t dwSize;
+    NetUtilsNPQStateSingle struAudioState;
+    NetUtilsNPQStateSingle struVideoState;
+    uint8_t byRes[256];
+};
 
-    // “Ù∆µ≤Œ ˝
-    struct
-    {
-        HPR_UINT16  channels;              // …˘µ¿
-        HPR_UINT16  bits_per_sample;       // —˘Œª
-        HPR_UINT32    samples_rate;          // ≤…—˘¬ 
-        HPR_UINT32    bit_rate;              // ±»Ãÿ¬ 
-    }audio;
+struct NetUtilsNPQCompressInfo {
+    uint32_t dwSize;
+    uint32_t dwMaxBitRate;
+    uint8_t byRes[64];
+};
 
-    // ÀΩ”–≤Œ ˝
-    struct
-    {
-        HPR_UINT32    privt_type;            // ÀΩ”–¿‡–Õ
-        HPR_UINT32    data_type;             // ◊”¿‡–Õ
-    }privt;
-
-}NET_UTILS_NPQ_PACK_PARAM, *LPNET_UTILS_NPQ_PACK_PARAM;
-
-
-
-typedef void (CALLBACK *NPQ_TRANS_CB)(HPR_INT32 id, HPR_INT32 iDataType, unsigned char* pData, HPR_UINT32 nDataLen, HPR_VOIDPTR pUser);
-
-
-
-typedef struct tagNET_UTILS_NPQ_STATE_SINGLE
-{
-    HPR_UINT32 dwRttUs;			//rtt£¨µ•Œªus
-    HPR_UINT32 dwRealRttUs;		// µ ±rtt£¨µ•Œªus
-    HPR_UINT32 dwBitRate;       //¬Î¬ 
-    HPR_UINT8 byLossFraction;	//∂™∞¸¬ £¨µ•Œª1/256
-    HPR_UINT8 byLossFraction2;	//æ≠π˝ª÷∏¥÷Æ∫Ûµƒ∂™∞¸¬ £¨÷ªƒ‹‘⁄Ω” ’∂ÀªÒ»°£¨µ•Œª1/256
-    HPR_UINT8 byRes[126];
-}NET_UTILS_NPQ_STATE_SINGLE, *LPNET_UTILS_NPQ_STATE_SINGLE;
-
-
-typedef struct tagNET_UTILS_NPQ_STATE
-{
-    HPR_UINT32 dwSize;
-    NET_UTILS_NPQ_STATE_SINGLE struAudioState;  //“Ù∆µ¥´ ‰◊¥Ã¨
-    NET_UTILS_NPQ_STATE_SINGLE struVideoState;  // ”∆µ¥´ ‰◊¥Ã¨
-    HPR_UINT8 byRes[256];
-}NET_UTILS_NPQ_STATE, *LPNET_UTILS_NPQ_STATE;
-
-// typedef struct tagNET_UTILS_NPQ_CONNECT_PARAM
-// {
-//     NET_UTILS_NPQ_LINK_COND struLinkRemote;  //∂‘∂À ”“Ù∆µ¡˜¡¨Ω”∫ÕRTCP¡¨Ω”µÿ÷∑–≈œ¢
-//     char *sSdp; //∂‘∂ÀSDP–≈œ¢
-//     HPR_UINT8 byRes[64];
-// }NET_UTILS_NPQ_CONNECT_PARAM, *LPNET_UTILS_NPQ_CONNECT_PARAM;
-
-typedef struct tagNET_UTILS_NPQ_COMPRESSINFO
-{
-    HPR_UINT32 dwSize;
-    HPR_UINT32 dwMaxBitRate; //◊Ó¥Û¬Î¬ 
-    HPR_UINT8 byRes[64];
-}NET_UTILS_NPQ_COMPRESSINFO, *LPNET_UTILS_NPQ_COMPRESSINFO;
-
-typedef struct rtp_hdr//rtp header
-{
+struct RTPHeader {
     unsigned char count : 4;
     unsigned char extension : 1;
     unsigned char padding : 1;
@@ -153,8 +112,8 @@ typedef struct rtp_hdr//rtp header
     unsigned short sequence;
     unsigned int timestamp;
     unsigned int ssrc;
-}RTP_HEADER;
+};
 
-#define COMMON_VIDEO_PT     96      //Õ®”√ ”∆µpayload∂®“Â
+constexpr int COMMON_VIDEO_PT = 96;
 
-#endif //_NPQ_DEFINE_H_
+#endif // _NPQ_DEFINE_H_
