@@ -1,79 +1,84 @@
 #pragma once
 
-#include "json.hpp"
-#include "utils.h"
-#include "public.hpp"
-#include <thread>
-#include "AudioPlayUtils.hpp"
+#include <string>
+#include <fstream>
+#include <nlohmann/json.hpp>
 
-namespace asns {
-    class CTtsPlayResult {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CTtsPlayResult, cmd, resultId, msg)
+using json = nlohmann::json;
 
-        void do_success() {
-            cmd = "TtsPlay";
-            resultId = 1;
-            msg = "play success";
+class TtsPlay {
+public:
+    TtsPlay(const std::string &clientId, const std::string &host, int port)
+        : clientId(clientId), host(host), port(port) {}
+
+    bool loadConfig(const std::string &configPath) {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            json j;
+            configFile >> j;
+
+            ttsConfig = j.at("ttsConfig").get<std::string>();
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
         }
+    }
 
-        void do_fail(const std::string& str) {
-            cmd = "TtsPlay";
-            resultId = 2;
-            msg = str;
+    bool saveConfig(const std::string &configPath) const {
+        try {
+            json j = {
+                {"ttsConfig", ttsConfig}
+            };
+
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
         }
+    }
 
-    private:
-        std::string cmd;
-        int resultId;
-        std::string msg;
-    };
+    void initializeClient() {
+        // Initialize MQTT client
+    }
 
-    class CTtsPlay {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CTtsPlay, cmd, content, playType, duration, voiceType, speed)
+    void setCallback(const std::function<void(const std::string &topic, const std::string &message)> &callback) {
+        // Set MQTT callback
+    }
 
-        int do_req(CSocket *pClient) {
-            CTtsPlayResult ttsPlayResult;
-            ttsPlayResult.do_success();
-            CUtils utils;
-            if (CUtils::get_process_status("madplay") || CUtils::get_process_status("ffplay") || PlayStatus::getInstance().getPlayState()) {
-                ttsPlayResult.do_fail("Existing playback task");
-            } else {
-                std::string txt = utils.hex_to_string(content);
-                switch (playType) {
-                    case 0:
-                        AudioPlayUtil::tts_loop_play(txt, ASYNC_START, speed, voiceType);
-                        break;
-                    case 1: {
-                        if (duration < 1) {
-                            ttsPlayResult.do_fail("parameter cannot be less than 1");
-                            break;
-                        }
-                        AudioPlayUtil::tts_num_play(duration, txt, ASYNC_START, speed, voiceType);
-                        break;
-                    }
-                    case 2: {
-                        if (duration < 1) {
-                            ttsPlayResult.do_fail("parameter cannot be less than 1");
-                            break;
-                        }
-                        AudioPlayUtil::tts_time_play(duration, txt, ASYNC_START, speed,voiceType);
-                        break;
-                    }
-                }
-            }
-            json js = ttsPlayResult;
-            std::string str = js.dump();
-            return pClient->Send(str.c_str(), str.length());
-        }
+    bool connect() {
+        // Connect to MQTT broker
+        return true;
+    }
 
-    private:
-        std::string cmd;
-        std::string content;
-        int playType;
-        int duration;
-        int voiceType;
-        int speed;
-    };
-}
+    void disconnect() {
+        // Disconnect from MQTT broker
+    }
+
+    bool subscribe(const std::string &topic) {
+        // Subscribe to MQTT topic
+        return true;
+    }
+
+    bool publish(const std::string &topic, const std::string &message) {
+        // Publish message to MQTT topic
+        return true;
+    }
+
+    void loopForever() {
+        // Loop forever to process MQTT messages
+    }
+
+private:
+    std::string clientId;
+    std::string host;
+    int port;
+    std::string ttsConfig;
+    // MQTT client instance
+};
