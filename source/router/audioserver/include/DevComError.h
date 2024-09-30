@@ -1,108 +1,76 @@
-#ifndef _DEVCOM_ERROR_
-#define _DEVCOM_ERROR_
+#ifndef DEV_COM_ERROR_H
+#define DEV_COM_ERROR_H
 
+#include <cstdint>
 
-/*******************È«¾Ö´íÎóÂë begin**********************/
-#define DEV_COM_ERROR_NONE                      0   //Ã»ÓÐ´íÎó
-#define DEV_COM_ERROR_NOINIT                    3   //Ã»ÓÐ³õÊ¼»¯
-#define DEV_COM_ERROR_CONNECT		            7	//Á¬½Ó·þÎñÆ÷Ê§°Ü
-#define DEV_COM_ERROR_SEND			            8	//Ïò·þÎñÆ÷·¢ËÍÊ§°Ü
-#define DEV_COM_ERROR_RECV			            9	//´Ó·þÎñÆ÷½ÓÊÕÊý¾ÝÊ§°Ü
-#define DEV_COM_ERROR_RECV_TIMEOUT		        10	//´Ó·þÎñÆ÷½ÓÊÕÊý¾Ý³¬Ê±
-#define DEV_COM_ERROR_DATA                      11  //ÍøÂçÉÏ½ÓÊÕµ½µÄÊý¾ÝÒì³£
-#define DEV_COM_ERROR_ORDER                     12  //µ÷ÓÃ´ÎÐò´íÎó
-#define DEV_COM_ERROR_PARAMETER                 17  //²ÎÊý´íÎó
-#define DEV_COM_ERROR_SUPPORT                   23  //²»Ö§³Ö¸Ã¹¦ÄÜ
-#define DEV_COM_ERROR_ALLOC_RESOURCE            41  //×ÊÔ´·ÖÅä´íÎó
-#define DEV_COM_ERROR_NOENOUGH_BUF              43  //»º³åÇøÌ«Ð¡
-#define DEV_COM_ERROR_CREATESOCKET              44  //´´½¨SOCKET³ö´í
-#define DEV_COM_ERROR_SETSOCKET                 45  //ÉèÖÃSOCKET³ö´í
-#define DEV_COM_ERROR_MAXNUM                    46  //´ïµ½×î´óÊýÁ¿
-#define DEV_COM_ERROR_BINDSOCKET    			72	//°ó¶¨Ì×½Ó×ÖÊ§°Ü
-#define DEV_COM_ERROR_SOCKETCLOSE   			73	//socketÁ¬½ÓÖÐ¶Ï£¬´Ë´íÎóÍ¨³£ÊÇÓÉÓÚÁ¬½ÓÖÐ¶Ï»òÄ¿µÄµØ²»¿É´ï
+namespace DevComError {
 
-//ÈÏÖ¤´íÎóÂë
-#define DEV_COM_ERROR_AUTHENTICATION_SUCCESS                     500  //ÈÏÖ¤³É¹¦
-#define DEV_COM_ERROR_AUTHENTICATION_FAIL                        501  //ÈÏÖ¤Ê§°Ü
-#define DEV_COM_ERROR_AUTHENTICATION_CMD_ERROR                   502  //·Ç·¨ÃüÁî
-#define DEV_COM_ERROR_AUTHENTICATION_DATA_INVALID                503  //Ð­Òé½âÎöÊ§°Ü
-#define DEV_COM_ERROR_AUTHENTICATION_DEV_ID_INVALID              504  //DevID·Ç·¨
-#define DEV_COM_ERROR_AUTHENTICATION_QUERY_AUTHCODE_FAIL         505  //Æ½Ì¨²éÑ¯ÑéÖ¤ÂëÊ§°Ü
-#define DEV_COM_ERROR_AUTHENTICATION_QUERY_REDIS_FAIL            506  //Æ½Ì¨²éÑ¯redisÊ§°Ü
-#define DEV_COM_ERROR_AUTHENTICATION_SESSION_KEY_INVALID         507  //SessionKeyÎÞÐ§
-#define DEV_COM_ERROR_AUTHENTICATION_ENCRYPT_FAIL                508  //Ð­Òé¼ÓÃÜÊ§°Ü
-#define DEV_COM_ERROR_AUTHENTICATION_QUERY_DATA_ERROR            509  //²éÑ¯Das»òStunÐÅÏ¢Ê§°Ü
-#define DEV_COM_ERROR_AUTHENTICATION_MASTERKEY_INVALID           510  //masterkey·Ç·¨
-#define DEV_COM_ERROR_AUTHENTICATION_SESSION_KEY_INVALID_NOT          //ÔÝ²»ÓÃ
-#define DEV_COM_ERROR_STUN_INVALID_AUTHENTICATION                512  //²éÑ¯stunÈÏÖ¤Ê§°Ü
-#define DEV_COM_ERROR_DAS_INVALID_AUTHENTICATION                 513  //²éÑ¯dasÈÏÖ¤Ê§°Ü
-#define DEV_COM_ERROR_CODE_ERROR                                 514  //½»»¥Á÷³Ì´íÎó
-#define DEV_COM_ERROR_LBS_UPDATE_REDIS_FAIL                      515  //Æ½Ì¨¸üÐÂÉè±¸ÐÅÏ¢Ê§°Ü
+constexpr int32_t NONE = 0;  // æ²¡æœ‰é”™è¯¯
+constexpr int32_t NOINIT = 3;  // æ²¡æœ‰åˆå§‹åŒ–
+constexpr int32_t CONNECT = 7;  // è¿žæŽ¥æœåŠ¡å™¨å¤±è´¥
+constexpr int32_t SEND = 8;  // å‘æœåŠ¡å™¨å‘é€å¤±è´¥
+constexpr int32_t RECV = 9;  // ä»ŽæœåŠ¡å™¨æŽ¥æ”¶æ•°æ®å¤±è´¥
+constexpr int32_t RECV_TIMEOUT = 10;  // ä»ŽæœåŠ¡å™¨æŽ¥æ”¶æ•°æ®è¶…æ—¶
+constexpr int32_t DATA = 11;  // ç½‘ç»œä¸ŠæŽ¥æ”¶åˆ°çš„æ•°æ®å¼‚å¸¸
+constexpr int32_t ORDER = 12;  // è°ƒç”¨æ¬¡åºé”™è¯¯
+constexpr int32_t PARAMETER = 17;  // å‚æ•°é”™è¯¯
+constexpr int32_t SUPPORT = 23;  // ä¸æ”¯æŒè¯¥åŠŸèƒ½
+constexpr int32_t ALLOC_RESOURCE = 41;  // èµ„æºåˆ†é…é”™è¯¯
+constexpr int32_t NOENOUGH_BUF = 43;  // ç¼“å†²åŒºå¤ªå°
+constexpr int32_t CREATESOCKET = 44;  // åˆ›å»ºSOCKETå‡ºé”™
+constexpr int32_t SETSOCKET = 45;  // è®¾ç½®SOCKETå‡ºé”™
+constexpr int32_t MAXNUM = 46;  // è¾¾åˆ°æœ€å¤§æ•°é‡
+constexpr int32_t BINDSOCKET = 72;  // ç»‘å®šå¥—æŽ¥å­—å¤±è´¥
+constexpr int32_t SOCKETCLOSE = 73;  // socketè¿žæŽ¥ä¸­æ–­ï¼Œæ­¤é”™è¯¯é€šå¸¸æ˜¯ç”±äºŽè¿žæŽ¥ä¸­æ–­æˆ–ç›®çš„åœ°ä¸å¯è¾¾
 
-//ÓïÒô¶Ô½²´íÎóÂë
-#define DEV_COM_ERROR_PARSING_FAIL               600  //½âÎöÏûÏ¢Ê§°Ü
-#define DEV_COM_ERROR_CHECK_TOKEN                601  //ÑéÖ¤tokenÊ§°Ü
+namespace Authentication {
+    constexpr int32_t SUCCESS = 500;  // è®¤è¯æˆåŠŸ
+    constexpr int32_t FAIL = 501;  // è®¤è¯å¤±è´¥
+    constexpr int32_t CMD_ERROR = 502;  // éžæ³•å‘½ä»¤
+    constexpr int32_t DATA_INVALID = 503;  // åè®®è§£æžå¤±è´¥
+    constexpr int32_t DEV_ID_INVALID = 504;  // DevIDéžæ³•
+    constexpr int32_t QUERY_AUTHCODE_FAIL = 505;  // å¹³å°æŸ¥è¯¢éªŒè¯ç å¤±è´¥
+    constexpr int32_t QUERY_REDIS_FAIL = 506;  // å¹³å°æŸ¥è¯¢rediså¤±è´¥
+    constexpr int32_t SESSION_KEY_INVALID = 507;  // SessionKeyæ— æ•ˆ
+    constexpr int32_t ENCRYPT_FAIL = 508;  // åè®®åŠ å¯†å¤±è´¥
+    constexpr int32_t QUERY_DATA_ERROR = 509;  // æŸ¥è¯¢Dasæˆ–Stunä¿¡æ¯å¤±è´¥
+    constexpr int32_t MASTERKEY_INVALID = 510;  // masterkeyéžæ³•
+    constexpr int32_t SESSION_KEY_INVALID_NOT = 511;  // æš‚ä¸ç”¨
+    constexpr int32_t STUN_INVALID_AUTHENTICATION = 512;  // æŸ¥è¯¢stunè®¤è¯å¤±è´¥
+    constexpr int32_t DAS_INVALID_AUTHENTICATION = 513;  // æŸ¥è¯¢dasè®¤è¯å¤±è´¥
+    constexpr int32_t CODE_ERROR = 514;  // äº¤äº’æµç¨‹é”™è¯¯
+    constexpr int32_t LBS_UPDATE_REDIS_FAIL = 515;  // å¹³å°æ›´æ–°è®¾å¤‡ä¿¡æ¯å¤±è´¥
+}
 
-//Ó©Ê¯Î¢ÄÚºË´íÎóÂë
-#define DEV_COM_ERROR_EZDEVSDK_INDEX                100000
-#define DEV_COM_ERROR_EZDEVSDK_INTERNAL             (DEV_COM_ERROR_EZDEVSDK_INDEX + 1)  //ÄÚ²¿´íÎó
-#define DEV_COM_ERROR_EZDEVSDK_INVALD_CALL          (DEV_COM_ERROR_EZDEVSDK_INDEX + 2)  //µ÷ÓÃÁ÷³ÌÓÐÎó
-#define DEV_COM_ERROR_EZDEVSDK_PARAMS_INVALID       (DEV_COM_ERROR_EZDEVSDK_INDEX + 3)  //²ÎÊý·Ç·¨
-#define DEV_COM_ERROR_EZDEVSDK_BUFFER_TOO_SMALL     (DEV_COM_ERROR_EZDEVSDK_INDEX + 4)  //»º³åÇø´óÐ¡²»×ã
-#define DEV_COM_ERROR_EZDEVSDK_DATA_LEN_RANGE       (DEV_COM_ERROR_EZDEVSDK_INDEX + 5)  //Êý¾Ý´óÐ¡³¬³ö·¶Î§
-#define DEV_COM_ERROR_EZDEVSDK_MEMORY               (DEV_COM_ERROR_EZDEVSDK_INDEX + 6)  //ÄÚ´æÒì³£
-#define DEV_COM_ERROR_EZDEVSDK_JSON_INVALID         (DEV_COM_ERROR_EZDEVSDK_INDEX + 7)  //·Ç·¨µÄjsonÊý¾Ý
-#define DEV_COM_ERROR_EZDEVSDK_JSON_FORMAT          (DEV_COM_ERROR_EZDEVSDK_INDEX + 8)  //jsonÊý¾ÝÓÐÎó
-#define DEV_COM_ERROR_EZDEVSDK_EXTEND_NO_FIND       (DEV_COM_ERROR_EZDEVSDK_INDEX + 9)  //ÐÅÁîÂ·ÓÉÕÒ²»µ½¶ÔÓ¦µÄ×¢²áÁìÓò
-#define DEV_COM_ERROR_EZDEVSDK_EXTEND_FULL          (DEV_COM_ERROR_EZDEVSDK_INDEX + 10) //À©Õ¹×¢²áÒÑÂú
-#define DEV_COM_ERROR_EZDEVSDK_EXTEND_EXISTED       (DEV_COM_ERROR_EZDEVSDK_INDEX + 11) //À©Õ¹ÒÑ¾­×¢²á
-#define DEV_COM_ERROR_EZDEVSDK_QUEUE_FULL           (DEV_COM_ERROR_EZDEVSDK_INDEX + 12) //ÏûÏ¢¶ÓÁÐÒÑÂú
-#define DEV_COM_ERROR_EZDEVSDK_VALUE_LOAD           (DEV_COM_ERROR_EZDEVSDK_INDEX + 13) //»ñÈ¡Éè±¸Êý¾ÝÊ§°Ü
-#define DEV_COM_ERROR_EZDEVSDK_VALUE_SAVE           (DEV_COM_ERROR_EZDEVSDK_INDEX + 14) //±£´æÊý¾ÝÖÁÉè±¸Ê§°Ü
-#define DEV_COM_ERROR_EZDEVSDK_MSG_STOP_DISTRIBUTE  (DEV_COM_ERROR_EZDEVSDK_INDEX + 15) //Éè±¸ÕýÔÚÍ£Ö¹,ÉÏ²ãÏûÏ¢Í£Ö¹ÏÂ·¢
-#define DEV_COM_ERROR_EZDEVSDK_MSG_DEFLATE_FAIL     (DEV_COM_ERROR_EZDEVSDK_INDEX + 16) //±¨ÎÄ½âÑ¹Ê§°Ü
-#define DEV_COM_ERROR_EZDEVSDK_MSG_INFLATE_FAIL     (DEV_COM_ERROR_EZDEVSDK_INDEX + 17) //±¨ÎÄÑ¹ËõÊ§°Ü
-#define DEV_COM_ERROR_EZDEVSDK_INS_FULL             (DEV_COM_ERROR_EZDEVSDK_INDEX + 18) //¿Í»§¶ËÊýÁ¿´ïµ½ÉÏÏÞ
+namespace Talk {
+    constexpr int32_t PARSING_FAIL = 600;  // è§£æžæ¶ˆæ¯å¤±è´¥
+    constexpr int32_t CHECK_TOKEN = 601;  // éªŒè¯tokenå¤±è´¥
+}
 
-#define DEV_COM_ERROR_EZDEVSDK_NET_INDEX            100300
-#define DEV_COM_ERROR_EZDEVSDK_NET_CREATE           (DEV_COM_ERROR_EZDEVSDK_NET_INDEX + 1)  ///< ´´½¨socketÊ§°Ü
-#define DEV_COM_ERROR_EZDEVSDK_NET_CONNECT          (DEV_COM_ERROR_EZDEVSDK_NET_INDEX + 2)  ///< ÍøÂçÁ¬½ÓÊ§°Ü
-#define DEV_COM_ERROR_EZDEVSDK_NET_DISCONNECTED     (DEV_COM_ERROR_EZDEVSDK_NET_INDEX + 3)  ///< ÍøÂçÁ¬½Ó¶Ï¿ª
-#define DEV_COM_ERROR_EZDEVSDK_NET_TRANSMIT         (DEV_COM_ERROR_EZDEVSDK_NET_INDEX + 4)  ///< Êý¾Ý´«ÊäÊ§°Ü
-#define DEV_COM_ERROR_EZDEVSDK_NET_DNS              (DEV_COM_ERROR_EZDEVSDK_NET_INDEX + 5)  ///< ÓòÃû½âÎöÊ§°Ü
+namespace EzDevSDK {
+    constexpr int32_t INDEX = 100000;
+    constexpr int32_t INTERNAL = INDEX + 1;  // å†…éƒ¨é”™è¯¯
+    constexpr int32_t INVALID_CALL = INDEX + 2;  // è°ƒç”¨æµç¨‹æœ‰è¯¯
+    constexpr int32_t PARAMS_INVALID = INDEX + 3;  // å‚æ•°éžæ³•
+    constexpr int32_t BUFFER_TOO_SMALL = INDEX + 4;  // ç¼“å†²åŒºå¤§å°ä¸è¶³
+    constexpr int32_t DATA_LEN_RANGE = INDEX + 5;  // æ•°æ®å¤§å°è¶…å‡ºèŒƒå›´
+    constexpr int32_t MEMORY = INDEX + 6;  // å†…å­˜å¼‚å¸¸
+    constexpr int32_t JSON_INVALID = INDEX + 7;  // éžæ³•çš„jsonæ•°æ®
+    constexpr int32_t JSON_FORMAT = INDEX + 8;  // jsonæ•°æ®æœ‰è¯¯
+    constexpr int32_t EXTEND_NO_FIND = INDEX + 9;  // ä¿¡ä»¤è·¯ç”±æ‰¾ä¸åˆ°å¯¹åº”çš„æ³¨å†Œé¢†åŸŸ
+    constexpr int32_t EXTEND_FULL = INDEX + 10; // æ‰©å±•æ³¨å†Œå·²æ»¡
+    constexpr int32_t EXTEND_EXISTED = INDEX + 11; // æ‰©å±•å·²ç»æ³¨å†Œ
+    constexpr int32_t QUEUE_FULL = INDEX + 12; // æ¶ˆæ¯é˜Ÿåˆ—å·²æ»¡
+    constexpr int32_t VALUE_LOAD = INDEX + 13; // èŽ·å–è®¾å¤‡æ•°æ®å¤±è´¥
+    constexpr int32_t VALUE_SAVE = INDEX + 14; // ä¿å­˜æ•°æ®è‡³è®¾å¤‡å¤±è´¥
+    constexpr int32_t MSG_STOP_DISTRIBUTE = INDEX + 15; // è®¾å¤‡æ­£åœ¨åœæ­¢,ä¸Šå±‚æ¶ˆæ¯åœæ­¢ä¸‹å‘
+    constexpr int32_t MSG_DEFLATE_FAIL = INDEX + 16; // æŠ¥æ–‡è§£åŽ‹å¤±è´¥
+    constexpr int32_t MSG_INFLATE_FAIL = INDEX + 17; // æŠ¥æ–‡åŽ‹ç¼©å¤±è´¥
+    constexpr int32_t INS_FULL = INDEX + 18; // å®¢æˆ·ç«¯æ•°é‡è¾¾åˆ°ä¸Šé™
+}
 
-#define DEV_COM_ERROR_EZDEVSDK_LBS_INDEX                100600
-#define DEV_COM_ERROR_EZDEVSDK_NET_AUTHCODE_MISMATCH    (DEV_COM_ERROR_EZDEVSDK_LBS_INDEX + 1)  ///< ÑéÖ¤Âë²»Ò»ÖÂ
-#define DEV_COM_ERROR_EZDEVSDK_NET_INVALID_CALL         (DEV_COM_ERROR_EZDEVSDK_LBS_INDEX + 2)  ///< ºÍ·þÎñÆ÷µÄ½»»¥Á÷³ÌÓÐÎÊÌâ
-#define DEV_COM_ERROR_EZDEVSDK_NET_INVALID_DATA         (DEV_COM_ERROR_EZDEVSDK_LBS_INDEX + 3)  ///< ·þÎñÆ÷ÊÕµ½´íÎóÊý¾Ý
-#define DEV_COM_ERROR_EZDEVSDK_NET_DEVID_MISMATCH       (DEV_COM_ERROR_EZDEVSDK_LBS_INDEX + 4)  ///< devid²»Ò»ÖÂ
-#define DEV_COM_ERROR_EZDEVSDK_NET_MASTERKEY_MISMATCH   (DEV_COM_ERROR_EZDEVSDK_LBS_INDEX + 5)  ///< masterkey²»Ò»ÖÂ
-#define DEV_COM_ERROR_EZDEVSDK_NET_SESSIONKEY_MISMATCH  (DEV_COM_ERROR_EZDEVSDK_LBS_INDEX + 6)  ///< sessionkey²»Ò»ÖÂ
-#define DEV_COM_ERROR_EZDEVSDK_NET_INVALID_DEV          (DEV_COM_ERROR_EZDEVSDK_LBS_INDEX + 7)  ///< ÎÞÐ§Éè±¸
-#define DEV_COM_ERROR_EZDEVSDK_NET_SERVER_CRYPTO        (DEV_COM_ERROR_EZDEVSDK_LBS_INDEX + 8)  ///< ·þÎñÆ÷¼Ó½âÃÜÊ§°Ü
-#define DEV_COM_ERROR_EZDEVSDK_NET_GET_DATA             (DEV_COM_ERROR_EZDEVSDK_LBS_INDEX + 9)  ///< »ñÈ¡das»òÕßstunÐÅÏ¢Ê§°Ü
-#define DEV_COM_ERROR_EZDEVSDK_NET_SERVER_EXCEPTION     (DEV_COM_ERROR_EZDEVSDK_LBS_INDEX + 10) ///< ·þÎñÆ÷ÄÚ²¿Òì³£
-#define DEV_COM_ERROR_EZDEVSDK_NET_CHECK_SESSIONKEY_FAIL (DEV_COM_ERROR_EZDEVSDK_LBS_INDEX +  11) ///< sessionkeyÑéÖ¤Ê§°Ü
-#define DEV_COM_ERROR_EZDEVSDK_NET_SIGN_CHECK_FAIL       (DEV_COM_ERROR_EZDEVSDK_LBS_INDEX + 12)  ///< auth_iÐ£ÑésignÊ§°Ü¡¢ÉêÇëdevice idÐ£ÑésignÊ§°Ü(¿ÉÄÜÑéÖ¤Âë³ö´í)
+// å…¶ä»–é”™è¯¯ç å®šä¹‰...
 
-#define DEV_COM_ERROR_EZDEVSDK_SECRETKEY_INDEX              100900
-#define DEV_COM_ERROR_EZDEVSDK_SECRETKEY_DECRYPT_FAIL       (DEV_COM_ERROR_EZDEVSDK_SECRETKEY_INDEX + 0)    ///< ÉêÇësecretkey±¨ÎÄÆ½Ì¨½âÃÜÊ§°Ü
-#define DEV_COM_ERROR_EZDEVSDK_SECRETKEY_OVERFLOW_WINDOWS   (DEV_COM_ERROR_EZDEVSDK_SECRETKEY_INDEX + 1)    ///< ÉêÇësecretkeyÇëÇó²»ÔÚ´°¿ÚÆÚ
-#define DEV_COM_ERROR_EZDEVSDK_SECRETKEY_NO_USER            (DEV_COM_ERROR_EZDEVSDK_SECRETKEY_INDEX + 2)    ///< Éè±¸Î´°ó¶¨ÓÃ»§
-#define DEV_COM_ERROR_EZDEVSDK_SECRETKEY_SN_NOT_EXIST       (DEV_COM_ERROR_EZDEVSDK_SECRETKEY_INDEX + 3)    ///< Éè±¸²»´æÔÚ
-#define DEV_COM_ERROR_EZDEVSDK_SECRETKEY_AGAIN              (DEV_COM_ERROR_EZDEVSDK_SECRETKEY_INDEX + 4)    ///< Éè±¸ÖØ¸´ÉêÇë
+} // namespace DevComError
 
-#define DEV_COM_ERROR_EZDEVSDK_DAS_INDEX                    101000
-#define DEV_COM_ERROR_EZDEVSDK_DAS_NOSUPPORT_PROTOCOL_VER   (DEV_COM_ERROR_EZDEVSDK_DAS_INDEX + 1)  ///< ²»Ö§³ÖµÄÐ­Òé°æ±¾
-#define DEV_COM_ERROR_EZDEVSDK_DAS_CLIENT_ID_INVALID        (DEV_COM_ERROR_EZDEVSDK_DAS_INDEX + 2)  ///< ²»ºÏ¸ñµÄ¿Í»§¶Ë±êÊ¶·û
-#define DEV_COM_ERROR_EZDEVSDK_DAS_SERVER_UNUSABLE          (DEV_COM_ERROR_EZDEVSDK_DAS_INDEX + 3)  ///< ·þÎñ¶Ë²»¿ÉÓÃ(·þÎñÆ÷ÄÚ²¿Òì³£)
-#define DEV_COM_ERROR_EZDEVSDK_DAS_INVALID_USERNAME         (DEV_COM_ERROR_EZDEVSDK_DAS_INDEX + 4)  ///< ÎÞÐ§µÄÓÃ»§Ãû»òÃÜÂë£¨ÏÖ½×¶ÎÔÝ²»Ê¹ÓÃ£©
-#define DEV_COM_ERROR_EZDEVSDK_DAS_UNAUTHORIZED             (DEV_COM_ERROR_EZDEVSDK_DAS_INDEX + 5)  ///< Î´ÊÚÈ¨£¨ÏÖ½×¶ÎÔÝ²»Ê¹ÓÃ£©
-#define DEV_COM_ERROR_EZDEVSDK_DAS_SESSION_INVAILD          (DEV_COM_ERROR_EZDEVSDK_DAS_INDEX + 6)  ///< ½ÓÈë»á»°Ê§Ð§
-#define DEV_COM_ERROR_EZDEVSDK_DAS_FORCE_OFFLINE            (DEV_COM_ERROR_EZDEVSDK_DAS_INDEX + 7)  ///< Éè±¸±»Ç¿ÖÆÏÂÏß
-#define DEV_COM_ERROR_EZDEVSDK_DAS_FORCE_DEV_RISK           (DEV_COM_ERROR_EZDEVSDK_DAS_INDEX + 8)  ///< Éè±¸±»·ç¿Ø£¨ºÚÃûµ¥£©
-#define DEV_COM_ERROR_EZDEVSDK_DAS_FORCE_DOMAIN_RISK        (DEV_COM_ERROR_EZDEVSDK_DAS_INDEX + 9)  ///< ÁìÓò±»·ç¿Ø
-#define DEV_COM_ERROR_EZDEVSDK_DAS_FORCE_CMD_RISK           (DEV_COM_ERROR_EZDEVSDK_DAS_INDEX + 10) ///< Ö¸Áî±»·ç¿Ø
-
-/*******************È«¾Ö´íÎóÂë end**********************/
-#endif
+#endif // DEV_COM_ERROR_H
