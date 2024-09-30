@@ -1,19 +1,19 @@
 #ifndef __SERVER_THREAD_H__
 #define __SERVER_THREAD_H__
 
-class CSThread;
+#include "CSThread.h"
+
 class CSocket;
-class CServerThread:public CSThread
-{
 
-	public:
-		virtual BOOL InitInstance();
-		virtual BOOL ExitInstance();
-	public:
-		void SetPort(int nPort) { m_nPort = nPort;}
-		
-	private:
-		int m_nPort;
+class CServerThread : public CSThread {
+public:
+    BOOL InitInstance() override;
+    BOOL ExitInstance() override;
 
+    void SetPort(int nPort) { m_nPort = nPort; }
+
+private:
+    int m_nPort;
 };
+
 #endif
