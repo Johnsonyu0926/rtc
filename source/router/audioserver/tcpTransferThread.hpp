@@ -8,9 +8,7 @@
 #include <fstream>
 
 class CSThread;
-
 class CSocket;
-
 
 class TcpTransferThread : public CSThread {
 public:
@@ -20,53 +18,27 @@ public:
             return SendFast(asns::OPERATION_FAIL_ERROR, pClient);
         }
         int opt = 1;
-        setsockopt(socket.m_hSocket, SOL_SOCKET, SO_REUSEADDR, (const char *) &opt, sizeof(opt));
+        setsockopt(socket.m_hSocket, SOL_SOCKET, SO_REUSEADDR, (const char*)&opt, sizeof(opt));
+
         for (int i = m_nPort; i < asns::ENDPORT; ++i) {
             if (socket.Bind(i)) {
                 m_nPort = i;
-                if (std::stoi(m_vecStr[3]) != asns::RECORDEND) {
-                    std::string res = "01 E1 " + m_vecStr[5] + " " + std::to_string(m_nPort);
-                    if(pClient == nullptr){
-                        Rs485::_uart_work(res.c_str(),res.length());
-                    }else{
-                        pClient->Send(res.c_str(), res.length());
-                    }
-                } else {
-                    CUtils utils;
-                    int file_size = utils.get_file_size(asns::RECORD_PATH);
-                    std::string res = "01 E1 " + m_vecStr[4] + " " + std::to_string(file_size) + " " + std::to_string(m_nPort);
-                    if(pClient == nullptr){
-                        Rs485::_uart_work(res.c_str(),res.length());
-                    }else{
-                        pClient->Send(res.c_str(), res.length());
-                    }
-                }
+                handleResponse(socket, i);
                 break;
             } else if (i == asns::ENDPORT) {
-                LOG(INFO) << "fatal , bind error!";
+                LOG(INFO) << "fatal, bind error!";
                 return SendFast(asns::OPERATION_FAIL_ERROR, pClient);
             }
         }
+
         socket.Listen();
-        fd_set rset;
-        FD_ZERO(&rset);
-        FD_SET(socket.m_hSocket, &rset);
-        struct timeval timeout;
-        timeout.tv_sec = 30;
-        timeout.tv_usec = 0;
-        int n = select(socket.m_hSocket + 1, &rset, NULL, NULL, &timeout);
-        if (n < 0) {
-            LOG(INFO) << "fatal , select error!";
+        if (!waitForConnection(socket)) {
             return SendFast(asns::OPERATION_FAIL_ERROR, pClient);
-        } else if (n == 0) {
-            LOG(INFO) << "timeout!";
-            return SendFast(asns::TCP_TIMEOUT, pClient);
-        } else if (n > 0) {
-            LOG(INFO) << "server select n = " << n;
         }
-        CSocket *pTcp = new CSocket;
+
+        CSocket* pTcp = new CSocket;
         socket.Accept(pTcp);
-        LOG(INFO) << "Got the no." << " connection :" << pTcp->GetRemoteIp() << ":" << ntohs(pTcp->GetPeerPort());
+        LOG(INFO) << "Got the connection: " << pTcp->GetRemoteIp() << ":" << ntohs(pTcp->GetPeerPort());
         do_req(pTcp);
         socket.Close();
         delete pTcp;
@@ -80,49 +52,65 @@ public:
 
     void SetPort(int nPort) { m_nPort = nPort; }
 
-    void SetClient(CSocket *pClient) { this->pClient = pClient; }
+    void SetClient(CSocket* pClient) { this->pClient = pClient; }
 
-    void SetVecStr(const std::vector<std::string> &vecStr) { m_vecStr = vecStr; }
+    void SetVecStr(const std::vector<std::string>& vecStr) { m_vecStr = vecStr; }
 
 private:
-    int do_req(CSocket *pTcp) {
+    void handleResponse(CSocket& socket, int port) {
+        std::string res;
+        if (std::stoi(m_vecStr[3]) != asns::RECORDEND) {
+            res = "01 E1 " + m_vecStr[5] + " " + std::to_string(port);
+        } else {
+            CUtils utils;
+            int file_size = utils.get_file_size(asns::RECORD_PATH);
+            res = "01 E1 " + m_vecStr[4] + " " + std::to_string(file_size) + " " + std::to_string(port);
+        }
+        sendResponse(res);
+    }
+
+    bool waitForConnection(CSocket& socket) {
+        fd_set rset;
+        FD_ZERO(&rset);
+        FD_SET(socket.m_hSocket, &rset);
+        struct timeval timeout = {30, 0};
+        int n = select(socket.m_hSocket + 1, &rset, nullptr, nullptr, &timeout);
+        if (n <= 0) {
+            LOG(INFO) << (n < 0 ? "fatal, select error!" : "timeout!");
+            return false;
+        }
+        LOG(INFO) << "server select n = " << n;
+        return true;
+    }
+
+    int do_req(CSocket* pTcp) {
         int condition = std::stoi(m_vecStr[3]);
         switch (condition) {
             case asns::RECORDEND:
-                Record(pTcp);
-                break;
+                return Record(pTcp);
             case asns::AUDIOFILEUPLOAD:
-                FileUpload(pTcp);
-                break;
+                return FileUpload(pTcp);
             case asns::REMOTEFILEUPGRADE:
-                FileUpgrade(pTcp);
-                break;
+                return FileUpgrade(pTcp);
             default:
-                SendFast(asns::NONSUPPORT_ERROR, pClient);
-                break;
+                return SendFast(asns::NONSUPPORT_ERROR, pClient);
         }
-        return 1;
     }
 
-    int Record(CSocket *pTcp) {
+    int Record(CSocket* pTcp) {
         CUtils utils;
         int file_size = utils.get_file_size(asns::RECORD_PATH);
         LOG(INFO) << "record file size:" << file_size;
-        char buf[asns::BUFSIZE] = {0};
         std::fstream fs(asns::RECORD_PATH, std::fstream::in | std::fstream::binary);
+        char buf[asns::BUFSIZE] = {0};
+
         while (!fs.eof()) {
             fs.read(buf, sizeof(buf));
             LOG(INFO) << fs.gcount() << " ";
-            if (fs.gcount() <= 0) {
-                LOG(INFO) << "read count < 0";
-                break;
-            }
+            if (fs.gcount() <= 0) break;
             pTcp->Send(buf, fs.gcount());
             file_size -= fs.gcount();
-            if (file_size <= 0) {
-                LOG(INFO) << "file size < 0";
-                break;
-            }
+            if (file_size <= 0) break;
         }
         fs.close();
         LOG(INFO) << "Send ok";
@@ -130,7 +118,7 @@ private:
         return SendTrue(pClient);
     }
 
-    int FileUpload(CSocket *pTcp) {
+    int FileUpload(CSocket* pTcp) {
         std::string prefix = m_vecStr[6].substr(0, m_vecStr[6].find_first_of('.'));
         std::string suffix = m_vecStr[6].substr(m_vecStr[6].find_first_of('.') + 1);
         std::transform(suffix.begin(), suffix.end(), suffix.begin(), ::tolower);
@@ -148,14 +136,8 @@ private:
             if (len > 0) {
                 fs.write(buf, len);
                 file_size -= len;
-                if (file_size <= 0) {
-                    LOG(INFO) << "read end";
-                    break;
-                }
-            } else if (len == 0) {
-                LOG(INFO) << "read end";
-                break;
-            } else if (len < 0) {
+                if (file_size <= 0) break;
+            } else if (len <= 0) {
                 fs.close();
                 std::string cmd = "rm " + path;
                 system(cmd.c_str());
@@ -168,10 +150,7 @@ private:
         utils.bit_rate_32_to_48(path);
         asns::CAddColumnCustomAudioFileBusiness business;
         if (!business.exist(name)) {
-            asns::CAddColumnCustomAudioFileData node;
-            node.type = asns::AUDIO_FILE_TYPE;
-            node.setName(name);
-            node.size = utils.get_file_size(path);
+            asns::CAddColumnCustomAudioFileData node = {asns::AUDIO_FILE_TYPE, name, utils.get_file_size(path)};
             business.business.push_back(node);
             business.saveJson();
         } else {
@@ -180,18 +159,19 @@ private:
         return SendTrue(pClient);
     }
 
-    int FileUpgrade(CSocket *pTcp) {
+    int FileUpgrade(CSocket* pTcp) {
         CUtils utils;
         std::fstream fs(asns::FIRMWARE_PATH, std::fstream::out | std::fstream::binary);
         int file_size = std::atoi(m_vecStr[4].c_str());
         char buf[asns::BUFSIZE] = {0};
+
         while (true) {
             int len = pTcp->Recv(buf, sizeof(buf));
             if (len > 0) {
                 fs.write(buf, len);
                 LOG(INFO) << len << " ";
                 file_size -= len;
-                if (file_size <= 0)break;
+                if (file_size <= 0) break;
             } else if (len <= 0) {
                 fs.close();
                 return SendFast(asns::TCP_TRANSFER_ERROR, pClient);
@@ -210,26 +190,34 @@ private:
         return 1;
     }
 
-    int SendTrue(CSocket *pClient) {
+    void sendResponse(const std::string& res) {
+        if (pClient == nullptr) {
+            Rs485::_uart_work(res.c_str(), res.length());
+        } else {
+            pClient->Send(res.c_str(), res.length());
+        }
+    }
+
+    int SendTrue(CSocket* pClient) {
         std::string res = "01 E1";
         LOG(INFO) << "return: " << res;
-        if(pClient == nullptr){
-            return Rs485::_uart_work(res.c_str(),res.length());
+        if (pClient == nullptr) {
+            return Rs485::_uart_work(res.c_str(), res.length());
         }
         return pClient->Send(res.c_str(), res.length());
     }
 
-    int SendFast(const std::string &err_code, CSocket *pClient) {
+    int SendFast(const std::string& err_code, CSocket* pClient) {
         std::string buf = "01 " + err_code;
         LOG(INFO) << "return: " << buf;
-        if(pClient == nullptr){
-            return Rs485::_uart_work(buf.c_str(),buf.length());
+        if (pClient == nullptr) {
+            return Rs485::_uart_work(buf.c_str(), buf.length());
         }
         return pClient->Send(buf.c_str(), buf.length());
     }
 
 private:
-    CSocket *pClient;
+    CSocket* pClient;
     int m_nPort;
     std::vector<std::string> m_vecStr;
 };
