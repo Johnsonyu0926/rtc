@@ -1,82 +1,39 @@
-#ifndef __AUDIO_CFG_HPP__
-#define __AUDIO_CFG_HPP__
+#pragma once
 
-#include <easylogging++.h>
-#include <iostream>
+#include <string>
 #include <fstream>
-#include <sstream>
-#include "json.hpp"
+#include <iostream>
+#include <nlohmann/json.hpp>
 
-using namespace std;
 using json = nlohmann::json;
 
-namespace asns {
-    const std::string AUDIOCFG_FILE_NAME = "/mnt/cfg/audio.cfg";
+class CAudioCfgBusiness {
+public:
+    CAudioCfgBusiness() = default;
+    ~CAudioCfgBusiness() = default;
 
-    class CAudioCfgData {
-    public:
-        int iBdVal;
-        int serverType;
-        string codeVersion;
-        string server;
-        int port;
-        string deviceID;
-        string password;
-        string serverPassword;
-        string serial;
-        string subSerial;
-        string devName;
-        string savePrefix;
-        string env;
-
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CAudioCfgData, iBdVal, serverType, codeVersion, server, port, deviceID, password,
-                                       serverPassword,
-                                       serial,
-                                       subSerial,
-                                       devName, savePrefix, env)
-    };
-
-    class CAudioCfgBusiness {
-    public:
-        vector <CAudioCfgData> business;
-
-    public:
-        void saveToJson() {
-            json j;
-            j["data"] = business;
-            std::ofstream o(AUDIOCFG_FILE_NAME);
-            o << std::setw(4) << j << std::endl;
-            o.close();
+    bool load() {
+        std::ifstream i(CONFIG_FILE);
+        if (!i.is_open()) {
+            std::cerr << "Failed to open config file: " << CONFIG_FILE << std::endl;
+            return false;
         }
 
-
-        int load() {
-            std::ifstream i(AUDIOCFG_FILE_NAME);
-            if (!i) {
-                LOG(ERROR) << "error in load! failed to open:" << AUDIOCFG_FILE_NAME;
-                return -1;
-            }
-            json j;
-            try {
-                i >> j;
-                business = j.at("data");
-            }
-            catch (json::parse_error &ex) {
-                LOG(ERROR) << "parse error at byte " << ex.byte;
-                i.close();
-                return -1;
-            }
-            i.close();
-            return 0;
+        try {
+            i >> config_json;
+        } catch (const json::exception &ex) {
+            std::cerr << "JSON parse error: " << ex.what() << std::endl;
+            return false;
         }
 
-        std::string getAudioFilePath() {
-            this->load();
-            std::string res = business[0].savePrefix + "/audiodata/";
-            return res;
-        }
-    };
+        return true;
+    }
 
-}
-#endif
+    std::string getAudioFilePath() const {
+        return config_json.value("audioFilePath", "");
+    }
+
+private:
+    static constexpr const char* CONFIG_FILE = "/mnt/cfg/audio.json";
+    json config_json;
+};
