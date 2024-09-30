@@ -1,65 +1,83 @@
 #pragma once
 
-#include "volume.hpp"
-#include "json.hpp"
-#include <iostream>
-#include <thread>
-#include "testFile.hpp"
+#include <string>
+#include <vector>
+#include <nlohmann/json.hpp>
+#include "mqtt.hpp"
+#include "audioStreamStart.hpp"
 
-namespace asns {
-    template<typename Quest, typename Result>
-    class CReQuest;
+using json = nlohmann::json;
 
-    template<typename T>
-    class CResult;
+class MqttAudioStreamStart {
+public:
+    MqttAudioStreamStart(const std::string &clientId, const std::string &host, int port)
+        : clientId(clientId), host(host), port(port) {}
 
-    class CAudioStreamStartResultData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CAudioStreamStartResultData, null)
+    bool loadConfig(const std::string &configPath) {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-        template<typename Quest, typename Result, typename T>
-        int do_success(const CReQuest<Quest, Result> &c, CResult<T> &r) {
-            CUtils utils;
-            if (CUtils::get_process_status("madplay") || CUtils::get_process_status("ffplay") || PlayStatus::getInstance().getPlayState()) {
-                r.resultId = 2;
-                r.result = "Already played";
-                return 2;
-            }
-            TestFileBusiness bus;
-            LOG(INFO) << "volume:" << c.data.volume;
-            if (c.data.volume > 0) {
-                CVolumeSet volumeSet;
-                volumeSet.addj(c.data.volume);
-                std::string streamUrl = c.data.streamPath + c.data.roomId;
-                char buf[256] = {0};
-                sprintf (buf, bus.getFfmpegCmd().c_str(), streamUrl.c_str());
-                LOG(INFO) << "system:" << buf;
-                system(buf);
+            json j;
+            configFile >> j;
 
-            } else {
-                std::string streamUrl = c.data.streamPath + c.data.roomId;
-                char buf[256] = {0};
-                sprintf (buf, bus.getFfmpegCmd().c_str(), streamUrl.c_str());
-                LOG(INFO) << "system:" << buf;
-                system(buf);
-            }
-            r.resultId = 1;
-            r.result = "success";
-            return 1;
+            audioConfig = j.at("audioConfig").get<std::vector<AudioStreamStart>>();
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
         }
+    }
 
-    private:
-        std::nullptr_t null;
-    };
+    bool saveConfig(const std::string &configPath) const {
+        try {
+            json j = {
+                {"audioConfig", audioConfig}
+            };
 
-    class CAudioStreamStartData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CAudioStreamStartData, streamPath, roomId, priority, volume)
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-    public:
-        std::string streamPath;
-        std::string roomId;
-        int priority;
-        int volume{-1};
-    };
-}
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
+
+    void initializeClient() {
+        mqttClient = std::make_unique<MqttClient>(clientId, host, port);
+    }
+
+    void setCallback(const std::function<void(const std::string &topic, const std::string &message)> &callback) {
+        mqttClient->setMessageCallback(callback);
+    }
+
+    bool connect() {
+        return mqttClient->connect();
+    }
+
+    void disconnect() {
+        mqttClient->disconnect();
+    }
+
+    bool subscribe(const std::string &topic) {
+        return mqttClient->subscribe(topic);
+    }
+
+    bool publish(const std::string &topic, const std::string &message) {
+        return mqttClient->publish(topic, message);
+    }
+
+    void loopForever() {
+        mqttClient->loopForever();
+    }
+
+private:
+    std::string clientId;
+    std::string host;
+    int port;
+    std::vector<AudioStreamStart> audioConfig;
+    std::unique_ptr<MqttClient> mqttClient;
+};
