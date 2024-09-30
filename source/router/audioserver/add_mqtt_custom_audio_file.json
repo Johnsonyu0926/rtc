@@ -1,6 +1,5 @@
-[
-  {
-    "fileName": "1.mp3",
-    "audioUploadRecordId": 1
-  }
-]
+{
+  "id": "unique_mqtt_file_id",
+  "name": "MQTT Custom Audio File",
+  "path": "/path/to/mqtt/audio/file"
+}
