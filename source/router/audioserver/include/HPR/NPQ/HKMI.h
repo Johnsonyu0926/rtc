@@ -1,71 +1,68 @@
-/** @file       HKMI.h
- *  @note       Hikvision Digital Technology Co., Ltd. All Right Reserved.
- *  @brief      ∫£øµ√ΩÃÂ–≈œ¢∂®“Â
- *
- *  @version    V1.0.1
- *  @author     –¡∞≤√Ò
- *  @date       2015/08/13
- *  @note       NEW
- *
- */
 #ifndef _HKMI_H_
 #define _HKMI_H_
 
+// Á≥ªÁªüÂ∞ÅË£ÖÂ±ÇÂÆö‰πâ
+enum class MISystem {
+    NULL_SYSTEM = 0x0000,
+    HIK = 0x0001,
+    MPEG2_PS = 0x0002,
+    MPEG2_TS = 0x0003,
+    RTP = 0x0004,
+    MPEG4 = 0x0005,
+    ASF = 0x0006,
+    AVI = 0x0007,
+    FLV = 0x0008,
+    RTMP = 0x0009
+};
 
-// œµÕ≥∑‚◊∞≤„∂®“Â
-#define MI_SYSTEM_NULL         0x0000            // ≤ª÷ß≥÷µƒ∑‚◊™∏Ò Ω
-#define MI_SYSTEM_HIK          0x0001            // ∫£øµ∑‚◊∞≤„
-#define MI_SYSTEM_MPEG2_PS     0x0002            // PS∑‚◊∞£¨Program Stream
-#define MI_SYSTEM_MPEG2_TS     0x0003            // TS∑‚◊∞£¨Transport Stream
-#define MI_SYSTEM_RTP          0x0004            // RTP∑‚◊∞
-#define MI_SYSTEM_MPEG4        0x0005            // ISO Base Media Format and Extension£¨.MP4, .AVC, .MOV, .3GP
-#define MI_SYSTEM_ASF          0x0006            // ASF
-#define MI_SYSTEM_AVI          0x0007            // AVI
-#define MI_SYSTEM_FLV          0x0008            // FLV
-#define MI_SYSTEM_RTMP         0x0009            // RTMP
+// ËßÜÈ¢ëÁºñÁ†ÅÁ±ªÂûãÂÆö‰πâ
+enum class MIVideo {
+    NULL_VIDEO = 0x0000,
+    HIK264 = 0x0001,
+    MPEG2 = 0x0002,
+    MPEG4 = 0x0003,
+    MJPEG = 0x0004,
+    AVC264 = 0x0100,
+    AVC265 = 0x0005,
+    SVAC = 0x0006,
+    SVC264 = 0x0110,
+    WMV9 = 0x0200,
+    VC1 = 0x0201,
+    REAL = 0x0300,
+    MSMPEG4V1 = 0x0811,
+    MSMPEG4V2 = 0x0812,
+    MSMPEG4V3 = 0x0813,
+    WMV1 = 0x0821,
+    WMV2 = 0x0822
+};
 
-//  ”∆µ±‡¬Î¿‡–Õ∂®“Â
-#define MI_VIDEO_NULL          0x0000            // Œﬁ ”∆µ±‡¬Î
-#define MI_VIDEO_HIK264        0x0001            // ∫£øµH.264∫Õ≤ø∑÷Ωœ‘Á±Í◊¢H264∂ºø…“‘”√’‚∏ˆ∂®“Â
-#define MI_VIDEO_MPEG2         0x0002            // ±Í◊ºMPEG2
-#define MI_VIDEO_MPEG4         0x0003            // ±Í◊ºMPEG4
-#define MI_VIDEO_MJPEG         0x0004            // Motion Jpeg
-#define MI_VIDEO_AVC264        0x0100            // ±Í◊ºH264/AVC
-#define MI_VIDEO_AVC265        0x0005            // ±Í◊ºH.265±£¡Ù
-#define MI_VIDEO_SVAC          0x0006            // ±Í◊ºSVAC±£¡Ù
-#define MI_VIDEO_SVC264        0x0110            // SVC±£¡Ù
-#define MI_VIDEO_WMV9          0x0200            // WMV9
-#define MI_VIDEO_VC1           0x0201            // VC1
-#define MI_VIDEO_REAL          0x0300            // REAL±£¡Ù
-#define MI_VIDEO_MSMPEG4V1     0x0811            // Œ¢»Ì∂®“Âµƒmpeg±‡¬Î∏Ò Ωversion1
-#define MI_VIDEO_MSMPEG4V2     0x0812            // Œ¢»Ì∂®“Âµƒmpeg±‡¬Î∏Ò Ωversion2
-#define MI_VIDEO_MSMPEG4V3     0x0813            // Œ¢»Ì∂®“Âµƒmpeg±‡¬Î∏Ò Ωversion3
-#define MI_VIDEO_WMV1          0x0821            // Œ¢»Ì∂®“ÂµƒWMV±‡¬Î∏Ò Ωversion1
-#define MI_VIDEO_WMV2          0x0822            // Œ¢»Ì∂®“ÂµƒWMV±‡¬Î∏Ò Ωversion2
+// Èü≥È¢ëÁºñÁ†ÅÁ±ªÂûãÂÆö‰πâ
+enum class MIAudio {
+    NULL_AUDIO = 0x0000,
+    ADPCM = 0x1000,
+    MPEG = 0x2000,
+    AAC = 0x2001,
+    RAW_DATA8 = 0x7000,
+    RAW_UDATA16 = 0x7001,
+    G711_U = 0x7110,
+    G711_A = 0x7111,
+    G722_1 = 0x7221,
+    G723_1 = 0x7231,
+    G726_U = 0x7260,
+    G726_A = 0x7261,
+    G726_16 = 0x7262,
+    G729 = 0x7290,
+    AMR_NB = 0x3000,
+    WMA_V2 = 0x8011
+};
 
-// “Ù∆µ±‡¬Î¿‡–Õ∂®“Â
-#define MI_AUDIO_NULL          0x0000            // √ª”–“Ù∆µ
-#define MI_AUDIO_ADPCM         0x1000            // ADPCM
-#define MI_AUDIO_MPEG          0x2000            // MPEGœµ¡–“Ù∆µ£¨Ω‚¬Î∆˜ƒ‹◊‘  ”¶∏˜÷÷MPEG“Ù∆µ
-#define MI_AUDIO_AAC           0x2001            // AAC±‡¬Î
-#define MI_AUDIO_RAW_DATA8     0x7000            // ≤…—˘¬ Œ™8kµƒ‘≠ º ˝æ›
-#define MI_AUDIO_RAW_UDATA16   0x7001            // ≤…—˘¬ Œ™16kµƒ‘≠ º ˝æ›£¨º¥L16
-#define MI_AUDIO_G711_U        0x7110            // G711 U Law
-#define MI_AUDIO_G711_A        0x7111            // G711 A Law
-#define MI_AUDIO_G722_1        0x7221            // G722.1
-#define MI_AUDIO_G723_1        0x7231            // G723.1
-#define MI_AUDIO_G726_U        0x7260            // G726 U Law
-#define MI_AUDIO_G726_A        0x7261            // G726 A Law
-#define MI_AUDIO_G726_16       0x7262
-#define MI_AUDIO_G729          0x7290            // G729
-#define MI_AUDIO_AMR_NB        0x3000
-#define MI_AUDIO_WMA_V2        0x8011            // WMA_V2
-
-// ÀΩ”– ˝æ›
-#define MI_PRIVT_IVS_INFO      0x0003
-#define MI_PRIVT_ITS_INFO      0x0004
-#define MI_PRIVT_IAS_INFO      0x0005
-#define MI_PRIVT_MD_INFO       0x0008
-#define MI_INTER_DECODER       0xBDBF            // ÷«ƒ‹¬Î¡˜
+// ÁßÅÊúâÊï∞ÊçÆ
+enum class MIPrivt {
+    IVS_INFO = 0x0003,
+    ITS_INFO = 0x0004,
+    IAS_INFO = 0x0005,
+    MD_INFO = 0x0008,
+    INTER_DECODER = 0xBDBF
+};
 
 #endif  // _HKMI_H_
