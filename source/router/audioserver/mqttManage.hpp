@@ -1,78 +1,86 @@
 #pragma once
 
+#include <string>
+#include <vector>
+#include <fstream>
+#include <nlohmann/json.hpp>
 #include "mqtt.hpp"
-#include <thread>
-#include "audiocfg.hpp"
-#include "MqttConfig.hpp"
+
+using json = nlohmann::json;
 
 class MqttManage {
 public:
     MqttManage() = default;
+    ~MqttManage() = default;
 
-    void start() {
-        LOG(INFO) << "------------------mqtt start----------------------";
-        asns::CAudioCfgBusiness cfg;
-        cfg.load();
-        name = cfg.business[0].devName;
-        pwd = cfg.business[0].password;
-        server = cfg.business[0].server;
-        port = cfg.business[0].port;
-        imei = cfg.business[0].serial;
-        env = cfg.business[0].env;
+    bool loadConfig(const std::string &configPath) {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-        LOG(INFO) << "env:" << env.c_str() << " imei:" << imei;
+            json j;
+            configFile >> j;
 
-        mosqpp::lib_init();
-
-        MQTT mqtt;
-        MqttConfig mqtt_config;
-        if (mqtt_config.load_file()) {
-            mqtt.publish_topic = mqtt_config.get_publish_topic();
-            mqtt.request_topic = mqtt_config.get_request_topic();
+            clientId = j.at("clientId").get<std::string>();
+            host = j.at("host").get<std::string>();
+            port = j.at("port").get<int>();
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
         }
-        mqtt.publish_topic += env;
-        mqtt.publish_topic += "/";
-        mqtt.publish_topic += imei;
-        mqtt.username_pw_set(name.c_str(), pwd.c_str());
-
-        LOG(INFO) << "begin connectting mqtt server :" << server << ", port:" << port;
-        int rc;
-        while (true) {
-            rc = mqtt.connect(server.c_str(), port);
-            if (MOSQ_ERR_ERRNO == rc) {
-                LOG(INFO) << "mqtt connect error: " << mosqpp::strerror(rc);
-                std::this_thread::sleep_for(std::chrono::seconds(10));
-            } else if (MOSQ_ERR_SUCCESS == rc) {
-                break;
-            }
-        }
-        if (MOSQ_ERR_SUCCESS == rc) {
-            mqtt.request_topic += env;
-            mqtt.request_topic += "/";
-            asns::REQUEST_TOPIC = mqtt.request_topic;
-            mqtt.request_topic += imei;
-            std::string reStr = ServiceManage::instance().boot();
-            mqtt.publish(nullptr, mqtt.publish_topic.c_str(), reStr.length(), reStr.c_str());
-            LOG(INFO) << "publish_topic:" << mqtt.publish_topic;
-            mqtt.heartBeat();
-            //订阅主题
-            mqtt.subscribe(nullptr, mqtt.request_topic.c_str());
-            LOG(INFO) << "Subscribe to:" << mqtt.request_topic;
-            //此函数在无限阻塞循环中为您调用 loop（）。但不能在回调中调用它。
-            mqtt.loop_forever();
-        }
-        mosqpp::lib_cleanup();
     }
 
-    ~MqttManage() {
-        mosqpp::lib_cleanup();
+    bool saveConfig(const std::string &configPath) const {
+        try {
+            json j = {
+                {"clientId", clientId},
+                {"host", host},
+                {"port", port}
+            };
+
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
+
+    void initializeClient() {
+        mqttClient = std::make_unique<MqttClient>(clientId, host, port);
+    }
+
+    void setCallback(const std::function<void(const std::string &topic, const std::string &message)> &callback) {
+        mqttClient->setMessageCallback(callback);
+    }
+
+    bool connect() {
+        return mqttClient->connect();
+    }
+
+    void disconnect() {
+        mqttClient->disconnect();
+    }
+
+    bool subscribe(const std::string &topic) {
+        return mqttClient->subscribe(topic);
+    }
+
+    bool publish(const std::string &topic, const std::string &message) {
+        return mqttClient->publish(topic, message);
+    }
+
+    void loopForever() {
+        mqttClient->loopForever();
     }
 
 private:
-    std::string name;
-    std::string server;
-    std::string pwd;
-    std::string imei;
-    std::string env;
+    std::string clientId;
+    std::string host;
     int port;
+    std::unique_ptr<MqttClient> mqttClient;
 };
