@@ -1,68 +1,83 @@
 #pragma once
 
-#include "json.hpp"
-#include "audiocfg.hpp"
+#include <string>
+#include <vector>
+#include <nlohmann/json.hpp>
+#include "mqtt.hpp"
+#include "baudSet.hpp"
 
-namespace asns {
-    template<typename Quest, typename Result>
-    class CReQuest;
+using json = nlohmann::json;
 
-    template<typename T>
-    class CResult;
+class MqttBaudSet {
+public:
+    MqttBaudSet(const std::string &clientId, const std::string &host, int port)
+        : clientId(clientId), host(host), port(port) {}
 
-    class CBaudResultData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CBaudResultData, null)
+    bool loadConfig(const std::string &configPath) {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-        template<typename Quest, typename Result, typename T>
-        int do_success(const CReQuest<Quest, Result> &c, CResult<T> &r) {
-            if (c.data.baud > 115200 || c.data.baud < 2400) {
-                r.resultId = 2;
-                r.result = "Baud rate error!";
-                return 2;
-            }
+            json j;
+            configFile >> j;
 
-            CAudioCfgBusiness cfg;
-            cfg.load();
-            if (cfg.business[0].iBdVal != c.data.baud) {
-                cfg.business[0].iBdVal = c.data.baud;
-                cfg.saveToJson();
-                CUtils::cmd_system("cm set_val sys bd " + std::to_string(c.data.baud));
-                if (AcquisitionNoise::getInstance().getMonitorStatus()) {
-                    AcquisitionNoise::getInstance().setMonitorStatus(0);
-                    CUtils::async_wait(1, 0, 0, [&] {
-                        while (Rs485::get_rs485_state()) {
-                            std::this_thread::sleep_for(std::chrono::seconds(1));
-                        }
-                        AcquisitionNoise::getInstance().setMonitorStatus(1);
-                        Rs485NoiseMange::startCollectingNoise();
-                    });
-                } else {
-                    AcquisitionNoise::getInstance().setMonitorStatus(1);
-                    CUtils::async_wait(1, 0, 0, [&] {
-                        while (Rs485::get_rs485_state()) {
-                            std::this_thread::sleep_for(std::chrono::seconds(1));
-                        }
-                        AcquisitionNoise::getInstance().setMonitorStatus(0);
-                        RSBusinessManage rs;
-                        rs.worker();
-                    });
-                }
-            }
-            r.resultId = 1;
-            r.result = "success";
-            return 1;
+            baudConfig = j.at("baudConfig").get<std::vector<BaudSet>>();
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
         }
+    }
 
-    private:
-        std::nullptr_t null{};
-    };
+    bool saveConfig(const std::string &configPath) const {
+        try {
+            json j = {
+                {"baudConfig", baudConfig}
+            };
 
-    class CBaudData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CBaudData, baud)
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-    public:
-        int baud{};
-    };
-}
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
+
+    void initializeClient() {
+        mqttClient = std::make_unique<MqttClient>(clientId, host, port);
+    }
+
+    void setCallback(const std::function<void(const std::string &topic, const std::string &message)> &callback) {
+        mqttClient->setMessageCallback(callback);
+    }
+
+    bool connect() {
+        return mqttClient->connect();
+    }
+
+    void disconnect() {
+        mqttClient->disconnect();
+    }
+
+    bool subscribe(const std::string &topic) {
+        return mqttClient->subscribe(topic);
+    }
+
+    bool publish(const std::string &topic, const std::string &message) {
+        return mqttClient->publish(topic, message);
+    }
+
+    void loopForever() {
+        mqttClient->loopForever();
+    }
+
+private:
+    std::string clientId;
+    std::string host;
+    int port;
+    std::vector<BaudSet> baudConfig;
+    std::unique_ptr<MqttClient> mqttClient;
+};
