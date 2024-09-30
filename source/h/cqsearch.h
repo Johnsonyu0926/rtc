@@ -9,13 +9,13 @@ public:
     virtual ~CCQSearch() = default;
 
     bool Init();
-    bool Search(const std::string& szQuery);
+    bool Search(const std::string& query);
 
 private:
-    void ParseQuery(const std::string& szQuery);
+    void ParseQuery(const std::string& query);
     void ExecuteSearch();
 
-    std::string m_szQuery;
+    std::string m_query;
 };
 
 #endif // CQSEARCH_H
