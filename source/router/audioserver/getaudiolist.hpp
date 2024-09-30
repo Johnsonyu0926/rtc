@@ -1,96 +1,104 @@
-#ifndef __CGETAUDIOLIST_H__
-#define __CGETAUDIOLIST_H__
+#pragma once
 
+#include <string>
+#include <vector>
+#include <fstream>
 #include <iostream>
-#include "json.hpp"
-#include "add_custom_audio_file.hpp"
-#include "add_column_custom_audio_file.hpp"
-#include "audiocfg.hpp"
-#include "utils.h"
+#include <nlohmann/json.hpp>
 
-using namespace std;
+using json = nlohmann::json;
 
-namespace asns {
+class AudioFileInfo {
+public:
+    AudioFileInfo() = default;
+    AudioFileInfo(const std::string &id, const std::string &name, const std::string &path)
+        : id(id), name(name), path(path) {}
 
-    class CGetAudioData {
-    public:
-        int storageType;
-        int type;
-        string fileName;
-        float size;
-        int audioId;
+    std::string getId() const { return id; }
+    void setId(const std::string &newId) { id = newId; }
 
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CGetAudioData, storageType, type, fileName, size, audioId)
-    };
+    std::string getName() const { return name; }
+    void setName(const std::string &newName) { name = newName; }
 
-    class CGetAudioListResult {
-    private:
-        string cmd;
-        int resultId;
-        string msg;
-        vector <CGetAudioData> data;
+    std::string getPath() const { return path; }
+    void setPath(const std::string &newPath) { path = newPath; }
 
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CGetAudioListResult, cmd, resultId, data, msg)
+    json toJson() const {
+        return json{
+            {"id", id},
+            {"name", name},
+            {"path", path}};
+    }
 
-    public:
-        void do_success() {
-            cmd = "GetAudioList";
-            resultId = 1;
-            msg = "GetAudioList handle success";
+    static AudioFileInfo fromJson(const json &j) {
+        return AudioFileInfo(
+            j.at("id").get<std::string>(),
+            j.at("name").get<std::string>(),
+            j.at("path").get<std::string>());
+    }
 
-            CAddCustomAudioFileBusiness audios;
-            audios.load();
-            for (auto & busines : audios.business) {
-                CGetAudioData v;
-                v.storageType = 1;
-                v.type = 32;
-                busines.parseFile();
-                v.fileName = busines.customAudioName;
-                CAudioCfgBusiness cfg;
-                cfg.load();
-                CUtils utils;
-                v.size = utils.get_size(cfg.getAudioFilePath().c_str(), busines.customAudioName.c_str());
-                v.audioId = busines.customAudioID;
-                data.push_back(v);
+private:
+    std::string id;
+    std::string name;
+    std::string path;
+};
+
+class AudioFileInfoManager {
+public:
+    AudioFileInfoManager(const std::string &configPath) : configPath(configPath) {}
+
+    bool load() {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            json j;
+            configFile >> j;
+
+            for (const auto &item : j) {
+                files.push_back(AudioFileInfo::fromJson(item));
             }
-
-            CAddColumnCustomAudioFileBusiness business;
-            business.Columnload();
-            for (const auto &it: business.business) {
-                CGetAudioData v;
-                v.storageType = 0;
-                v.type = 2;
-                v.fileName = it.getName();
-                CAudioCfgBusiness cfg;
-                cfg.load();
-                CUtils utils;
-                v.size = utils.get_size(cfg.getAudioFilePath().c_str(), it.getName().c_str());
-                v.audioId = 0;
-                data.push_back(v);
-            }
-        };
-    };
-
-    class CGetAudioList {
-    private:
-        string cmd;
-
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CGetAudioList, cmd)
-
-    public:
-        int do_req(CSocket *pClient) {
-            CGetAudioListResult res;
-            res.do_success();
-            json j = res;
-            std::string s = j.dump();
-            LOG(INFO) <<"return json:"<< s;
-            pClient->Send(s.c_str(), s.length());
-            return 1;
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
         }
-    };
+    }
 
-} // namespace tcpserver
-#endif
+    bool save() const {
+        try {
+            json j;
+            for (const auto &file : files) {
+                j.push_back(file.toJson());
+            }
+
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
+
+    void addFile(const AudioFileInfo &file) {
+        files.push_back(file);
+    }
+
+    void removeFile(const std::string &id) {
+        files.erase(std::remove_if(files.begin(), files.end(),
+            [&id](const AudioFileInfo &file) { return file.getId() == id; }), files.end());
+    }
+
+    AudioFileInfo* findFile(const std::string &id) {
+        auto it = std::find_if(files.begin(), files.end(),
+            [&id](const AudioFileInfo &file) { return file.getId() == id; });
+        return (it != files.end()) ? &(*it) : nullptr;
+    }
+
+private:
+    std::string configPath;
+    std::vector<AudioFileInfo> files;
+};
