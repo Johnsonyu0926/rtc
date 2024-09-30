@@ -1,42 +1,50 @@
 #pragma once
 
+#include <string>
 #include "json.hpp"
 #include "utils.h"
 
 namespace asns {
 
-    class CRebootResult {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CRebootResult, cmd, resultId, msg)
+class CRebootResult {
+public:
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(CRebootResult, cmd, resultId, msg)
 
-        void do_success() {
-            cmd = "Reboot";
-            resultId = 1;
-            msg = "reboot success";
-        }
+    void do_fail(const std::string& str) {
+        cmd = "Reboot";
+        resultId = 2;
+        msg = str;
+    }
 
-    private:
-        std::string cmd;
-        int resultId;
-        std::string msg;
-    };
+    void do_success() {
+        cmd = "Reboot";
+        resultId = 1;
+        msg = "Reboot success";
+    }
 
-    class CReboot {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CReboot, cmd)
+private:
+    std::string cmd;
+    int resultId;
+    std::string msg;
+};
 
-        int do_req(CSocket *pClient) {
-            CUtils utils;
-            utils.reboot();
-            CRebootResult rebootResult;
-            rebootResult.do_success();
-            json js = rebootResult;
-            std::string s = js.dump();
-            return pClient->Send(s.c_str(), s.length());
-        }
+class CReboot {
+public:
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(CReboot, cmd)
 
-    private:
-        std::string cmd;
-    };
+    int do_req(CSocket *pClient) {
+        CUtils utils;
+        CRebootResult res;
+        res.do_success();
+        json j = res;
+        std::string s = j.dump();
+        pClient->Send(s.c_str(), s.length());
+        utils.exec("reboot");
+        return 1;
+    }
 
-}
+private:
+    std::string cmd;
+};
+
+} // namespace asns
