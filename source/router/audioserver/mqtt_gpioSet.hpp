@@ -1,61 +1,82 @@
 #pragma once
 
-#include "json.hpp"
-#include "utils.h"
+#include <string>
+#include <nlohmann/json.hpp>
+#include "mqtt.hpp"
+#include "gpioSet.hpp"
 
-namespace asns {
-    template<typename Quest, typename Result>
-    class CReQuest;
+using json = nlohmann::json;
 
-    template<typename T>
-    class CResult;
+class MqttGpioSet {
+public:
+    MqttGpioSet(const std::string &clientId, const std::string &host, int port)
+        : clientId(clientId), host(host), port(port) {}
 
-    class CGpioSetResultData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CGpioSetResultData, v5, v12, v24)
+    bool loadConfig(const std::string &configPath) {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-        template<typename Quest, typename Result, typename T>
-        int do_success(const CReQuest<Quest, Result> &c, CResult<T> &r) {
-            switch (c.data.portList[0].val) {
-                case 0:
-                    Relay::getInstance().set_gpio_off();
-                    break;
-                case 1:
-                    Relay::getInstance().set_gpio_on();
-                    break;
-                default:
-                    r.resultId = 2;
-                    r.result = "Protocol error";
-                    return 2;
-            }
-            v5 = Relay::getInstance().getGpioStatus();
-            v12 = 0;
-            v24 = 0;
-            r.resultId = 1;
-            r.result = "success";
-            return 1;
+            json j;
+            configFile >> j;
+
+            gpioConfig = j.at("gpioConfig").get<GpioSet>();
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
         }
+    }
 
-    public:
-        int v5;
-        int v12;
-        int v24;
-    };
+    bool saveConfig(const std::string &configPath) const {
+        try {
+            json j = {
+                {"gpioConfig", gpioConfig}
+            };
 
-    class CGpioSetData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CGpioSetData, port, val)
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-    public:
-        int port;
-        int val;
-    };
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
 
-    class CGpioSet {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CGpioSet, portList)
+    void initializeClient() {
+        mqttClient = std::make_unique<MqttClient>(clientId, host, port);
+    }
 
-    public:
-        std::vector<CGpioSetData> portList;
-    };
-}
+    void setCallback(const std::function<void(const std::string &topic, const std::string &message)> &callback) {
+        mqttClient->setMessageCallback(callback);
+    }
+
+    bool connect() {
+        return mqttClient->connect();
+    }
+
+    void disconnect() {
+        mqttClient->disconnect();
+    }
+
+    bool subscribe(const std::string &topic) {
+        return mqttClient->subscribe(topic);
+    }
+
+    bool publish(const std::string &topic, const std::string &message) {
+        return mqttClient->publish(topic, message);
+    }
+
+    void loopForever() {
+        mqttClient->loopForever();
+    }
+
+private:
+    std::string clientId;
+    std::string host;
+    int port;
+    GpioSet gpioConfig;
+    std::unique_ptr<MqttClient> mqttClient;
+};
