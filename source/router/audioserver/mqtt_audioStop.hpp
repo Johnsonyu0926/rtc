@@ -1,36 +1,83 @@
 #pragma once
 
-#include "json.hpp"
-#include "utils.h"
+#include <string>
+#include <vector>
+#include <nlohmann/json.hpp>
+#include "mqtt.hpp"
+#include "audioStop.hpp"
 
-namespace asns {
-    template<typename Quest, typename Result>
-    class CReQuest;
+using json = nlohmann::json;
 
-    template<typename T>
-    class CResult;
+class MqttAudioStop {
+public:
+    MqttAudioStop(const std::string &clientId, const std::string &host, int port)
+        : clientId(clientId), host(host), port(port) {}
 
-    class CAudioStopResultData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CAudioStopResultData, null)
+    bool loadConfig(const std::string &configPath) {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-        template<typename Quest, typename Result, typename T>
-        int do_success(const CReQuest<Quest, Result> &c, CResult<T> &r) {
-            AudioPlayUtil::audio_stop();
-            r.resultId = 1;
-            r.result = "success";
-            return 1;
+            json j;
+            configFile >> j;
+
+            audioConfig = j.at("audioConfig").get<std::vector<AudioStop>>();
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
         }
+    }
 
-    private:
-        std::nullptr_t null;
-    };
+    bool saveConfig(const std::string &configPath) const {
+        try {
+            json j = {
+                {"audioConfig", audioConfig}
+            };
 
-    class CAudioStopData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CAudioStopData, null)
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-    private:
-        std::nullptr_t null;
-    };
-}
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
+
+    void initializeClient() {
+        mqttClient = std::make_unique<MqttClient>(clientId, host, port);
+    }
+
+    void setCallback(const std::function<void(const std::string &topic, const std::string &message)> &callback) {
+        mqttClient->setMessageCallback(callback);
+    }
+
+    bool connect() {
+        return mqttClient->connect();
+    }
+
+    void disconnect() {
+        mqttClient->disconnect();
+    }
+
+    bool subscribe(const std::string &topic) {
+        return mqttClient->subscribe(topic);
+    }
+
+    bool publish(const std::string &topic, const std::string &message) {
+        return mqttClient->publish(topic, message);
+    }
+
+    void loopForever() {
+        mqttClient->loopForever();
+    }
+
+private:
+    std::string clientId;
+    std::string host;
+    int port;
+    std::vector<AudioStop> audioConfig;
+    std::unique_ptr<MqttClient> mqttClient;
+};
