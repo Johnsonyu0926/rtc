@@ -1,109 +1,44 @@
 #pragma once
 
-#include "json.hpp"
-#include "audiocfg.hpp"
-#include "utils.h"
-#include "volume.hpp"
-#include "Relay.hpp"
+#include <string>
+#include <vector>
+#include <fstream>
+#include <iostream>
+#include <nlohmann/json.hpp>
 
-extern asns::CVolumeSet g_volumeSet;
-namespace asns {
+using json = nlohmann::json;
 
-    class CDeviceBaseData {
-    public:
-        string codeVersion;
-        string coreVersion;
-        int relayMode;
-        string ip;
-        int storageType;
-        int port;
-        int playStatus;
-        int volume;
-        int relayStatus;
-        string hardwareReleaseTime;
-        int spiFreeSpace;
-        int flashFreeSpace;
-        string hardwareVersion;
-        string password;
-        int temperature;
-        string netmask;
-        string address;
-        string gateway;
-        string userName;
-        string imei;
-        string functionVersion;
-        string deviceCode;
-        string serverAddress;
-        string serverPort;
+class DeviceBaseInfo {
+public:
+    DeviceBaseInfo() = default;
+    DeviceBaseInfo(const std::string &deviceId, const std::string &deviceType, const std::string &firmwareVersion)
+        : deviceId(deviceId), deviceType(deviceType), firmwareVersion(firmwareVersion) {}
 
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CDeviceBaseData, codeVersion, coreVersion, relayMode, ip, storageType, port,
-                                       playStatus, volume, relayStatus, hardwareReleaseTime, spiFreeSpace,
-                                       flashFreeSpace, hardwareVersion, password, temperature, netmask, address,
-                                       gateway, userName, imei, functionVersion, deviceCode, serverAddress, serverPort)
+    std::string getDeviceId() const { return deviceId; }
+    void setDeviceId(const std::string &newDeviceId) { deviceId = newDeviceId; }
 
-    };
+    std::string getDeviceType() const { return deviceType; }
+    void setDeviceType(const std::string &newDeviceType) { deviceType = newDeviceType; }
 
-    class CGetDeviceBaseInfoResult {
+    std::string getFirmwareVersion() const { return firmwareVersion; }
+    void setFirmwareVersion(const std::string &newFirmwareVersion) { firmwareVersion = newFirmwareVersion; }
 
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CGetDeviceBaseInfoResult, cmd, resultId, data, msg)
+    json toJson() const {
+        return json{
+            {"deviceId", deviceId},
+            {"deviceType", deviceType},
+            {"firmwareVersion", firmwareVersion}};
+    }
 
-        void do_success() {
-            CAudioCfgBusiness cfg;
-            cfg.load();
-            CUtils util;
-            cmd = "GetDeviceBaseInfo";
-            resultId = 1;
-            msg = "Obtaining information successfully";
+    static DeviceBaseInfo fromJson(const json &j) {
+        return DeviceBaseInfo(
+            j.at("deviceId").get<std::string>(),
+            j.at("deviceType").get<std::string>(),
+            j.at("firmwareVersion").get<std::string>());
+    }
 
-            data.codeVersion = cfg.business[0].codeVersion;
-            data.coreVersion = util.get_core_version();
-            data.relayMode = Relay::getInstance().getGpioModel();;
-            data.ip = util.get_addr();
-            data.storageType = 1;
-            data.port = 34508;
-            data.playStatus = PlayStatus::getInstance().getPlayState();
-            g_volumeSet.load();
-            data.volume = g_volumeSet.getVolume();
-            data.relayStatus = Relay::getInstance().getGpioStatus();
-            data.hardwareReleaseTime = util.get_hardware_release_time();
-            data.spiFreeSpace = 9752500;
-            data.flashFreeSpace = util.get_available_Disk("/mnt");
-            data.hardwareVersion = util.get_res_by_cmd("uname -r");
-            data.password = cfg.business[0].serverPassword;
-            data.temperature = 12;
-            data.netmask = util.get_netmask();
-            data.address = "01";
-            data.gateway = util.get_gateway();
-            data.userName = "admin";
-            data.imei = cfg.business[0].deviceID;
-            data.functionVersion = "COMMON";
-            data.deviceCode = cfg.business[0].deviceID;
-            data.serverAddress = cfg.business[0].server;
-            data.serverPort = to_string(cfg.business[0].port);
-        };
-    private:
-        std::string cmd;
-        int resultId;
-        CDeviceBaseData data;
-        std::string msg;
-    };
-
-    class CGetDeviceBaseInfo {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CGetDeviceBaseInfo, cmd)
-
-        int do_req(CSocket *pClient) {
-            CGetDeviceBaseInfoResult deviceBaseInfoResult;
-            deviceBaseInfoResult.do_success();
-            json js = deviceBaseInfoResult;
-            std::string s = js.dump();
-            LOG(INFO) << "data:" << s;
-            return pClient->Send(s.c_str(), s.length());
-        }
-
-    private:
-        std::string cmd;
-    };
-}
+private:
+    std::string deviceId;
+    std::string deviceType;
+    std::string firmwareVersion;
+};
