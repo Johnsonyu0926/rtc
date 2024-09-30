@@ -1,64 +1,33 @@
-/** @file       IMuxDefine.h
- *  @note       Hikvision Digital Technology Co., Ltd. All Right Reserved.
- *  @brief      IOÏà¹Ø½á¹¹¶¨Òå
- *
- *  @version    V1.0.1
- *  @author     ĞÁ°²Ãñ
- *  @date       2015/10/13
- *  @note       NEW
- *
- */
 #ifndef _IMUX_DEFINE_H_
 #define _IMUX_DEFINE_H_
 
 #include "HKMI.h"
 
-// ×î´ó¹ìµÀÊıÁ¿
-#define MAX_TRACK_COUNT             8
+constexpr int MAX_TRACK_COUNT = 8;
 
-// Êä³ö°üÀàĞÍ
-#define UNKNOW_PACKET               0
-#define VIDEO_PACKET                1
-#ifndef AUDIO_PACKET
-    #define AUDIO_PACKET            2
-#endif
-#ifndef PRIVT_PACKET
-    #define PRIVT_PACKET            3
-#endif
-#define HIK_FILE_HEADER             4
-#define HIK_FILE_INDEX              5
+// è¾“å‡ºåŒ…ç±»å‹
+enum class PacketType {
+    UNKNOWN = 0,
+    VIDEO = 1,
+    AUDIO = 2,
+    PRIVT = 3,
+    HIK_FILE_HEADER = 4,
+    HIK_FILE_INDEX = 5
+};
 
-// ÊÓÆµĞÅÏ¢¶¨Òå
-#define MIN_FRAMERATE               (1.0 / 16)      // ×îĞ¡Ö¡ÂÊ
-#define COMMON_FRAMERATE            25              // Ä¬ÈÏÖ¡ÂÊ
-#define MAX_FRAMERATE               480             // ×î´óÖ¡ÂÊ480
+// è§†é¢‘ä¿¡æ¯å®šä¹‰
+constexpr double MIN_FRAMERATE = (1.0 / 16);
+constexpr int COMMON_FRAMERATE = 25;
+constexpr int MAX_FRAMERATE = 480;
 
-// »º´æ¶¨Òå
-#define DEFAULT_BUF_SIZE            (1024*1024*2)   // Í¨ÓÃµÄ»º´æ´óĞ¡
-#define MAX_VALID_BUFSIZE           (1024*1024*32)  // ×î´óµÄ»º´æ³¤¶È£¬ÓÃÓÚÅĞ¶ÏÊı¾İ³¤¶ÈÊÇ·ñºÏ·¨
+// ç¼“å­˜å®šä¹‰
+constexpr size_t DEFAULT_BUF_SIZE = (1024 * 1024 * 2);
+constexpr size_t MAX_VALID_BUFSIZE = (1024 * 1024 * 32);
 
-// ²ÎÊıÓĞĞ§ĞÔ¼ì²é
-#define ARG_CHECK(arg)\
-{\
-    if(0 == (arg))\
-    {\
-        return IMUX_E_PARAMETER;\
-    }\
-}
+#define ARG_CHECK(arg) if (0 == (arg)) { return IMUX_E_PARAMETER; }
+#define ERR_CHECK(err) if (IMUX_OK != (err)) { return (err); }
 
-// º¯Êı·µ»ØÖµ¼ì²é
-#define ERR_CHECK(err)\
-{\
-    int ret = (err);\
-    if(IMUX_OK != (ret))\
-    {\
-        return ret;\
-    }\
-}
-
-// Ê±¼ä
-typedef struct _HK_SYSTEMTIME
-{
+struct HKSystemTime {
     unsigned short wYear;
     unsigned short wMonth;
     unsigned short wDayOfWeek;
@@ -67,83 +36,64 @@ typedef struct _HK_SYSTEMTIME
     unsigned short wMinute;
     unsigned short wSecond;
     unsigned short wMilliseconds;
-}HK_SYSTEMTIME;
+};
 
-// ´ò°üÊäÈë²ÎÊı
-typedef struct
-{
-    // ¹Ì¶¨µÄ²ÎÊı
-    unsigned int        pack_size;             // PS¡¢TSºÍRTPÉèÖÃ×î´ó°ü³¤£¬0ÎªÄ¬ÈÏ³¤¶È
-    unsigned int        track_index;           // ¹ìµÀºÅ
-    unsigned int        syc_video_track;       // ¹ØÁªµÄÊÓÆµ¹ìµÀºÅ
+struct MuxParam {
+    unsigned int pack_size;
+    unsigned int track_index;
+    unsigned int syc_video_track;
+    unsigned int system_format;
+    unsigned int system_format_subtype;
+    unsigned int video_format;
+    unsigned int audio_format;
+    unsigned int privt_format;
+    unsigned int is_hik_stream;
+    unsigned int encrypt_type;
+    unsigned int frame_type;
+    unsigned int time_stamp;
+    float duration;
+    unsigned int frame_num;
+    HKSystemTime global_time;
 
-    unsigned int        system_format;         // Ä¿±ê·â×°¸ñÊ½
-    unsigned int        system_format_subtype; // Ä¿±êÀàĞÍµÄ×Ó¸ñÊ½£¬Ä¿Ç°Ö»Ê¹ÓÃÓÚMP4£¬ÆäËû·â×°²»ÊÊÓÃ
+    struct {
+        unsigned short width_orig;
+        unsigned short height_orig;
+        unsigned short width_play;
+        unsigned short height_play;
+        float frame_rate;
+        unsigned short interlace;
+        unsigned short b_frame_num;
+        unsigned int is_svc_stream;
+    } video;
 
-    unsigned int        video_format;          // ÊÓÆµÀàĞÍ
-    unsigned int        audio_format;          // ÒôÆµÀàĞÍ
-    unsigned int        privt_format;          // Ë½ÓĞÊı¾İÀàĞÍ
+    struct {
+        unsigned short channels;
+        unsigned short bits_per_sample;
+        unsigned int samples_rate;
+        unsigned int bit_rate;
+    } audio;
 
-    // ²Î¿¼Ö¡ĞÅÏ¢£¬·Ç¹Ì¶¨²ÎÊı
-    unsigned int        is_hik_stream;         // ÊÇ·ñ·ûºÏº£¿µ¶¨Òå
-    unsigned int        encrypt_type;          // ¼ÓÃÜÀàĞÍ
-    unsigned int        frame_type;            // µ±Ç°Ö¡ÀàĞÍ I/P/B/audio/privt
-    unsigned int        time_stamp;            // Ê±¼ä´Á
-    float               duration;              // Ö¡Ê±³¤
-    unsigned int        frame_num;             // Ö¡ºÅ
-    HK_SYSTEMTIME       global_time;           // È«¾ÖÊ±¼ä£¨º£¿µÂëÁ÷²ÅÓĞ£©
+    struct {
+        unsigned int privt_type;
+        unsigned int data_type;
+    } privt;
+};
 
-    // ÊÓÆµ²ÎÊı
-    struct
-    {
-        unsigned short  width_orig;            // ·Ö±æÂÊ£¬Ô­Ê¼¿í
-        unsigned short  height_orig;           // ·Ö±æÂÊ£¬Ô­Ê¼¸ß
-        unsigned short  width_play;            // ·Ö±æÂÊ£¬²Ã¼ô¿í
-        unsigned short  height_play;           // ·Ö±æÂÊ£¬²Ã¼ô¸ß
-        float           frame_rate;            // Ö¡ÂÊ
-        unsigned short  interlace;             // ÊÇ·ñ³¡±àÂë
-        unsigned short  b_frame_num;           // ×éÄ£Ê½ÖĞ£¬BÖ¡µÄ¸öÊı
-        unsigned int    is_svc_stream;         // ÊÇ·ñSVCÂëÁ÷
-    }video;
+struct InputBuf {
+    unsigned char* pData;
+    unsigned int nDataLen;
+};
 
-    // ÒôÆµ²ÎÊı
-    struct
-    {
-        unsigned short  channels;              // ÉùµÀ
-        unsigned short  bits_per_sample;       // ÑùÎ»
-        unsigned int    samples_rate;          // ²ÉÑùÂÊ
-        unsigned int    bit_rate;              // ±ÈÌØÂÊ
-    }audio;
+struct OutBuf {
+    unsigned char* pData;
+    unsigned int nDataLen;
+};
 
-    // Ë½ÓĞ²ÎÊı
-    struct
-    {
-        unsigned int    privt_type;            // Ë½ÓĞÀàĞÍ
-        unsigned int    data_type;             // ×ÓÀàĞÍ
-    }privt;
-}MUX_PARAM;
+struct MuxInfo {
+    unsigned int target_id;
+    PacketType packet_type;
+    unsigned int is_key_frame;
+    unsigned int time_stamp;
+};
 
-// ÊäÈëÊı¾İ½á¹¹Ìå
-typedef struct INPUT_BUF
-{
-    unsigned char*      pData;                 // Êı¾İµØÖ·
-    unsigned int        nDataLen;              // Êı¾İ³¤¶È
-}INPUT_BUF;
-
-// Êä³öÊı¾İ½á¹¹Ìå
-typedef struct OUT_BUF
-{
-    unsigned char*      pData;                 // Êı¾İµØÖ·
-    unsigned int        nDataLen;              // Êı¾İ³¤¶È
-}OUT_BUF;
-
-// ´ò°üÊä³öĞÅÏ¢
-typedef struct
-{
-    unsigned int        target_id;             // Ä¿±êÊı¾İĞòºÅ
-    unsigned int        packet_type;           // °üÀàĞÍ
-    unsigned int        is_key_frame;          // 0£º·Ç¹Ø¼üÖ¡£»1£º¹Ø¼üÖ¡
-    unsigned int        time_stamp;            // Ê±¼ä´Á
-}MUX_INFO;
-
-#endif  // _IDEMUX_DEFINE_H_
+#endif  // _IMUX_DEFINE_H_
