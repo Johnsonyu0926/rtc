@@ -1,39 +1,71 @@
 #pragma once
 
-#include <string>
-#include <fstream>
-#include <iostream>
-#include <nlohmann/json.hpp>
+#include "json.hpp"
+#include "add_custom_audio_file.hpp"
+#include "add_column_custom_audio_file.hpp"
+#include "audiocfg.hpp"
+#include "utils.h"
+#include "getaudiolist.hpp"
 
-using json = nlohmann::json;
+namespace asns {
 
-class CAudioCfgBusiness {
+class CDeleteAudioResult {
 public:
-    CAudioCfgBusiness() = default;
-    ~CAudioCfgBusiness() = default;
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(CDeleteAudioResult, cmd, resultId, data, msg)
 
-    bool load() {
-        std::ifstream i(CONFIG_FILE);
-        if (!i.is_open()) {
-            std::cerr << "Failed to open config file: " << CONFIG_FILE << std::endl;
-            return false;
+    void do_success() {
+        cmd = "AudioDelete";
+        resultId = 1;
+        msg = "AudioDelete handle success";
+        CAddCustomAudioFileBusiness audios;
+        audios.load();
+        CAudioCfgBusiness cfg;
+        cfg.load();
+        CUtils utils;
+        for (auto &busines : audios.business) {
+            CGetAudioData v;
+            v.storageType = 0;
+            v.type = 32;
+            busines.parseFile();
+            v.fileName = busines.customAudioName;
+            v.size = utils.get_size(cfg.getAudioFilePath().c_str(), busines.filename);
+            v.audioId = busines.customAudioID;
+            data.push_back(v);
         }
-
-        try {
-            i >> config_json;
-        } catch (const json::exception &ex) {
-            std::cerr << "JSON parse error: " << ex.what() << std::endl;
-            return false;
-        }
-
-        return true;
-    }
-
-    std::string getAudioFilePath() const {
-        return config_json.value("audioFilePath", "");
     }
 
 private:
-    static constexpr const char* CONFIG_FILE = "/mnt/cfg/audio.json";
-    json config_json;
+    std::string cmd;
+    int resultId;
+    std::string msg;
+    std::vector<CGetAudioData> data;
 };
+
+class CDeleteAudio {
+public:
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(CDeleteAudio, cmd, deleteName, storageType)
+
+    int do_del(const std::string &name, int type) {
+        CAddCustomAudioFileBusiness audios;
+        CAddColumnCustomAudioFileBusiness business;
+        audios.deleteAudio(name);
+        business.deleteAudio(name);
+        return 0;
+    }
+
+    int do_req(CSocket *pClient) {
+        do_del(deleteName, storageType);
+        CDeleteAudioResult res;
+        res.do_success();
+        json j = res;
+        std::string s = j.dump();
+        pClient->Send(s.c_str(), s.length());
+        return 1;
+    }
+
+private:
+    std::string cmd;
+    std::string deleteName;
+    int storageType;
+};
+}
