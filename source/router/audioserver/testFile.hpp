@@ -4,47 +4,52 @@
 #include "audiocfg.hpp"
 
 namespace asns {
-    class TestFile {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(TestFile, ffmpegCmd)
 
-    public:
-        std::string ffmpegCmd = "ffplay -fflags nobuffer -nodisp -analyzeduration 1 %s &";
-    };
+class TestFile {
+public:
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(TestFile, ffmpegCmd)
 
-    class TestFileBusiness {
-    public:
-        const std::string TEST_FILE = "/cfg/test.json";
+    std::string ffmpegCmd = "ffplay -fflags nobuffer -nodisp -analyzeduration 1 %s &";
+};
 
-        TestFileBusiness() {
-            CAudioCfgBusiness business;
-            business.load();
-            filePath = business.business[0].savePrefix + TEST_FILE;
-            load();
+class TestFileBusiness {
+public:
+    static const std::string TEST_FILE;
+
+    TestFileBusiness() {
+        CAudioCfgBusiness business;
+        business.load();
+        filePath = business.business[0].savePrefix + TEST_FILE;
+        load();
+    }
+
+    void load() {
+        std::ifstream ifs(filePath);
+        if (!ifs.is_open()) {
+            LOG(INFO) << "open test.json fail";
+            return;
         }
 
-        void load() {
-            std::ifstream ifs(filePath);
-            if (!ifs.is_open()) {
-                LOG(INFO) << "open test.json fail";
-                return;
-            }
+        try {
             json js;
-            try{
-                ifs >> js;
-                testFile = js;
-            } catch (json::parse_error &ex) {
-                LOG(ERROR) << "parse error at byte " << ex.byte;
-            }
-            ifs.close();
+            ifs >> js;
+            testFile = js.get<TestFile>();
+        } catch (const json::parse_error &ex) {
+            LOG(ERROR) << "parse error at byte " << ex.byte;
         }
 
-        std::string getFfmpegCmd() const {
-            return testFile.ffmpegCmd;
-        }
+        ifs.close();
+    }
 
-    private:
-        TestFile testFile;
-        std::string filePath;
-    };
-}
+    std::string getFfmpegCmd() const {
+        return testFile.ffmpegCmd;
+    }
+
+private:
+    TestFile testFile;
+    std::string filePath;
+};
+
+const std::string TestFileBusiness::TEST_FILE = "/cfg/test.json";
+
+} // namespace asns
