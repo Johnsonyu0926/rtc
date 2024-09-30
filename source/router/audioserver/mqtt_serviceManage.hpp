@@ -1,174 +1,82 @@
 #pragma once
 
-#include <map>
-#include <functional>
 #include <string>
+#include <nlohmann/json.hpp>
+#include "mqtt.hpp"
+#include "serviceManage.hpp"
 
-#include "mosquittopp.h"
-#include "mqtt_reTemp.hpp"
-#include "mqtt_audioPlay.hpp"
-#include "mqtt_fileUpload.hpp"
-#include "mqtt_ttsPlay.hpp"
-#include "mqtt_recordPlay.hpp"
-#include "mqtt_volumeSet.hpp"
-#include "mqtt_fileDelete.hpp"
-#include "mqtt_heartbeat.hpp"
-#include "mqtt_boot.hpp"
-#include "mqtt_reboot.hpp"
-#include "mqtt_heartbeat.hpp"
-#include "mqtt_audioStop.hpp"
-#include "mqtt_planPlay.hpp"
-#include "mqtt_audioStreamStart.hpp"
-#include "mqtt_operateCmd.hpp"
-#include "mqtt_ledShowSet.hpp"
-#include "mqtt_micRecordUpload.hpp"
-#include "mqtt_gpioSet.hpp"
-#include "audiocfg.hpp"
-#include "VolumeAdaptSchemaSet.hpp"
-#include "mqtt_volumeAdaptSchemaSet.hpp"
-#include "mqtt_baudSet.hpp"
+using json = nlohmann::json;
 
-class ServiceManage {
+class MqttServiceManage {
 public:
-    const int DEL_SIZE = 21;
-    const std::string DEL_STR = "\"data\"";
-    using msgHandler = std::function<std::string(const json &)>;
+    MqttServiceManage(const std::string &clientId, const std::string &host, int port)
+        : clientId(clientId), host(host), port(port) {}
 
-    static ServiceManage &instance() {
-        static ServiceManage serviceManage;
-        return serviceManage;
-    }
+    bool loadConfig(const std::string &configPath) {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-    msgHandler getHandler(std::string str) {
-        auto it = m_fn.find(str);
-        if (it != m_fn.end()) {
-            //如果找到了消息id对应的处理函数就把函数返回
-            return m_fn[str];
-        } else {
-            //没找到就返回一个空操作的处理函数
-            return [=](const json &js) -> std::string {
-                json res;
-                res["result"] = "no such cmd";
-                res["resultId"] = 2;
-                res["imei"] = js["imei"];
-                res["topic"] = asns::REQUEST_TOPIC + js["imei"].get<std::string>();
-                res["cmd"] = js["cmd"];
-                res["publishId"] = js["publishId"];
-                return res.dump();
-            };
+            json j;
+            configFile >> j;
+
+            serviceManageConfig = j.at("serviceManageConfig").get<ServiceManage>();
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
         }
     }
 
-    std::string heartBeat() {
-        asns::CHeartBeatData heartBeat;
-        heartBeat.do_success();
-        json js = heartBeat;
-        return js.dump();
+    bool saveConfig(const std::string &configPath) const {
+        try {
+            json j = {
+                {"serviceManageConfig", serviceManageConfig}
+            };
+
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
+        }
     }
 
-    std::string boot() {
-        asns::CBootData bootData;
-        bootData.do_success();
-        json js = bootData;
-        return js.dump();
+    void initializeClient() {
+        mqttClient = std::make_unique<MqttClient>(clientId, host, port);
     }
 
-    ~ServiceManage() = default;
+    void setCallback(const std::function<void(const std::string &topic, const std::string &message)> &callback) {
+        mqttClient->setMessageCallback(callback);
+    }
+
+    bool connect() {
+        return mqttClient->connect();
+    }
+
+    void disconnect() {
+        mqttClient->disconnect();
+    }
+
+    bool subscribe(const std::string &topic) {
+        return mqttClient->subscribe(topic);
+    }
+
+    bool publish(const std::string &topic, const std::string &message) {
+        return mqttClient->publish(topic, message);
+    }
+
+    void loopForever() {
+        mqttClient->loopForever();
+    }
 
 private:
-    explicit ServiceManage() {
-        m_fn.insert(std::make_pair("audioPlay", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CAudioPlayData, asns::CAudioPlayResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            reStr.erase(reStr.find(DEL_STR), DEL_SIZE);
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("ttsPlay", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CTtsPlayData, asns::CTtsPlayResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            reStr.erase(reStr.find(DEL_STR), DEL_SIZE);
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("recordPlay", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CRecordPlayData, asns::CRecordPlayResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            reStr.erase(reStr.find(DEL_STR), DEL_SIZE);
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("fileUpload", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CFileUploadData, asns::CFileUploadResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("volumeSet", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CVolumeSetData, asns::CVolumeSetResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("fileDelete", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CFileDeleteData, asns::CFileDeleteResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("reboot", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CRebootData, asns::CRebootResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            reStr.erase(reStr.find(DEL_STR), DEL_SIZE);
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("audioStreamTest", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CPlanPlayData, asns::CPlanPlayResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            reStr.erase(reStr.find(DEL_STR), DEL_SIZE);
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("audioStop", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CAudioStopData, asns::CAudioStopResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            reStr.erase(reStr.find(DEL_STR), DEL_SIZE);
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("audioStreamStart", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CAudioStreamStartData, asns::CAudioStreamStartResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            reStr.erase(reStr.find(DEL_STR), DEL_SIZE);
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("ptzOperate", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CPtzOperateData, asns::CPtzOperateResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            reStr.erase(reStr.find(DEL_STR), DEL_SIZE);
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("ledShowSet", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CLedShowSetData, asns::CLedShowSetResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("micRecordUpload", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CMicRecordUploadData, asns::CMicRecordUploadResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("gpioSet", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CGpioSet, asns::CGpioSetResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("volumeAdaptSchemaSet", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CVolumeAdaptSchemaData, asns::CVolumeAdaptSchemaSet> req = js;
-            std::string reStr = req.do_fail_success();
-            reStr.erase(reStr.find(DEL_STR), DEL_SIZE);
-            return reStr;
-        }));
-        m_fn.insert(std::make_pair("configurationSet", [&](const json &js) -> std::string {
-            asns::CReQuest<asns::CBaudData, asns::CBaudResultData> req = js;
-            std::string reStr = req.do_fail_success();
-            reStr.erase(reStr.find(DEL_STR), DEL_SIZE);
-            return reStr;
-        }));
-    }
-
-public:
-    std::unordered_map<std::string, std::function<std::string(const json &js)>> m_fn;
+    std::string clientId;
+    std::string host;
+    int port;
+    ServiceManage serviceManageConfig;
+    std::unique_ptr<MqttClient> mqttClient;
 };
