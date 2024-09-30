@@ -1,9 +1,20 @@
 #!/bin/sh
-vol=$(ffmpeg -i "$1" -af "volumedetect" -f null /dev/null 2>&1| grep mean_volume| cut -f 2 -d ':' | cut -f 2 -d ' ' | cut -f 2 -d '-' | cut -f 1 -d '.')
-echo "get val: $vol"
-if [ "$vol" -gt 14 ]
-then
-  x=$((vol-14))
-  ffmpeg -y -i "$1" -filter:a "volume=${x}dB" /tmp/vol."$2"
-  cp /tmp/vol."$2" "$1"
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <volume-level>"
+    exit 1
 fi
+
+VOLUME_LEVEL="$1"
+
+if ! [[ "$VOLUME_LEVEL" =~ ^[0-9]+$ ]]; then
+    echo "Error: Volume level must be a number."
+    exit 1
+fi
+
+if [ "$VOLUME_LEVEL" -lt 0 ] || [ "$VOLUME_LEVEL" -gt 100 ]; then
+    echo "Error: Volume level must be between 0 and 100."
+    exit 1
+fi
+
+amixer set Master "${VOLUME_LEVEL}%"
