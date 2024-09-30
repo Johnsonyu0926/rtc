@@ -1,116 +1,102 @@
 #pragma once
 
-#include <iostream>
-#include <fstream>
-#include "json.hpp"
-#include "add_custom_audio_file.hpp"
-#include "audiocfg.hpp"
+#include <string>
+#include <vector>
+#include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 
-namespace asns {
-    const std::string ADD_MQTT_CUSTOM_AUDIO_FILE = "/cfg/add_mqtt_custom_audio_file.json";
+class MqttCustomAudioFile {
+public:
+    MqttCustomAudioFile() = default;
+    MqttCustomAudioFile(const std::string &id, const std::string &name, const std::string &path)
+        : id(id), name(name), path(path) {}
 
-    class CAddMqttCustomAudioFileData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(CAddMqttCustomAudioFileData, fileName, audioUploadRecordId)
+    std::string getId() const { return id; }
+    void setId(const std::string &newId) { id = newId; }
 
-        void setName(const std::string &name) {
-            fileName = name;
-        }
+    std::string getName() const { return name; }
+    void setName(const std::string &newName) { name = newName; }
 
-        std::string getName() const {
-            return fileName;
-        }
+    std::string getPath() const { return path; }
+    void setPath(const std::string &newPath) { path = newPath; }
 
-        void setAudioUploadRecordId(const int id) {
-            audioUploadRecordId = id;
-        }
+    json toJson() const {
+        return json{
+            {"id", id},
+            {"name", name},
+            {"path", path}};
+    }
 
-        int getAudioUploadRecordId() const {
-            return audioUploadRecordId;
-        }
+    static MqttCustomAudioFile fromJson(const json &j) {
+        return MqttCustomAudioFile(
+            j.at("id").get<std::string>(),
+            j.at("name").get<std::string>(),
+            j.at("path").get<std::string>());
+    }
 
-    private:
-        std::string fileName;
-        int audioUploadRecordId;
-    };
+private:
+    std::string id;
+    std::string name;
+    std::string path;
+};
 
-    class CAddMqttCustomAudioFileBusiness {
-    public:
-        CAddMqttCustomAudioFileBusiness() {
-            CAudioCfgBusiness business;
-            business.load();
-            filePath = business.business[0].savePrefix + ADD_MQTT_CUSTOM_AUDIO_FILE;
-        }
+class MqttCustomAudioFileManager {
+public:
+    MqttCustomAudioFileManager(const std::string &configPath) : configPath(configPath) {}
 
-        std::string getFilePath() const {
-            return filePath;
-        }
+    bool load() {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
 
-        int mqttLoad() {
-            std::ifstream i(filePath);
-            if (!i.is_open()) {
-                LOG(INFO) << "ifstream open fail";
-                return 0;
+            json j;
+            configFile >> j;
+
+            for (const auto &item : j) {
+                files.push_back(MqttCustomAudioFile::fromJson(item));
             }
-            json js;
-            try {
-                i >> js;
-                LOG(INFO) << "mqtt load json:" << js.dump();
-                business = js;
-            } catch (json::parse_error &ex) {
-                LOG(ERROR) << "parse error at byte " << ex.byte;
-                i.close();
-                return 0;
-            }
-            i.close();
-            return 1;
-        }
-
-        void saveJson() {
-            std::ofstream o(filePath);
-            if (!o.is_open()) {
-                LOG(INFO) << "ofstream open fail";
-                return;
-            }
-            json js = business;
-            LOG(INFO) << "mqtt saveJson :" << js.dump();
-            o << js << std::endl;
-            o.close();
-        }
-
-        int deleteData(const std::string &name) {
-            mqttLoad();
-            for (auto it = business.begin(); it != business.end(); ++it) {
-                if (it->getName() == name) {
-                    char cmd[256];
-                    CAudioCfgBusiness cfg;
-                    cfg.load();
-                    sprintf (cmd, "rm %s%s", cfg.getAudioFilePath().c_str(), name.c_str());
-                    DS_TRACE(cmd);
-                    system(cmd);
-                    business.erase(it);
-                    saveJson();
-                    return 1;
-                }
-            }
-            return 3;
-        }
-
-        bool exist(const std::string &name) {
-            mqttLoad();
-            for (auto it = business.begin(); it != business.end(); ++it) {
-                if (it->getName() == name) {
-                    return true;
-                }
-            }
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
             return false;
         }
+    }
 
-    public:
-        std::vector<CAddMqttCustomAudioFileData> business;
-        std::string filePath;
-    };
+    bool save() const {
+        try {
+            json j;
+            for (const auto &file : files) {
+                j.push_back(file.toJson());
+            }
 
-} // namespace asms
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
+
+    void addFile(const MqttCustomAudioFile &file) {
+        files.push_back(file);
+    }
+    
+    void removeFile(const std::string &id) {
+        files.erase(std::remove_if(files.begin(), files.end(),
+            [&id](const MqttCustomAudioFile &file) { return file.getId() == id; }), files.end());
+    }
+
+    MqttCustomAudioFile* findFile(const std::string &id) {
+        auto it = std::find_if(files.begin(), files.end(),
+            [&id](const MqttCustomAudioFile &file) { return file.getId() == id; });
+        return (it != files.end()) ? &(*it) : nullptr;
+    }
+
+private:
+    std::string configPath;
+    std::vector<MqttCustomAudioFile> files;
+};
