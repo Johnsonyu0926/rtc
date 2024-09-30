@@ -1,68 +1,82 @@
 #pragma once
 
-#include "audiocfg.hpp"
-#include "volume.hpp"
-#include "json.hpp"
-#include "utils.h"
-#include "VolumeAdaptSchemaSet.hpp"
-#include "AudioPlayStatus.hpp"
-/**
- * {
-        "cmd":"hello",
-        "currentVol":"4",
-        "imei":"869298057540007",
-        "playStatus":0,
-        "rssi":18, // 当前4G信号强度
-        "sdCardFreeSpace":"7684500",
-        "space":"7684500",
-        "stateCharge":"821",
-        "storageType":1
-    }
- */
-namespace asns {
-    class CHeartBeatData {
-    public:
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(CHeartBeatData, cmd, volume, imei, playStatus, sdcardSpace, flashSpace,
-                                       storageType, v5, v12, v24, playContent, decibel, volumeAdaptSchema, baud, intervalTime)
+#include <string>
+#include <nlohmann/json.hpp>
+#include "mqtt.hpp"
+#include "heartbeat.hpp"
 
-        int do_success() {
-            CAudioCfgBusiness cfg;
-            cfg.load();
-            CVolumeSet volumeSet;
-            volumeSet.load();
-            cmd = "hello";
-            volume = volumeSet.getVolume();
-            imei = cfg.business[0].serial;
-            playStatus = PlayStatus::getInstance().getMqttPlayStatus() != -1 ? PlayStatus::getInstance().getMqttPlayStatus() : PlayStatus::getInstance().getPlayState();
-            sdcardSpace = "7684500";
-            flashSpace = std::to_string(CUtils::get_available_Disk("/mnt/"));
-            storageType = 1;
-            v5 = Relay::getInstance().getGpioStatus();
-            v12 = 0;
-            v24 = 0;
-            playContent = PlayStatus::getInstance().getPlayConten();
-            decibel = CUtils::fmt_float_to_str(AcquisitionNoise::getInstance().getDecibel());
-            volumeAdaptSchema.do_data();
-            baud = cfg.business[0].iBdVal;
-            intervalTime = 10;
-            return 1;
+using json = nlohmann::json;
+
+class MqttHeartbeat {
+public:
+    MqttHeartbeat(const std::string &clientId, const std::string &host, int port)
+        : clientId(clientId), host(host), port(port) {}
+
+    bool loadConfig(const std::string &configPath) {
+        try {
+            std::ifstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            json j;
+            configFile >> j;
+
+            heartbeatConfig = j.at("heartbeatConfig").get<Heartbeat>();
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error loading config file: " << e.what() << std::endl;
+            return false;
         }
+    }
 
-    private:
-        std::string cmd;
-        int volume;
-        std::string imei;
-        int playStatus;
-        std::string sdcardSpace;
-        std::string flashSpace;
-        int storageType;
-        int v5;
-        int v12;
-        int v24;
-        std::string playContent;
-        std::string decibel;
-        CVolumeAdaptSchemaData volumeAdaptSchema;
-        int baud;
-        int intervalTime;
-    };
-}
+    bool saveConfig(const std::string &configPath) const {
+        try {
+            json j = {
+                {"heartbeatConfig", heartbeatConfig}
+            };
+
+            std::ofstream configFile(configPath);
+            if (!configFile.is_open()) return false;
+
+            configFile << j.dump(4);
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Error saving config file: " << e.what() << std::endl;
+            return false;
+        }
+    }
+
+    void initializeClient() {
+        mqttClient = std::make_unique<MqttClient>(clientId, host, port);
+    }
+
+    void setCallback(const std::function<void(const std::string &topic, const std::string &message)> &callback) {
+        mqttClient->setMessageCallback(callback);
+    }
+
+    bool connect() {
+        return mqttClient->connect();
+    }
+
+    void disconnect() {
+        mqttClient->disconnect();
+    }
+
+    bool subscribe(const std::string &topic) {
+        return mqttClient->subscribe(topic);
+    }
+
+    bool publish(const std::string &topic, const std::string &message) {
+        return mqttClient->publish(topic, message);
+    }
+
+    void loopForever() {
+        mqttClient->loopForever();
+    }
+
+private:
+    std::string clientId;
+    std::string host;
+    int port;
+    Heartbeat heartbeatConfig;
+    std::unique_ptr<MqttClient> mqttClient;
+};
