@@ -29,4 +29,4 @@ typedef signed short S16;
 typedef unsigned char U08;
 typedef signed char S08;
 
-#endif // _HIK_DATATYPE_DEFINITION_
+#endif // _HIK_DATATYPE_DEFINITION_ok
